@@ -68,7 +68,7 @@ h1 {
   background: #cfe6ff;
 }
 
-/* WRONG FEEDBACK */
+/* WRONG */
 .word.wrong {
   animation: shake 0.65s ease;
   background: #ff4d4d !important;
@@ -123,29 +123,19 @@ h1 {
 }
 
 /* =========================
-   CONTROLS (FIXAT MARGINALER)
+   BUTTONS UNDER GRID
 ========================= */
-.controls {
-  margin-top: 14px;
-
-  /* 👇 detta är nyckeln */
-  max-width: 520px;
-  margin-left: auto;
-  margin-right: auto;
-
-  padding: 0 10px;
-}
-
-/* BUTTON STACK */
-.button-stack {
+.action-grid {
   display: grid;
-  gap: 10px;
-  margin-bottom: 10px;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 button {
+  width: 100%;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 700;
   background: #222;
   color: white;
@@ -174,11 +164,9 @@ button:disabled {
 <div class="game-area">
   <div id="solved"></div>
   <div id="grid" class="grid"></div>
-</div>
 
-<div class="controls">
-
-  <div class="button-stack">
+  <!-- KNAPPAR DIREKT UNDER GRID -->
+  <div class="action-grid">
     <button id="testBtn" onclick="check()" disabled>TESTA</button>
     <button id="shareBtn" onclick="shareResult()" disabled>DELA RESULTAT</button>
   </div>
@@ -186,7 +174,6 @@ button:disabled {
   <div class="bombar">
     BOMMAR <span id="attemptsLabel">0</span>
   </div>
-
 </div>
 
 <div id="popup" class="popup"></div>
@@ -297,7 +284,7 @@ function check() {
 
     flashWrong(selected);
 
-    show(almost ? "NÄSTAN!" : "FEL");
+    show(almost ? "3 AV 4 RÄTT!" : "FEL");
 
     setTimeout(() => {
       selected.forEach(el => el.classList.remove("selected"));
