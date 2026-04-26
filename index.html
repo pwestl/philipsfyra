@@ -72,7 +72,7 @@ h1 {
   100% { transform: translateX(0); }
 }
 
-/* GROUP (2x2 block) */
+/* GROUP (endast när löst) */
 .group {
   grid-column: span 2;
   min-height: calc(32px * 2 + 8px);
@@ -83,6 +83,13 @@ h1 {
 
   border-radius: 12px;
   padding: 10px;
+
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .yellow { background: #f9df6d; }
@@ -154,7 +161,8 @@ button:disabled {
 
 <script>
 let groups = [];
-let remaining = [];
+let remainingGroups = [];
+let solvedGroups = [];
 let allWords = [];
 let bombs = 0;
 let locked = false;
@@ -168,8 +176,9 @@ const shareBtn = document.getElementById("shareBtn");
 async function load() {
   const res = await fetch("puzzle.json?v=" + Date.now());
   groups = await res.json();
-  remaining = structuredClone(groups);
-  allWords = remaining.flatMap(g => g.words);
+  remainingGroups = structuredClone(groups);
+  solvedGroups = [];
+  allWords = remainingGroups.flatMap(g => g.words);
   shuffle();
 }
 
@@ -181,54 +190,31 @@ function shuffle() {
 function render() {
   grid.innerHTML = "";
 
-  // 🔥 bygg lista av ALLT som ska visas
-  let items = [];
-
-  // först grupper (så de hamnar överst)
-  for (const g of groups) {
-    if (!remaining.includes(g)) {
-      items.push({
-        type: "group",
-        data: g
-      });
-    }
-  }
-
-  // sedan ord
-  for (const w of allWords) {
-    items.push({
-      type: "word",
-      value: w
-    });
-  }
-
-  items.forEach(item => {
+  // 🔥 1. visa lösta grupper först (MEN bara de som finns i solvedGroups)
+  solvedGroups.forEach(g => {
     const div = document.createElement("div");
-    div.className = "cell";
+    div.className = `cell group ${g.color}`;
+    div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
+    grid.appendChild(div);
+  });
 
-    if (item.type === "word") {
-      div.classList.add("word");
-      div.textContent = item.value;
+  // 🔥 2. visa ord
+  allWords.forEach(w => {
+    const div = document.createElement("div");
+    div.className = "cell word";
+    div.textContent = w;
 
-      div.onclick = () => {
-        if (locked) return;
+    div.onclick = () => {
+      if (locked) return;
 
-        div.classList.toggle("selected");
+      div.classList.toggle("selected");
 
-        if (document.querySelectorAll(".selected").length > 4) {
-          div.classList.remove("selected");
-        }
+      if (document.querySelectorAll(".selected").length > 4) {
+        div.classList.remove("selected");
+      }
 
-        testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
-      };
-
-    } else {
-      div.classList.add("group", item.data.color);
-      div.innerHTML = `
-        <strong>${item.data.name}</strong><br>
-        ${item.data.words.join(", ")}
-      `;
-    }
+      testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+    };
 
     grid.appendChild(div);
   });
@@ -255,7 +241,7 @@ function check() {
   let match = null;
   let almost = false;
 
-  for (const g of remaining) {
+  for (const g of remainingGroups) {
     const count = g.words.filter(w => words.includes(w)).length;
 
     if (count === 4) match = g;
@@ -263,7 +249,8 @@ function check() {
   }
 
   if (match) {
-    remaining = remaining.filter(g => g !== match);
+    solvedGroups.unshift(match); // 🔥 lägg överst
+    remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
     selected.forEach(el => el.classList.remove("selected"));
@@ -271,7 +258,7 @@ function check() {
     show("RÄTT GRUPP!");
     win();
 
-    render(); // 🔥 här sker ALLT om-sorterat (ingen rörelse kvar)
+    render();
 
   } else {
     bombs++;
@@ -292,7 +279,7 @@ function show(t) {
 }
 
 function win() {
-  if (remaining.length === 0) {
+  if (remainingGroups.length === 0) {
     show(`KLAR PÅ ${bombs} BOMMAR`);
     shareBtn.disabled = false;
     testBtn.disabled = true;
