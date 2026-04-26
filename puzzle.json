@@ -1,22 +1,22 @@
 [
   {
-    "name": "Fotbollsvallar",
+    "name": "Tidigare socialdemokratisk statsminister",
     "color": "yellow",
-    "words": ["Örjan","Stadspark","Koppar","Vånga"]
+    "words": ["Carlsson","Persson","Andersson","Lövfen"]
   },
   {
-    "name": "Behövs för rostfritt stål",
+    "name": "Gubbe från Halmstad",
     "color": "green",
-    "words": ["Järn","Kol","Krom","Nickel"]
+    "words": ["Bildt","Walhbeck","Gessle","Ljungberg"]
   },
   {
-    "name": "Kan smörjas",
+    "name": "Har vunnit På spåret!",
     "color": "blue",
-    "words": ["Krås","Kedja","Gångjärn","Hud"]
+    "words": ["Armstrong","Apelgren","Bendjelloul","Unge"]
   },
   {
-    "name": "Sällskapsresan!",
+    "name": "Har programlett På spåret!",
     "color": "purple",
-    "words": ["Ole","Svenskt kaffe","Stork","Gonorré"]
+    "words": ["Luuk","Lindström","Oldsberg","Hellberg"]
   }
 ]
