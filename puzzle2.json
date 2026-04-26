@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Cykelmärken",
+    "color": "yellow",
+    "words": ["Nishiki","Bianchi","DBS","Skeppshult"]
+  },
+  {
+    "name": "Tågoperatörer",
+    "color": "green",
+    "words": ["SJ","MTR","DB","VY"]
+  },
+  {
+    "name": "Italienska fotbollsspelare",
+    "color": "blue",
+    "words": ["Pirlo","Del Piero","Cannavaro","Baresi"]
+  },
+  {
+    "name": "Pastamärken",
+    "color": "purple",
+    "words": ["Barilla","Kungsörnen","Zeta","De Cecco"]
+  }
+]
