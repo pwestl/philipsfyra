@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="sv">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bonusfyran</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 14px;
+  text-align: center;
+}
+
+h1 { font-size: 24px; margin-bottom: 10px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.word {
+  padding: 14px;
+  background: #f2f2f2;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  transition: 0.15s;
+  font-size: clamp(14px, 3.5vw, 16px);
+}
+
+.word:active {
+  transform: scale(0.98);
+}
+
+.selected {
+  background: #4da3ff;
+  color: white;
+}
+
+.wrong-flash {
+  background: #ff6b6b !important;
+  color: white;
+}
+
+/* GROUPS */
+.group-box {
+  padding: 12px;
+  border-radius: 10px;
+  margin: 10px 0;
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.yellow { background: #f9df6d; }
+.green  { background: #a0c35a; }
+.blue   { background: #b0c4ef; }
+.purple { background: #ba81c5; }
+
+/* BUTTONS */
+button {
+  padding: 10px 14px;
+  margin: 6px 4px;
+  border: none;
+  border-radius: 8px;
+  background: #222;
+  color: white;
+  cursor: pointer;
+}
+
+/* STATUS */
+#status {
+  margin-top: 10px;
+  font-weight: bold;
+  min-height: 20px;
+}
+
+/* BOMMAR */
+.info {
+  font-size: 18px;
+  font-weight: 900;
+  margin-top: 18px;
+  color: #111;
+}
+
+/* POPUP */
+.popup {
+  position: fixed;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  background: #222;
+  color: white;
+  padding: 14px 18px;
+  border-radius: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.25s;
+}
+
+.popup.show {
+  opacity: 1;
+  top: 25%;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>Philips fyra</h1>
+
+<div id="solved"></div>
+<div id="grid" class="grid"></div>
+
+<button onclick="check()">Testa</button> <button onclick="shuffle()">Blanda</button>
+
+<div class="info">
+  Bommar: <span id="attempts">0</span>
+</div>
+
+<div id="popup" class="popup"></div>
+
+<script>
+let groups = [];
+let remainingGroups = [];
+let allWords = [];
+let bommar = 0;
+let locked = false;
+
+const grid = document.getElementById("grid");
+const solvedDiv = document.getElementById("solved");
+const popup = document.getElementById("popup");
+const attemptsEl = document.getElementById("attempts");
+
+/* LOAD GAME FROM JSON */
+async function loadGame() {
+  try {
+    const res = await fetch("puzzle.json");
+    groups = await res.json();
+    remainingGroups = structuredClone(groups);
+    init();
+  } catch (e) {
+    alert("Kunde inte ladda puzzle.json 😢");
+  }
+}
+
+/* INIT */
+function init() {
+  allWords = remainingGroups.flatMap(g => g.words);
+  shuffle();
+}
+
+/* SHUFFLE (Fisher-Yates) */
+function shuffle() {
+  for (let i = allWords.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allWords[i], allWords[j]] = [allWords[j], allWords[i]];
+  }
+  render();
+}
+
+/* RENDER */
+function render() {
+  grid.innerHTML = "";
+
+  allWords.forEach(word => {
+    const div = document.createElement("div");
+    div.className = "word";
+    div.textContent = word;
+
+    div.onclick = () => {
+      if (locked) return;
+
+      div.classList.toggle("selected");
+
+      if (document.querySelectorAll(".selected").length > 4) {
+        div.classList.remove("selected");
+      }
+    };
+
+    grid.appendChild(div);
+  });
+}
+
+/* CHECK */
+function check() {
+  if (locked) return;
+
+  const selected = [...document.querySelectorAll(".selected")];
+
+  if (selected.length !== 4) {
+    showPopup("Välj exakt 4 ord!");
+    return;
+  }
+
+  locked = true;
+
+  const words = selected.map(e => e.textContent);
+
+  let match = null;
+  let almost = false;
+
+  for (const g of remainingGroups) {
+    const count = g.words.filter(w => words.includes(w)).length;
+
+    if (count === 4) match = g;
+    if (count === 3) almost = true;
+  }
+
+  if (match) {
+    const box = document.createElement("div");
+    box.className = `group-box ${match.color}`;
+    box.innerHTML = `<strong>${match.name}</strong><br>${match.words.join(", ")}`;
+    solvedDiv.appendChild(box);
+
+    remainingGroups = remainingGroups.filter(g => g !== match);
+    allWords = allWords.filter(w => !match.words.includes(w));
+
+    render();
+    showPopup("🎉 Rätt grupp!");
+    checkWin();
+  } else {
+    bommar++;
+    attemptsEl.textContent = bommar;
+
+    flashWrong(selected);
+    showPopup(almost ? "🔥 3 av 4 rätt!" : "❌ Fel kombination");
+
+    selected.forEach(el => el.classList.remove("selected"));
+  }
+
+  setTimeout(() => locked = false, 800);
+}
+
+/* WRONG FLASH */
+function flashWrong(selected) {
+  selected.forEach(el => el.classList.add("wrong-flash"));
+
+  setTimeout(() => {
+    selected.forEach(el => el.classList.remove("wrong-flash"));
+  }, 1000);
+}
+
+/* POPUP */
+function showPopup(text) {
+  popup.textContent = text;
+  popup.classList.add("show");
+
+  setTimeout(() => {
+    popup.classList.remove("show");
+  }, 1200);
+}
+
+/* WIN */
+function checkWin() {
+  if (remainingGroups.length === 0) {
+    showPopup(`🏆 Du klarade spelet på ${bommar} bommar!`);
+  }
+}
+
+/* START */
+loadGame();
+</script>
+
+</body>
+</html>
