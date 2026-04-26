@@ -36,7 +36,9 @@ h1 {
   font-weight: 600;
   cursor: pointer;
   user-select: none;
-  transition: 0.15s;
+
+  /* 🧠 mjukare övergångar */
+  transition: background-color 0.25s ease, transform 0.25s ease;
   font-size: clamp(14px, 3.5vw, 16px);
 }
 
@@ -130,40 +132,40 @@ button:disabled {
   top: 25%;
 }
 
-/* 🔴 ROBUST FEL-FEEDBACK (NU FUNKAR ALLTID) */
+/* 🔴 MJUK FEL-FEEDBACK */
 .word.wrong-flash {
   background-color: #ff4d4d !important;
   color: white !important;
-  transform: scale(1.02);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* ↔️ SHAKE */
+/* 🫨 MJUK SHAKE */
 @keyframes shake {
   0% { transform: translateX(0); }
-  20% { transform: translateX(-6px); }
-  40% { transform: translateX(6px); }
-  60% { transform: translateX(-4px); }
-  80% { transform: translateX(4px); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
   100% { transform: translateX(0); }
 }
 
 .word.shake {
-  animation: shake 0.4s ease;
+  animation: shake 0.55s cubic-bezier(.36,.07,.19,.97);
 }
 
-/* GRID SHAKE */
+/* GRID SHAKE (lite mjukare också) */
 @keyframes gridShake {
   0% { transform: translateX(0); }
-  15% { transform: translateX(-8px); }
-  30% { transform: translateX(8px); }
-  45% { transform: translateX(-6px); }
-  60% { transform: translateX(6px); }
-  75% { transform: translateX(-3px); }
+  15% { transform: translateX(-6px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
   100% { transform: translateX(0); }
 }
 
 .grid-shake {
-  animation: gridShake 0.55s ease;
+  animation: gridShake 0.6s ease;
 }
 </style>
 </head>
@@ -260,7 +262,7 @@ function updateTestButton() {
   testBtn.disabled = count !== 4;
 }
 
-/* ❌ FEL FEEDBACK (NU STABIL) */
+/* ❌ FEL FEEDBACK (MJUK) */
 function flashWrong(selected) {
   selected.forEach(el => {
     el.classList.add("wrong-flash", "shake");
@@ -270,7 +272,7 @@ function flashWrong(selected) {
     selected.forEach(el => {
       el.classList.remove("wrong-flash", "shake");
     });
-  }, 500);
+  }, 550);
 }
 
 /* GRID SHAKE */
@@ -279,7 +281,7 @@ function shakeGrid() {
 
   setTimeout(() => {
     grid.classList.remove("grid-shake");
-  }, 550);
+  }, 600);
 }
 
 /* CHECK */
