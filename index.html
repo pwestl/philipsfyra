@@ -14,7 +14,10 @@ body {
   text-align: center;
 }
 
-h1 { font-size: 24px; margin-bottom: 10px; }
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
 
 /* GRID */
 .grid {
@@ -40,15 +43,7 @@ h1 { font-size: 24px; margin-bottom: 10px; }
 }
 
 .selected {
-  background: linear-gradient(135deg, #4da3ff, #2f6fff);
-  color: white;
-  transform: scale(1.03);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
-
-.wrong-flash {
-  background: #ff6b6b !important;
-  color: white;
+  background: #bcdcff;
 }
 
 /* GROUPS */
@@ -79,37 +74,36 @@ button {
   padding: 10px 14px;
   margin: 6px 4px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #2b2b2b, #111);
+  border-radius: 8px;
+  background: #222;
   color: white;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: 0.15s;
   font-family: inherit;
 }
 
 button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+  background: #333;
 }
 
 button:active {
-  transform: translateY(0px) scale(0.98);
+  transform: scale(0.98);
 }
 
-/* DISABLED SHARE BUTTON */
 button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
 }
 
 /* PRIMARY */
 .primary {
-  background: linear-gradient(135deg, #4da3ff, #2f6fff);
+  background: #4da3ff;
+}
+
+.primary:hover {
+  background: #3b8be0;
 }
 
 /* INFO */
@@ -153,7 +147,7 @@ button:disabled {
 <button onclick="shuffle()">Blanda</button>
 
 <button id="shareBtn" onclick="shareResult()" disabled>
-📤 Dela resultat
+Dela resultat
 </button>
 
 <div class="info">
@@ -209,6 +203,7 @@ function render() {
 
     div.onclick = () => {
       if (locked) return;
+
       div.classList.toggle("selected");
 
       if (document.querySelectorAll(".selected").length > 4) {
@@ -255,14 +250,14 @@ function check() {
     allWords = allWords.filter(w => !match.words.includes(w));
 
     render();
-    showPopup("🎉 Rätt grupp!");
+    showPopup("Rätt grupp!");
     checkWin();
   } else {
     bommar++;
     attemptsEl.textContent = bommar;
 
     flashWrong(selected);
-    showPopup(almost ? "🔥 3 av 4 rätt!" : "❌ Fel kombination");
+    showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
 
     selected.forEach(el => el.classList.remove("selected"));
   }
@@ -292,8 +287,7 @@ function showPopup(text) {
 /* WIN */
 function checkWin() {
   if (remainingGroups.length === 0) {
-    showPopup(`🏆 Du klarade spelet på ${bommar} bommar!`);
-
+    showPopup(`Du klarade spelet på ${bommar} bommar!`);
     shareBtn.disabled = false;
   }
 }
@@ -303,7 +297,7 @@ function shareResult() {
   if (shareBtn.disabled) return;
 
   const text =
-`Jag klarade Philips fyra 🧩
+`Jag klarade Philips fyra
 
 💥 ${bommar} bommar
 
@@ -311,7 +305,7 @@ Testa själv här:
 ${window.location.href}`;
 
   navigator.clipboard.writeText(text).then(() => {
-    showPopup("📋 Kopierat till clipboard!");
+    showPopup("Kopierat till clipboard!");
   });
 }
 
