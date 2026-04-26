@@ -48,67 +48,34 @@ h1 {
   background: #bcdcff;
 }
 
-/* GROUP COLORS */
+/* GROUP BOX */
+.group-box {
+  position: relative;
+  overflow: hidden;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 10px 0;
+  animation: pop 0.35s ease, glow 0.35s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  50% { box-shadow: 0 0 18px rgba(0,0,0,0.15); }
+  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+}
+
+/* COLORS */
 .yellow { background: #f9df6d; }
 .green  { background: #a0c35a; }
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* GROUP BOX + ANIMATION (1 + 3 COMBO) */
-.group-box {
-  position: relative;
-  overflow: hidden;
-
-  padding: 12px;
-  border-radius: 10px;
-  margin: 10px 0;
-
-  animation: glowPop 0.35s ease;
-}
-
-/* pop + glow */
-@keyframes glowPop {
-  0% {
-    transform: scale(0.9);
-    opacity: 0;
-    box-shadow: 0 0 0 rgba(0,0,0,0);
-  }
-  50% {
-    transform: scale(1.03);
-    box-shadow: 0 0 18px rgba(0,0,0,0.15);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 rgba(0,0,0,0);
-  }
-}
-
-/* shine sweep */
-.group-box::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -150%;
-  width: 80%;
-  height: 100%;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.45),
-    transparent
-  );
-  transform: skewX(-20deg);
-  animation: shine 0.6s ease;
-}
-
-@keyframes shine {
-  to {
-    left: 150%;
-  }
-}
-
-/* BUTTON STACK */
+/* BUTTONS */
 .button-stack {
   display: grid;
   grid-template-columns: 1fr;
@@ -116,7 +83,6 @@ h1 {
   margin-top: 12px;
 }
 
-/* BUTTONS */
 button {
   padding: 10px 14px;
   border: none;
@@ -126,17 +92,7 @@ button {
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  transition: 0.15s;
-  font-family: inherit;
   width: 100%;
-}
-
-button:hover {
-  background: #333;
-}
-
-button:active {
-  transform: scale(0.98);
 }
 
 button:disabled {
@@ -144,13 +100,8 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* PRIMARY */
 .primary {
   background: #4da3ff;
-}
-
-.primary:hover {
-  background: #3b8be0;
 }
 
 /* BOMBAR */
@@ -158,7 +109,6 @@ button:disabled {
   margin-top: 16px;
   font-size: 18px;
   font-weight: 900;
-  color: #111;
 }
 
 /* POPUP */
@@ -172,13 +122,50 @@ button:disabled {
   padding: 14px 18px;
   border-radius: 10px;
   opacity: 0;
-  pointer-events: none;
   transition: 0.25s;
 }
 
 .popup.show {
   opacity: 1;
   top: 25%;
+}
+
+/* 🔴 WRONG FLASH */
+@keyframes wrongFlash {
+  0% { background: #ff6b6b; color: white; }
+  100% { background: #f2f2f2; color: black; }
+}
+
+.wrong-flash {
+  animation: wrongFlash 0.5s ease;
+}
+
+/* ↔️ SHAKE (rutor) */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.4s ease;
+}
+
+/* 🌐 GRID SHAKE (NY) */
+@keyframes gridShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+.grid-shake {
+  animation: gridShake 0.4s ease;
 }
 </style>
 </head>
@@ -275,12 +262,31 @@ function updateTestButton() {
   testBtn.disabled = count !== 4;
 }
 
+/* FLASH */
+function flashWrong(selected) {
+  selected.forEach(el => {
+    el.classList.add("wrong-flash", "shake");
+
+    setTimeout(() => {
+      el.classList.remove("wrong-flash", "shake");
+    }, 500);
+  });
+}
+
+/* GRID SHAKE */
+function shakeGrid() {
+  grid.classList.add("grid-shake");
+
+  setTimeout(() => {
+    grid.classList.remove("grid-shake");
+  }, 400);
+}
+
 /* CHECK */
 function check() {
   if (locked) return;
 
   const selected = [...document.querySelectorAll(".selected")];
-
   if (selected.length !== 4) return;
 
   locked = true;
@@ -314,6 +320,7 @@ function check() {
     attemptsLabel.textContent = `💥 ${bommar}`;
 
     flashWrong(selected);
+    shakeGrid();
 
     setTimeout(() => {
       selected.forEach(el => el.classList.remove("selected"));
@@ -327,32 +334,18 @@ function check() {
   setTimeout(() => locked = false, 800);
 }
 
-/* FLASH + SHAKE */
-function flashWrong(selected) {
-  selected.forEach(el => {
-    el.classList.add("wrong-flash", "shake");
-
-    setTimeout(() => {
-      el.classList.remove("wrong-flash", "shake");
-    }, 500);
-  });
-}
-
 /* POPUP */
 function showPopup(text) {
   popup.textContent = text;
   popup.classList.add("show");
 
-  setTimeout(() => {
-    popup.classList.remove("show");
-  }, 1200);
+  setTimeout(() => popup.classList.remove("show"), 1200);
 }
 
 /* WIN */
 function checkWin() {
   if (remainingGroups.length === 0) {
     showPopup(`Du klarade spelet på ${bommar} bommar!`);
-
     shareBtn.disabled = false;
     testBtn.disabled = true;
     locked = true;
