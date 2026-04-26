@@ -12,8 +12,13 @@ body {
   margin: 0 auto;
   padding: 14px;
   text-align: center;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* TITLE */
 h1 {
   font-size: 28px;
   font-weight: 800;
@@ -21,11 +26,36 @@ h1 {
   margin-bottom: 14px;
 }
 
-/* GRID */
+/* =========================
+   🎮 FIXED GAME AREA
+========================= */
+.game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  /* 🔒 FIX: stabil höjd så inget hoppar */
+  height: calc(100vh - 240px);
+  overflow: hidden;
+}
+
+/* solved + grid scrollar inuti */
+#solved {
+  overflow-y: auto;
+  max-height: 40%;
+  margin-bottom: 10px;
+  padding-right: 4px;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+
+  overflow-y: auto;
+  flex: 1;
+  align-content: start;
+  padding-right: 4px;
 }
 
 /* WORDS */
@@ -74,12 +104,75 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* BUTTONS */
+/* POPUP */
+.popup {
+  position: fixed;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  background: #222;
+  color: white;
+  padding: 14px 18px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: 0.25s;
+}
+
+.popup.show {
+  opacity: 1;
+  top: 25%;
+}
+
+/* 🔴 FEL */
+.word.wrong-flash {
+  background-color: #ff4d4d !important;
+  color: white !important;
+  transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* 🫨 SHAKE */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  15% { transform: translateX(-3px); }
+  30% { transform: translateX(3px); }
+  45% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+
+.word.shake {
+  animation: shake 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* GRID SHAKE */
+@keyframes gridShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.grid-shake {
+  animation: gridShake 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* =========================
+   💥 FOOTER (FAST FIXED UI)
+========================= */
+.footer {
+  margin-top: auto;
+  padding-top: 16px;
+  padding-bottom: 10px;
+}
+
 .button-stack {
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
-  margin-top: 12px;
+  margin-bottom: 14px;
 }
 
 button {
@@ -103,66 +196,40 @@ button:disabled {
   background: #4da3ff;
 }
 
-/* INFO */
-.info {
-  margin-top: 16px;
-  font-size: 18px;
-  font-weight: 900;
+/* BOMMAR UI */
+.bombar-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-/* POPUP */
-.popup {
-  position: fixed;
-  left: 50%;
-  top: 20%;
-  transform: translateX(-50%);
-  background: #222;
-  color: white;
-  padding: 14px 18px;
-  border-radius: 10px;
-  opacity: 0;
-  transition: 0.25s;
+.bombar-line {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: #e5e5e5;
+  top: 50%;
 }
 
-.popup.show {
-  opacity: 1;
-  top: 25%;
+.bombar-badge {
+  position: relative;
+  background: white;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 14px;
+  z-index: 1;
+  min-width: 34px;
+  text-align: center;
 }
 
-/* 🔴 MJUK FEL-FEEDBACK (långsammare fade) */
-.word.wrong-flash {
-  background-color: #ff4d4d !important;
-  color: white !important;
-  transition: background-color 0.6s ease, color 0.6s ease;
-}
-
-/* 🫨 MJUKARE & LÅNGSAMMARE SHAKE */
-@keyframes shake {
-  0% { transform: translateX(0); }
-  15% { transform: translateX(-3px); }
-  30% { transform: translateX(3px); }
-  45% { transform: translateX(-2px); }
-  60% { transform: translateX(2px); }
-  75% { transform: translateX(-1px); }
-  100% { transform: translateX(0); }
-}
-
-.word.shake {
-  animation: shake 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* 🌐 MJUK GRID-SHAKE */
-@keyframes gridShake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
-  100% { transform: translateX(0); }
-}
-
-.grid-shake {
-  animation: gridShake 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+.bombar-text {
+  margin-top: 8px;
+  font-size: 16px;
+  color: #111;
+  font-weight: 500;
 }
 </style>
 </head>
@@ -171,21 +238,29 @@ button:disabled {
 
 <h1>PHILIPS FYRA</h1>
 
-<div id="solved"></div>
-<div id="grid" class="grid"></div>
-
-<div class="button-stack">
-  <button id="testBtn" class="primary" onclick="check()" disabled>
-    TESTA
-  </button>
-
-  <button id="shareBtn" onclick="shareResult()" disabled>
-    DELA RESULTAT
-  </button>
+<div class="game-area">
+  <div id="solved"></div>
+  <div id="grid" class="grid"></div>
 </div>
 
-<div class="info">
-  <span id="attemptsLabel">💥 0</span>
+<div class="footer">
+
+  <div class="button-stack">
+    <button id="testBtn" class="primary" onclick="check()" disabled>
+      TESTA
+    </button>
+
+    <button id="shareBtn" onclick="shareResult()" disabled>
+      DELA RESULTAT
+    </button>
+  </div>
+
+  <div class="bombar-wrapper">
+    <div class="bombar-line"></div>
+    <div class="bombar-badge" id="attemptsLabel">0</div>
+  </div>
+  <div class="bombar-text">Bommar</div>
+
 </div>
 
 <div id="popup" class="popup"></div>
@@ -259,7 +334,7 @@ function updateTestButton() {
   testBtn.disabled = count !== 4;
 }
 
-/* ❌ FEL FEEDBACK */
+/* FEEDBACK */
 function flashWrong(selected) {
   selected.forEach(el => {
     el.classList.add("wrong-flash", "shake");
@@ -316,7 +391,7 @@ function check() {
     checkWin();
   } else {
     bommar++;
-    attemptsLabel.textContent = `💥 ${bommar}`;
+    attemptsLabel.textContent = bommar;
 
     flashWrong(selected);
     shakeGrid();
