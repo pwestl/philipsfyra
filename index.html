@@ -104,7 +104,7 @@ button:disabled {
   background: #4da3ff;
 }
 
-/* BOMBAR */
+/* INFO */
 .info {
   margin-top: 16px;
   font-size: 18px;
@@ -130,14 +130,10 @@ button:disabled {
   top: 25%;
 }
 
-/* 🔴 WRONG FLASH */
-@keyframes wrongFlash {
-  0% { background: #ff6b6b; color: white; }
-  100% { background: #f2f2f2; color: black; }
-}
-
+/* 🔴 FEL (FIXAD – NU SYNS DEN ALLTID) */
 .wrong-flash {
-  animation: wrongFlash 0.5s ease;
+  background: #ff6b6b !important;
+  color: white !important;
 }
 
 /* ↔️ SHAKE */
@@ -154,7 +150,7 @@ button:disabled {
   animation: shake 0.4s ease;
 }
 
-/* 🌐 GRID SHAKE (förstärkt) */
+/* 🌐 GRID SHAKE */
 @keyframes gridShake {
   0% { transform: translateX(0); }
   15% { transform: translateX(-8px); }
@@ -257,24 +253,26 @@ function render() {
   });
 }
 
-/* TEST BUTTON */
+/* BUTTON STATE */
 function updateTestButton() {
   const count = document.querySelectorAll(".selected").length;
   testBtn.disabled = count !== 4;
 }
 
-/* FLASH */
+/* ❌ FEL FEEDBACK (FIXAD) */
 function flashWrong(selected) {
   selected.forEach(el => {
     el.classList.add("wrong-flash", "shake");
-
-    setTimeout(() => {
-      el.classList.remove("wrong-flash", "shake");
-    }, 500);
   });
+
+  setTimeout(() => {
+    selected.forEach(el => {
+      el.classList.remove("wrong-flash", "shake");
+    });
+  }, 500);
 }
 
-/* GRID SHAKE */
+/* 🌐 GRID SHAKE */
 function shakeGrid() {
   grid.classList.add("grid-shake");
 
@@ -324,11 +322,7 @@ function check() {
     shakeGrid();
 
     setTimeout(() => {
-      selected.forEach(el => {
-        el.classList.remove("selected");
-        el.classList.remove("wrong-flash");
-        el.classList.remove("shake");
-      });
+      selected.forEach(el => el.classList.remove("selected"));
     }, 650);
 
     setTimeout(() => {
