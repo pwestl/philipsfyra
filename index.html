@@ -335,10 +335,23 @@ function win() {
 }
 
 function share() {
-  navigator.clipboard.writeText(
-`Jag klarade spelet med ${bombs} bommar`
-  );
-  show("KOPIERAT!");
+  let message;
+
+  if (bombs === 0) {
+    message =
+`Jag klarade PHILIPS FYRA med 0 bommar! Ha! Så enkelt! Testa du med!
+
+https://pwestl.github.io/philipsfyra/`;
+  } else {
+    message =
+`Jag klarade PHILIPS FYRA med ${bombs} bommar! Testa du med!
+
+https://pwestl.github.io/philipsfyra/`;
+  }
+
+  navigator.clipboard.writeText(message);
+
+  show("RESULTAT KOPIERAT!");
 }
 
 load();
