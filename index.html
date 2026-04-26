@@ -6,104 +6,90 @@
 <title>Philips fyra</title>
 
 <style>
-html, body {
-  height: 100%;
-}
-
 body {
-  font-family: Arial, sans-serif;
+  font-family: system-ui, -apple-system, Arial;
   max-width: 600px;
   margin: 0 auto;
-
-  height: 100vh;
+  padding: 14px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  overflow: hidden; /* ⭐ ingen page scroll */
 }
 
-/* TITLE */
 h1 {
   font-size: 28px;
   font-weight: 800;
   letter-spacing: 2px;
-  margin: 14px 0;
   text-align: center;
+  margin: 12px 0 18px;
 }
 
-/* =========================
-   🎮 GAME AREA (APP STYLE)
-========================= */
+/* GAME AREA */
 .game-area {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0; /* ⭐ KRITISK */
-  overflow: hidden;
 }
 
-/* solved scroll */
 #solved {
-  overflow-y: auto;
-  max-height: 35%;
-  padding: 0 4px 6px 4px;
+  margin-bottom: 12px;
 }
 
-/* grid scroll */
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  align-content: start;
-
-  padding: 0 4px;
 }
 
 /* WORDS */
 .word {
   padding: 14px;
-  background: #f2f2f2;
-  border-radius: 10px;
+  background: #f3f3f3;
+  border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   user-select: none;
-
-  transition: background-color 0.25s ease, transform 0.25s ease;
-  font-size: clamp(14px, 3.5vw, 16px);
+  transition: all 0.25s ease;
+  font-size: 15px;
+  text-align: center;
 }
 
 .word:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .selected {
-  background: #bcdcff;
+  background: #cfe6ff;
 }
 
-/* GROUP BOX */
+/* WRONG FEEDBACK */
+.word.wrong {
+  animation: shake 0.55s ease;
+  background: #ff5a5a !important;
+  color: white;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
+/* GROUPS */
 .group-box {
   padding: 12px;
-  border-radius: 10px;
-  margin: 10px 0;
-  animation: pop 0.35s ease, glow 0.35s ease;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  animation: pop 0.4s ease;
 }
 
 @keyframes pop {
-  from { transform: scale(0.9); opacity: 0; }
+  from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
-@keyframes glow {
-  0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-  50% { box-shadow: 0 0 18px rgba(0,0,0,0.15); }
-  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-}
-
-/* COLORS */
 .yellow { background: #f9df6d; }
 .green  { background: #a0c35a; }
 .blue   { background: #b0c4ef; }
@@ -113,127 +99,69 @@ h1 {
 .popup {
   position: fixed;
   left: 50%;
-  top: 20%;
+  top: 18%;
   transform: translateX(-50%);
-  background: #222;
+  background: rgba(0,0,0,0.85);
   color: white;
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-radius: 10px;
   opacity: 0;
-  transition: 0.25s;
+  transition: all 0.35s ease;
+  font-size: 14px;
 }
 
 .popup.show {
   opacity: 1;
-  top: 25%;
+  top: 22%;
 }
 
-/* 🔴 FEL */
-.word.wrong-flash {
-  background-color: #ff4d4d !important;
-  color: white !important;
-  transition: background-color 0.6s ease;
-}
-
-/* 🫨 SHAKE */
-@keyframes shake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
-  100% { transform: translateX(0); }
-}
-
-.word.shake {
-  animation: shake 0.75s ease;
-}
-
-/* GRID SHAKE */
-@keyframes gridShake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-2px); }
-  80% { transform: translateX(2px); }
-  100% { transform: translateX(0); }
-}
-
-.grid-shake {
-  animation: gridShake 0.8s ease;
-}
-
-/* =========================
-   📱 FOOTER (APP BAR STYLE)
-========================= */
+/* FOOTER */
 .footer {
+  position: sticky;
+  bottom: 0;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid #eee;
   padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-  margin-top: auto;
 }
 
 /* BUTTONS */
 .button-stack {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 button {
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #222;
   color: white;
-  cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
-  width: 100%;
+  cursor: pointer;
 }
 
 button:disabled {
   opacity: 0.35;
-  cursor: not-allowed;
-}
-
-.primary {
-  background: #4da3ff;
 }
 
 /* BOMMAR */
-.bombar-wrapper {
-  position: relative;
+.bombar {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.bombar-line {
-  position: absolute;
-  width: 100%;
-  height: 1px;
-  background: #e5e5e5;
-  top: 50%;
+  gap: 8px;
+  font-weight: 600;
 }
 
 .bombar-badge {
-  position: relative;
-  background: white;
-  border: 2px solid #e5e5e5;
-  border-radius: 12px;
-  padding: 6px 14px;
-  font-weight: 700;
-  font-size: 14px;
-  z-index: 1;
-  min-width: 34px;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 4px 10px;
+  border-radius: 10px;
+  min-width: 28px;
   text-align: center;
-}
-
-.bombar-text {
-  margin-top: 8px;
-  font-size: 16px;
-  color: #111;
-  font-weight: 500;
 }
 </style>
 </head>
@@ -250,20 +178,13 @@ button:disabled {
 <div class="footer">
 
   <div class="button-stack">
-    <button id="testBtn" class="primary" onclick="check()" disabled>
-      TESTA
-    </button>
-
-    <button id="shareBtn" onclick="shareResult()" disabled>
-      DELA RESULTAT
-    </button>
+    <button id="testBtn" onclick="check()" disabled>TESTA</button>
+    <button id="shareBtn" onclick="shareResult()" disabled>DELA RESULTAT</button>
   </div>
 
-  <div class="bombar-wrapper">
-    <div class="bombar-line"></div>
-    <div class="bombar-badge" id="attemptsLabel">0</div>
+  <div class="bombar">
+    Bommar <div class="bombar-badge" id="attemptsLabel">0</div>
   </div>
-  <div class="bombar-text">Bommar</div>
 
 </div>
 
@@ -299,12 +220,9 @@ function init() {
 
 /* SHUFFLE */
 function shuffle() {
-  for (let i = allWords.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [allWords[i], allWords[j]] = [allWords[j], allWords[i]];
-  }
+  allWords.sort(() => Math.random() - 0.5);
   render();
-  updateTestButton();
+  updateBtn();
 }
 
 /* RENDER */
@@ -325,7 +243,7 @@ function render() {
         div.classList.remove("selected");
       }
 
-      updateTestButton();
+      updateBtn();
     };
 
     grid.appendChild(div);
@@ -333,31 +251,19 @@ function render() {
 }
 
 /* BUTTON */
-function updateTestButton() {
-  const count = document.querySelectorAll(".selected").length;
-  testBtn.disabled = count !== 4;
+function updateBtn() {
+  testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
 }
 
-/* FEEDBACK */
+/* WRONG FEEDBACK */
 function flashWrong(selected) {
   selected.forEach(el => {
-    el.classList.add("wrong-flash", "shake");
+    el.classList.add("wrong");
   });
 
   setTimeout(() => {
-    selected.forEach(el => {
-      el.classList.remove("wrong-flash", "shake");
-    });
-  }, 700);
-}
-
-/* GRID SHAKE */
-function shakeGrid() {
-  grid.classList.add("grid-shake");
-
-  setTimeout(() => {
-    grid.classList.remove("grid-shake");
-  }, 800);
+    selected.forEach(el => el.classList.remove("wrong"));
+  }, 550);
 }
 
 /* CHECK */
@@ -391,53 +297,47 @@ function check() {
     allWords = allWords.filter(w => !match.words.includes(w));
 
     render();
-    showPopup("Rätt grupp!");
-    checkWin();
+    show("Rätt grupp!");
+    winCheck();
   } else {
     bommar++;
     attemptsLabel.textContent = bommar;
 
     flashWrong(selected);
-    shakeGrid();
 
-    showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
-    updateTestButton();
+    // ⭐ samma feedback för "fel" och "nästan"
+    show(almost ? "Nästan!" : "Fel");
+
+    setTimeout(() => {
+      selected.forEach(el => el.classList.remove("selected"));
+    }, 400);
   }
 
-  setTimeout(() => locked = false, 800);
+  setTimeout(() => locked = false, 600);
 }
 
 /* POPUP */
-function showPopup(text) {
+function show(text) {
   popup.textContent = text;
   popup.classList.add("show");
 
-  setTimeout(() => popup.classList.remove("show"), 1200);
+  setTimeout(() => popup.classList.remove("show"), 1000);
 }
 
 /* WIN */
-function checkWin() {
+function winCheck() {
   if (remainingGroups.length === 0) {
-    showPopup(`Du klarade spelet på ${bommar} bommar!`);
+    show(`Klar på ${bommar} bommar!`);
     shareBtn.disabled = false;
     testBtn.disabled = true;
-    locked = true;
   }
 }
 
 /* SHARE */
 function shareResult() {
-  const text =
-`Jag klarade Philips fyra
-
-💥 ${bommar} bommar
-
-Testa själv här:
-${window.location.href}`;
-
-  navigator.clipboard.writeText(text).then(() => {
-    showPopup("Kopierat!");
-  });
+  const text = `Jag klarade Philips fyra med ${bommar} bommar\n${window.location.href}`;
+  navigator.clipboard.writeText(text);
+  show("Kopierat!");
 }
 
 /* START */
