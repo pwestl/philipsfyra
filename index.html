@@ -85,7 +85,6 @@ button {
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  letter-spacing: 0.3px;
   transition: all 0.2s ease;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   font-family: inherit;
@@ -98,15 +97,17 @@ button:hover {
 
 button:active {
   transform: translateY(0px) scale(0.98);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
 }
 
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(77,163,255,0.3);
+/* DISABLED SHARE BUTTON */
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
-/* PRIMARY BUTTON */
+/* PRIMARY */
 .primary {
   background: linear-gradient(135deg, #4da3ff, #2f6fff);
 }
@@ -150,7 +151,8 @@ button:focus {
 
 <button class="primary" onclick="check()">Testa</button>
 <button onclick="shuffle()">Blanda</button>
-<button id="shareBtn" onclick="shareResult()" style="display:none;">
+
+<button id="shareBtn" onclick="shareResult()" disabled>
 📤 Dela resultat
 </button>
 
@@ -171,6 +173,7 @@ const grid = document.getElementById("grid");
 const solvedDiv = document.getElementById("solved");
 const popup = document.getElementById("popup");
 const attemptsEl = document.getElementById("attempts");
+const shareBtn = document.getElementById("shareBtn");
 
 /* LOAD GAME */
 async function loadGame() {
@@ -272,7 +275,7 @@ function flashWrong(selected) {
   selected.forEach(el => el.classList.add("wrong-flash"));
 
   setTimeout(() => {
-    el.classList.remove("wrong-flash");
+    selected.forEach(el => el.classList.remove("wrong-flash"));
   }, 1000);
 }
 
@@ -290,12 +293,15 @@ function showPopup(text) {
 function checkWin() {
   if (remainingGroups.length === 0) {
     showPopup(`🏆 Du klarade spelet på ${bommar} bommar!`);
-    document.getElementById("shareBtn").style.display = "inline-block";
+
+    shareBtn.disabled = false;
   }
 }
 
 /* SHARE */
 function shareResult() {
+  if (shareBtn.disabled) return;
+
   const text =
 `Jag klarade Philips fyra 🧩
 
