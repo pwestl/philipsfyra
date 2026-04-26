@@ -2,20 +2,24 @@
 <html lang="sv">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Philips fyra</title>
 
 <style>
+html, body {
+  height: 100%;
+}
+
 body {
   font-family: Arial, sans-serif;
   max-width: 600px;
   margin: 0 auto;
-  padding: 14px;
-  text-align: center;
 
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+
+  overflow: hidden; /* ⭐ ingen page scroll */
 }
 
 /* TITLE */
@@ -23,39 +27,40 @@ h1 {
   font-size: 28px;
   font-weight: 800;
   letter-spacing: 2px;
-  margin-bottom: 14px;
+  margin: 14px 0;
+  text-align: center;
 }
 
 /* =========================
-   🎮 FIXED GAME AREA
+   🎮 GAME AREA (APP STYLE)
 ========================= */
 .game-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-
-  /* 🔒 FIX: stabil höjd så inget hoppar */
-  height: calc(100vh - 240px);
+  min-height: 0; /* ⭐ KRITISK */
   overflow: hidden;
 }
 
-/* solved + grid scrollar inuti */
+/* solved scroll */
 #solved {
   overflow-y: auto;
-  max-height: 40%;
-  margin-bottom: 10px;
-  padding-right: 4px;
+  max-height: 35%;
+  padding: 0 4px 6px 4px;
 }
 
+/* grid scroll */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 
-  overflow-y: auto;
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   align-content: start;
-  padding-right: 4px;
+
+  padding: 0 4px;
 }
 
 /* WORDS */
@@ -67,7 +72,7 @@ h1 {
   cursor: pointer;
   user-select: none;
 
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: background-color 0.25s ease, transform 0.25s ease;
   font-size: clamp(14px, 3.5vw, 16px);
 }
 
@@ -127,22 +132,21 @@ h1 {
 .word.wrong-flash {
   background-color: #ff4d4d !important;
   color: white !important;
-  transition: background-color 0.6s ease, color 0.6s ease;
+  transition: background-color 0.6s ease;
 }
 
 /* 🫨 SHAKE */
 @keyframes shake {
   0% { transform: translateX(0); }
-  15% { transform: translateX(-3px); }
-  30% { transform: translateX(3px); }
-  45% { transform: translateX(-2px); }
-  60% { transform: translateX(2px); }
-  75% { transform: translateX(-1px); }
+  20% { transform: translateX(-3px); }
+  40% { transform: translateX(3px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
   100% { transform: translateX(0); }
 }
 
 .word.shake {
-  animation: shake 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: shake 0.75s ease;
 }
 
 /* GRID SHAKE */
@@ -156,18 +160,18 @@ h1 {
 }
 
 .grid-shake {
-  animation: gridShake 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: gridShake 0.8s ease;
 }
 
 /* =========================
-   💥 FOOTER (FAST FIXED UI)
+   📱 FOOTER (APP BAR STYLE)
 ========================= */
 .footer {
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
   margin-top: auto;
-  padding-top: 16px;
-  padding-bottom: 10px;
 }
 
+/* BUTTONS */
 .button-stack {
   display: grid;
   grid-template-columns: 1fr;
@@ -196,7 +200,7 @@ button:disabled {
   background: #4da3ff;
 }
 
-/* BOMMAR UI */
+/* BOMMAR */
 .bombar-wrapper {
   position: relative;
   display: flex;
@@ -353,7 +357,7 @@ function shakeGrid() {
 
   setTimeout(() => {
     grid.classList.remove("grid-shake");
-  }, 900);
+  }, 800);
 }
 
 /* CHECK */
@@ -400,7 +404,7 @@ function check() {
     updateTestButton();
   }
 
-  setTimeout(() => locked = false, 900);
+  setTimeout(() => locked = false, 800);
 }
 
 /* POPUP */
@@ -408,7 +412,7 @@ function showPopup(text) {
   popup.textContent = text;
   popup.classList.add("show");
 
-  setTimeout(() => popup.classList.remove("show"), 1300);
+  setTimeout(() => popup.classList.remove("show"), 1200);
 }
 
 /* WIN */
@@ -432,7 +436,7 @@ Testa själv här:
 ${window.location.href}`;
 
   navigator.clipboard.writeText(text).then(() => {
-    showPopup("Kopierat till clipboard!");
+    showPopup("Kopierat!");
   });
 }
 
