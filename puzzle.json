@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Fotbollsvallar",
+    "color": "yellow",
+    "words": ["Örjan","Stadspark","Koppar","Vånga"]
+  },
+  {
+    "name": "Behövs för rostfritt stål",
+    "color": "green",
+    "words": ["Järn","Kol","Krom","Nickel"]
+  },
+  {
+    "name": "Kan smörjas",
+    "color": "blue",
+    "words": ["Krås","Kedja","Gångjärn","Hud"]
+  },
+  {
+    "name": "Sällskapsresan!",
+    "color": "purple",
+    "words": ["Ole","Svenskt kaffe","Stork","Gonorré"]
+  }
+]
