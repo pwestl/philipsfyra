@@ -140,7 +140,7 @@ button:disabled {
   animation: wrongFlash 0.5s ease;
 }
 
-/* ↔️ SHAKE (rutor) */
+/* ↔️ SHAKE */
 @keyframes shake {
   0% { transform: translateX(0); }
   20% { transform: translateX(-6px); }
@@ -154,18 +154,19 @@ button:disabled {
   animation: shake 0.4s ease;
 }
 
-/* 🌐 GRID SHAKE (NY) */
+/* 🌐 GRID SHAKE (förstärkt) */
 @keyframes gridShake {
   0% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-6px); }
-  80% { transform: translateX(6px); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
   100% { transform: translateX(0); }
 }
 
 .grid-shake {
-  animation: gridShake 0.4s ease;
+  animation: gridShake 0.55s ease;
 }
 </style>
 </head>
@@ -279,7 +280,7 @@ function shakeGrid() {
 
   setTimeout(() => {
     grid.classList.remove("grid-shake");
-  }, 400);
+  }, 550);
 }
 
 /* CHECK */
@@ -323,10 +324,16 @@ function check() {
     shakeGrid();
 
     setTimeout(() => {
-      selected.forEach(el => el.classList.remove("selected"));
-    }, 500);
+      selected.forEach(el => {
+        el.classList.remove("selected");
+        el.classList.remove("wrong-flash");
+        el.classList.remove("shake");
+      });
+    }, 650);
 
-    showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
+    setTimeout(() => {
+      showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
+    }, 120);
 
     updateTestButton();
   }
