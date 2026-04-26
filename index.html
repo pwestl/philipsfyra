@@ -69,10 +69,17 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
+/* BUTTON STACK */
+.button-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
 /* BUTTONS */
 button {
   padding: 10px 14px;
-  margin: 6px 4px;
   border: none;
   border-radius: 8px;
   background: #222;
@@ -82,6 +89,7 @@ button {
   font-size: 14px;
   transition: 0.15s;
   font-family: inherit;
+  width: 100%;
 }
 
 button:hover {
@@ -92,12 +100,14 @@ button:active {
   transform: scale(0.98);
 }
 
+/* DISABLED */
 button:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
+  transform: none !important;
 }
 
-/* PRIMARY */
+/* primary look for Testa */
 .primary {
   background: #4da3ff;
 }
@@ -143,12 +153,15 @@ button:disabled {
 <div id="solved"></div>
 <div id="grid" class="grid"></div>
 
-<button class="primary" onclick="check()">Testa</button>
-<button onclick="shuffle()">Blanda</button>
+<div class="button-stack">
+  <button id="testBtn" class="primary" onclick="check()" disabled>
+    Testa
+  </button>
 
-<button id="shareBtn" onclick="shareResult()" disabled>
-Dela resultat
-</button>
+  <button id="shareBtn" onclick="shareResult()" disabled>
+    Dela
+  </button>
+</div>
 
 <div class="info">
   Bommar: <span id="attempts">0</span>
@@ -167,6 +180,7 @@ const grid = document.getElementById("grid");
 const solvedDiv = document.getElementById("solved");
 const popup = document.getElementById("popup");
 const attemptsEl = document.getElementById("attempts");
+const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
 /* LOAD GAME */
@@ -190,6 +204,7 @@ function shuffle() {
     [allWords[i], allWords[j]] = [allWords[j], allWords[i]];
   }
   render();
+  updateTestButton();
 }
 
 /* RENDER */
@@ -209,10 +224,18 @@ function render() {
       if (document.querySelectorAll(".selected").length > 4) {
         div.classList.remove("selected");
       }
+
+      updateTestButton();
     };
 
     grid.appendChild(div);
   });
+}
+
+/* ENABLE TEST BUTTON ONLY WHEN 4 SELECTED */
+function updateTestButton() {
+  const count = document.querySelectorAll(".selected").length;
+  testBtn.disabled = count !== 4;
 }
 
 /* CHECK */
@@ -221,10 +244,7 @@ function check() {
 
   const selected = [...document.querySelectorAll(".selected")];
 
-  if (selected.length !== 4) {
-    showPopup("Välj exakt 4 ord!");
-    return;
-  }
+  if (selected.length !== 4) return;
 
   locked = true;
 
@@ -256,22 +276,13 @@ function check() {
     bommar++;
     attemptsEl.textContent = bommar;
 
-    flashWrong(selected);
+    selected.forEach(el => el.classList.remove("selected"));
     showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
 
-    selected.forEach(el => el.classList.remove("selected"));
+    updateTestButton();
   }
 
   setTimeout(() => locked = false, 800);
-}
-
-/* WRONG FLASH */
-function flashWrong(selected) {
-  selected.forEach(el => el.classList.add("wrong-flash"));
-
-  setTimeout(() => {
-    selected.forEach(el => el.classList.remove("wrong-flash"));
-  }, 1000);
 }
 
 /* POPUP */
