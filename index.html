@@ -130,10 +130,11 @@ button:disabled {
   top: 25%;
 }
 
-/* 🔴 FEL (FIXAD – NU SYNS DEN ALLTID) */
-.wrong-flash {
-  background: #ff6b6b !important;
+/* 🔴 ROBUST FEL-FEEDBACK (NU FUNKAR ALLTID) */
+.word.wrong-flash {
+  background-color: #ff4d4d !important;
   color: white !important;
+  transform: scale(1.02);
 }
 
 /* ↔️ SHAKE */
@@ -146,11 +147,11 @@ button:disabled {
   100% { transform: translateX(0); }
 }
 
-.shake {
+.word.shake {
   animation: shake 0.4s ease;
 }
 
-/* 🌐 GRID SHAKE */
+/* GRID SHAKE */
 @keyframes gridShake {
   0% { transform: translateX(0); }
   15% { transform: translateX(-8px); }
@@ -253,13 +254,13 @@ function render() {
   });
 }
 
-/* BUTTON STATE */
+/* BUTTON */
 function updateTestButton() {
   const count = document.querySelectorAll(".selected").length;
   testBtn.disabled = count !== 4;
 }
 
-/* ❌ FEL FEEDBACK (FIXAD) */
+/* ❌ FEL FEEDBACK (NU STABIL) */
 function flashWrong(selected) {
   selected.forEach(el => {
     el.classList.add("wrong-flash", "shake");
@@ -272,7 +273,7 @@ function flashWrong(selected) {
   }, 500);
 }
 
-/* 🌐 GRID SHAKE */
+/* GRID SHAKE */
 function shakeGrid() {
   grid.classList.add("grid-shake");
 
