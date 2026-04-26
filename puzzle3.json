@@ -1,0 +1,22 @@
+[
+  {
+    "name": "TEST 1",
+    "color": "yellow",
+    "words": ["1","1","1","1"]
+  },
+  {
+    "name": "TEST 2",
+    "color": "green",
+    "words": ["2","2","2","2"]
+  },
+  {
+    "name": "TEST 3",
+    "color": "blue",
+    "words": ["3","3","3","3"]
+  },
+  {
+    "name": "TEST 4",
+    "color": "purple",
+    "words": ["4","4","4","4"]
+  }
+]
