@@ -22,7 +22,7 @@ h1 {
 }
 
 /* =========================
-   EN GRID FÖR ALLT
+   GRID (ENDA SYSTEMET)
 ========================= */
 .grid {
   display: grid;
@@ -31,7 +31,7 @@ h1 {
 }
 
 /* =========================
-   BASE CELL
+   CELL BAS
 ========================= */
 .cell {
   min-height: 32px;
@@ -67,7 +67,7 @@ h1 {
   background: #cfe6ff;
 }
 
-/* WRONG */
+/* WRONG FEEDBACK */
 .word.wrong {
   animation: shake 0.6s ease;
   background: #ff4d4d !important;
@@ -84,10 +84,12 @@ h1 {
 }
 
 /* =========================
-   GROUP (KATEGORIER)
+   GROUP (ERSÄTTER 4 RUTOR)
 ========================= */
 .group {
   grid-column: span 2;
+
+  /* exakt 2 rader höjd */
   min-height: calc(32px * 2 + 8px);
 
   display: flex;
@@ -111,11 +113,10 @@ h1 {
 .purple { background: #ba81c5; }
 
 /* =========================
-   BUTTONS
+   UI
 ========================= */
 .actions {
   display: grid;
-  grid-template-columns: 1fr;
   gap: 8px;
   margin-top: 10px;
 }
@@ -134,14 +135,12 @@ button:disabled {
   opacity: 0.35;
 }
 
-/* BOMMAR */
 .bombar {
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
 }
 
-/* POPUP */
 .popup {
   position: fixed;
   left: 50%;
@@ -173,9 +172,7 @@ button:disabled {
   <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
 </div>
 
-<div class="bombar">
-  BOMMAR: <span id="bombs">0</span>
-</div>
+<div class="bombar">BOMMAR: <span id="bombs">0</span></div>
 
 <div id="popup" class="popup"></div>
 
@@ -258,18 +255,25 @@ function check() {
   }
 
   if (match) {
+    // 🔥 ta bort exakt dessa 4 rutor
+    selected.forEach(el => el.remove());
+
+    // 🔥 skapa kategori som ersätter samma plats i grid
     const box = document.createElement("div");
-    box.className = `group cell ${match.color}`;
-    box.innerHTML = `<strong>${match.name}</strong><br>${match.words.join(", ")}`;
+    box.className = `cell group ${match.color}`;
+    box.innerHTML = `
+      <strong>${match.name}</strong><br>
+      ${match.words.join(", ")}
+    `;
 
     grid.appendChild(box);
 
     remaining = remaining.filter(g => g !== match);
     all = all.filter(w => !match.words.includes(w));
 
-    render();
     show("RÄTT GRUPP!");
     win();
+
   } else {
     bombs++;
     bombsEl.textContent = bombs;
