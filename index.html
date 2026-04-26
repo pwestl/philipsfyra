@@ -18,45 +18,45 @@ body {
 }
 
 h1 {
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 800;
   text-align: center;
-  margin: 12px 0 18px;
+  margin: 6px 0 10px;
+  letter-spacing: 1px;
 }
 
 /* GAME AREA */
 .game-area {
   flex: 1;
-  padding-bottom: 140px; /* plats för footer */
 }
 
 /* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  gap: 8px;
 }
 
-/* =========================
-   WORDS (KOMPAKTADE)
-========================= */
+/* WORDS */
 .word {
-  padding: 8px 10px;     /* 👈 mindre padding */
+  padding: 7px 9px;
+  font-size: 12.5px;
+  min-height: 32px;
+
   background: #f3f3f3;
   border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  user-select: none;
 
-  font-size: 13px;       /* 👈 mindre text */
+  font-weight: 600;
   text-align: center;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  min-height: 34px;      /* 👈 kompakt höjd */
-  line-height: 1.1;
+  line-height: 1.05;
+  cursor: pointer;
+  user-select: none;
+
   transition: all 0.2s ease;
 }
 
@@ -122,22 +122,21 @@ h1 {
   top: 22%;
 }
 
-/* FOOTER */
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+/* =========================
+   CONTROLS (FIXAT MARGINALER)
+========================= */
+.controls {
+  margin-top: 14px;
 
-  width: 100%;
-  max-width: 600px;
+  /* 👇 detta är nyckeln */
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
 
-  background: white;
-  padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-  box-shadow: 0 -8px 20px rgba(0,0,0,0.08);
+  padding: 0 10px;
 }
 
-/* BUTTONS */
+/* BUTTON STACK */
 .button-stack {
   display: grid;
   gap: 10px;
@@ -145,12 +144,12 @@ h1 {
 }
 
 button {
-  padding: 11px 14px;
-  border: none;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
   background: #222;
   color: white;
-  font-weight: 600;
+  border: none;
   cursor: pointer;
 }
 
@@ -177,7 +176,7 @@ button:disabled {
   <div id="grid" class="grid"></div>
 </div>
 
-<div class="footer">
+<div class="controls">
 
   <div class="button-stack">
     <button id="testBtn" onclick="check()" disabled>TESTA</button>
