@@ -22,16 +22,18 @@ h1 {
 }
 
 /* =========================
-   GRID (ENDA SYSTEMET)
+   GRID
 ========================= */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
+
+  align-content: start;
 }
 
 /* =========================
-   CELL BAS
+   BASE CELL
 ========================= */
 .cell {
   min-height: 32px;
@@ -48,6 +50,9 @@ h1 {
   text-align: center;
 
   user-select: none;
+
+  /* 🔥 stabil layout rendering */
+  contain: layout paint;
 }
 
 /* =========================
@@ -89,7 +94,6 @@ h1 {
 .group {
   grid-column: span 2;
 
-  /* exakt 2 rader höjd */
   min-height: calc(32px * 2 + 8px);
 
   display: flex;
@@ -255,10 +259,12 @@ function check() {
   }
 
   if (match) {
-    // 🔥 ta bort exakt dessa 4 rutor
-    selected.forEach(el => el.remove());
+    const selectedArray = [...selected];
 
-    // 🔥 skapa kategori som ersätter samma plats i grid
+    // 🔥 viktig: hitta position innan removal
+    const firstIndex = [...grid.children].indexOf(selectedArray[0]);
+
+    // skapa kategori
     const box = document.createElement("div");
     box.className = `cell group ${match.color}`;
     box.innerHTML = `
@@ -266,7 +272,12 @@ function check() {
       ${match.words.join(", ")}
     `;
 
-    grid.appendChild(box);
+    // ta bort orden
+    selectedArray.forEach(el => el.remove());
+
+    // 🔥 placera exakt där första ordet låg
+    const ref = grid.children[firstIndex] || null;
+    grid.insertBefore(box, ref);
 
     remaining = remaining.filter(g => g !== match);
     all = all.filter(w => !match.words.includes(w));
