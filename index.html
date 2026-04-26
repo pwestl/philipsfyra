@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="sv">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Bonusfyran</title>
+<title>Philips fyra</title>
 
 <style>
 body {
@@ -17,12 +16,14 @@ body {
 
 h1 { font-size: 24px; margin-bottom: 10px; }
 
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
+/* WORDS */
 .word {
   padding: 14px;
   background: #f2f2f2;
@@ -39,8 +40,10 @@ h1 { font-size: 24px; margin-bottom: 10px; }
 }
 
 .selected {
-  background: #4da3ff;
+  background: linear-gradient(135deg, #4da3ff, #2f6fff);
   color: white;
+  transform: scale(1.03);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
 .wrong-flash {
@@ -53,12 +56,17 @@ h1 { font-size: 24px; margin-bottom: 10px; }
   padding: 12px;
   border-radius: 10px;
   margin: 10px 0;
-  animation: pop 0.3s ease;
+  animation: pop 0.25s ease, fadeIn 0.4s ease;
 }
 
 @keyframes pop {
   from { transform: scale(0.9); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .yellow { background: #f9df6d; }
@@ -71,20 +79,39 @@ button {
   padding: 10px 14px;
   margin: 6px 4px;
   border: none;
-  border-radius: 8px;
-  background: #222;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2b2b2b, #111);
   color: white;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  font-family: inherit;
 }
 
-/* STATUS */
-#status {
-  margin-top: 10px;
-  font-weight: bold;
-  min-height: 20px;
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
 }
 
-/* BOMMAR */
+button:active {
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(77,163,255,0.3);
+}
+
+/* PRIMARY BUTTON */
+.primary {
+  background: linear-gradient(135deg, #4da3ff, #2f6fff);
+}
+
+/* INFO */
 .info {
   font-size: 18px;
   font-weight: 900;
@@ -112,7 +139,6 @@ button {
   top: 25%;
 }
 </style>
-
 </head>
 
 <body>
@@ -122,7 +148,11 @@ button {
 <div id="solved"></div>
 <div id="grid" class="grid"></div>
 
-<button onclick="check()">Testa</button> <button onclick="shuffle()">Blanda</button>
+<button class="primary" onclick="check()">Testa</button>
+<button onclick="shuffle()">Blanda</button>
+<button id="shareBtn" onclick="shareResult()" style="display:none;">
+📤 Dela resultat
+</button>
 
 <div class="info">
   Bommar: <span id="attempts">0</span>
@@ -142,16 +172,12 @@ const solvedDiv = document.getElementById("solved");
 const popup = document.getElementById("popup");
 const attemptsEl = document.getElementById("attempts");
 
-/* LOAD GAME FROM JSON */
+/* LOAD GAME */
 async function loadGame() {
-  try {
-    const res = await fetch("puzzle.json");
-    groups = await res.json();
-    remainingGroups = structuredClone(groups);
-    init();
-  } catch (e) {
-    alert("Kunde inte ladda puzzle.json 😢");
-  }
+  const res = await fetch("puzzle.json?v=" + Date.now());
+  groups = await res.json();
+  remainingGroups = structuredClone(groups);
+  init();
 }
 
 /* INIT */
@@ -160,7 +186,7 @@ function init() {
   shuffle();
 }
 
-/* SHUFFLE (Fisher-Yates) */
+/* SHUFFLE */
 function shuffle() {
   for (let i = allWords.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -180,7 +206,6 @@ function render() {
 
     div.onclick = () => {
       if (locked) return;
-
       div.classList.toggle("selected");
 
       if (document.querySelectorAll(".selected").length > 4) {
@@ -247,7 +272,7 @@ function flashWrong(selected) {
   selected.forEach(el => el.classList.add("wrong-flash"));
 
   setTimeout(() => {
-    selected.forEach(el => el.classList.remove("wrong-flash"));
+    el.classList.remove("wrong-flash");
   }, 1000);
 }
 
@@ -265,7 +290,23 @@ function showPopup(text) {
 function checkWin() {
   if (remainingGroups.length === 0) {
     showPopup(`🏆 Du klarade spelet på ${bommar} bommar!`);
+    document.getElementById("shareBtn").style.display = "inline-block";
   }
+}
+
+/* SHARE */
+function shareResult() {
+  const text =
+`Jag klarade Philips fyra 🧩
+
+💥 ${bommar} bommar
+
+Testa själv här:
+${window.location.href}`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    showPopup("📋 Kopierat till clipboard!");
+  });
 }
 
 /* START */
