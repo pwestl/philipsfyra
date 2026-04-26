@@ -21,20 +21,14 @@ h1 {
   margin: 6px 0 10px;
 }
 
-/* =========================
-   GRID
-========================= */
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
-
-  align-content: start;
 }
 
-/* =========================
-   BASE CELL
-========================= */
+/* CELL */
 .cell {
   min-height: 32px;
   padding: 7px 9px;
@@ -50,29 +44,19 @@ h1 {
   text-align: center;
 
   user-select: none;
-
-  /* 🔥 stabil layout rendering */
-  contain: layout paint;
 }
 
-/* =========================
-   WORDS
-========================= */
+/* WORD */
 .word {
   background: #f3f3f3;
   cursor: pointer;
-  transition: 0.15s;
-}
-
-.word:active {
-  transform: scale(0.97);
 }
 
 .selected {
   background: #cfe6ff;
 }
 
-/* WRONG FEEDBACK */
+/* WRONG */
 .word.wrong {
   animation: shake 0.6s ease;
   background: #ff4d4d !important;
@@ -88,12 +72,9 @@ h1 {
   100% { transform: translateX(0); }
 }
 
-/* =========================
-   GROUP (ERSÄTTER 4 RUTOR)
-========================= */
+/* GROUP (2x2 block) */
 .group {
   grid-column: span 2;
-
   min-height: calc(32px * 2 + 8px);
 
   display: flex;
@@ -102,13 +83,6 @@ h1 {
 
   border-radius: 12px;
   padding: 10px;
-
-  animation: pop 0.25s ease;
-}
-
-@keyframes pop {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
 }
 
 .yellow { background: #f9df6d; }
@@ -116,9 +90,7 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* =========================
-   UI
-========================= */
+/* UI */
 .actions {
   display: grid;
   gap: 8px;
@@ -183,7 +155,7 @@ button:disabled {
 <script>
 let groups = [];
 let remaining = [];
-let all = [];
+let allWords = [];
 let bombs = 0;
 let locked = false;
 
@@ -197,34 +169,66 @@ async function load() {
   const res = await fetch("puzzle.json?v=" + Date.now());
   groups = await res.json();
   remaining = structuredClone(groups);
-  all = remaining.flatMap(g => g.words);
+  allWords = remaining.flatMap(g => g.words);
   shuffle();
 }
 
 function shuffle() {
-  all.sort(() => Math.random() - 0.5);
+  allWords.sort(() => Math.random() - 0.5);
   render();
 }
 
 function render() {
   grid.innerHTML = "";
 
-  all.forEach(w => {
+  // 🔥 bygg lista av ALLT som ska visas
+  let items = [];
+
+  // först grupper (så de hamnar överst)
+  for (const g of groups) {
+    if (!remaining.includes(g)) {
+      items.push({
+        type: "group",
+        data: g
+      });
+    }
+  }
+
+  // sedan ord
+  for (const w of allWords) {
+    items.push({
+      type: "word",
+      value: w
+    });
+  }
+
+  items.forEach(item => {
     const div = document.createElement("div");
-    div.className = "cell word";
-    div.textContent = w;
+    div.className = "cell";
 
-    div.onclick = () => {
-      if (locked) return;
+    if (item.type === "word") {
+      div.classList.add("word");
+      div.textContent = item.value;
 
-      div.classList.toggle("selected");
+      div.onclick = () => {
+        if (locked) return;
 
-      if (document.querySelectorAll(".selected").length > 4) {
-        div.classList.remove("selected");
-      }
+        div.classList.toggle("selected");
 
-      testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
-    };
+        if (document.querySelectorAll(".selected").length > 4) {
+          div.classList.remove("selected");
+        }
+
+        testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+      };
+
+    } else {
+      div.classList.add("group", item.data.color);
+      div.innerHTML = `
+        <strong>${item.data.name}</strong><br>
+        ${item.data.words.join(", ")}
+      `;
+    }
 
     grid.appendChild(div);
   });
@@ -259,31 +263,15 @@ function check() {
   }
 
   if (match) {
-    const selectedArray = [...selected];
-
-    // 🔥 viktig: hitta position innan removal
-    const firstIndex = [...grid.children].indexOf(selectedArray[0]);
-
-    // skapa kategori
-    const box = document.createElement("div");
-    box.className = `cell group ${match.color}`;
-    box.innerHTML = `
-      <strong>${match.name}</strong><br>
-      ${match.words.join(", ")}
-    `;
-
-    // ta bort orden
-    selectedArray.forEach(el => el.remove());
-
-    // 🔥 placera exakt där första ordet låg
-    const ref = grid.children[firstIndex] || null;
-    grid.insertBefore(box, ref);
-
     remaining = remaining.filter(g => g !== match);
-    all = all.filter(w => !match.words.includes(w));
+    allWords = allWords.filter(w => !match.words.includes(w));
+
+    selected.forEach(el => el.classList.remove("selected"));
 
     show("RÄTT GRUPP!");
     win();
+
+    render(); // 🔥 här sker ALLT om-sorterat (ingen rörelse kvar)
 
   } else {
     bombs++;
