@@ -27,11 +27,15 @@ h1 {
 }
 
 /* =========================
-   GRID
+   GRID (EXAKT ENHETSSYSTEM)
 ========================= */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+
+  /* 🔥 avgör ALL höjd i systemet */
+  grid-auto-rows: var(--cell-h);
+
   gap: var(--gap);
 
   align-content: start;
@@ -56,10 +60,10 @@ h1 {
 }
 
 /* =========================
-   WORDS
+   WORDS (EXAKT 1 GRID-RAD)
 ========================= */
 .word {
-  height: var(--cell-h);
+  height: 100%;
   font-size: 14px;
   background: #f3f3f3;
   cursor: pointer;
@@ -86,19 +90,19 @@ h1 {
 }
 
 /* =========================
-   GROUPS (2x2 block)
+   GROUPS (EXAKT 2x2 GRID)
 ========================= */
 .group {
   grid-column: span 2;
+  grid-row: span 2;
 
-  height: calc((var(--cell-h) * 2) + var(--gap));
   font-size: 14px;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
 
-  padding: 14px;
+  padding: 0 14px; /* 🔥 ingen vertikal padding som förstör höjd */
   border-radius: 12px;
 
   transition: transform 280ms ease;
@@ -110,7 +114,7 @@ h1 {
 .purple { background: #ba81c5; }
 
 /* =========================
-   BUTTONS (större)
+   BUTTONS
 ========================= */
 .actions {
   display: grid;
@@ -134,7 +138,7 @@ button:disabled {
 }
 
 /* =========================
-   BOMB COUNT
+   BOMB COUNTER
 ========================= */
 .bombar {
   text-align: center;
@@ -209,13 +213,14 @@ function shuffle() {
 }
 
 /* =========================
-   FLIP RENDER (stabil + mjuk rörelse)
+   FLIP RENDER (stabil + mjuk flytt)
 ========================= */
 function render() {
   const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
 
   grid.innerHTML = "";
 
+  // 🔥 solved groups (överst → nedåt)
   solvedGroups.forEach(g => {
     const div = document.createElement("div");
     div.className = `cell group ${g.color}`;
@@ -223,6 +228,7 @@ function render() {
     grid.appendChild(div);
   });
 
+  // 🔥 words
   allWords.forEach(w => {
     const div = document.createElement("div");
     div.className = "cell word";
@@ -291,7 +297,7 @@ function check() {
   }
 
   if (match) {
-    solvedGroups.push(match); // ✔ stabil ordning (över → under)
+    solvedGroups.push(match);
 
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
