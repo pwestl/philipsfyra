@@ -178,6 +178,7 @@ async function load() {
 
   // ✔ RUBRIK MED SPELNUMMER
   document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+  document.title = `PHILIPS FYRA #${game}`; // Uppdaterar både sidrubrik och flik-titel
 
   const res = await fetch(`puzzle${game}.json?v=` + Date.now());
   groups = await res.json();
