@@ -199,11 +199,16 @@ const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
 async function load() {
-  const res = await fetch("puzzle.json?v=" + Date.now());
+  const params = new URLSearchParams(window.location.search);
+  const game = params.get("game") || "1";
+
+  const res = await fetch(`puzzle${game}.json?v=` + Date.now());
   groups = await res.json();
+
   remainingGroups = structuredClone(groups);
   solvedGroups = [];
   allWords = remainingGroups.flatMap(g => g.words);
+
   shuffle();
 }
 
