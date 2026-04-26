@@ -7,8 +7,8 @@
 
 <style>
 :root {
-  --cell-h: 32px;
-  --gap: 8px;
+  --cell-h: 42px;
+  --gap: 10px;
 }
 
 body {
@@ -26,7 +26,9 @@ h1 {
   margin: 6px 0 10px;
 }
 
-/* GRID */
+/* =========================
+   GRID
+========================= */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -36,7 +38,9 @@ h1 {
   contain: layout paint;
 }
 
-/* CELL */
+/* =========================
+   CELL BASE
+========================= */
 .cell {
   display: flex;
   align-items: center;
@@ -44,16 +48,19 @@ h1 {
 
   border-radius: 10px;
 
-  font-size: 12.5px;
   font-weight: 600;
   text-align: center;
-
   user-select: none;
+
+  will-change: transform;
 }
 
-/* WORD */
+/* =========================
+   WORDS
+========================= */
 .word {
   height: var(--cell-h);
+  font-size: 14px;
   background: #f3f3f3;
   cursor: pointer;
 }
@@ -78,25 +85,23 @@ h1 {
   100% { transform: translateX(0); }
 }
 
-/* GROUP (EXAKT 2x2 = identisk höjd som 4 words) */
+/* =========================
+   GROUPS (2x2 block)
+========================= */
 .group {
   grid-column: span 2;
 
   height: calc((var(--cell-h) * 2) + var(--gap));
+  font-size: 14px;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
 
-  padding: 10px;
+  padding: 14px;
   border-radius: 12px;
 
-  animation: pop 0.18s ease-out;
-}
-
-@keyframes pop {
-  from { transform: scale(0.96); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  transition: transform 280ms ease;
 }
 
 .yellow { background: #f9df6d; }
@@ -104,18 +109,21 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* UI */
+/* =========================
+   BUTTONS (större)
+========================= */
 .actions {
   display: grid;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  font-weight: 700;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
   background: #222;
   color: white;
   border: none;
@@ -125,12 +133,18 @@ button:disabled {
   opacity: 0.35;
 }
 
+/* =========================
+   BOMB COUNT
+========================= */
 .bombar {
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
 }
 
+/* =========================
+   POPUP
+========================= */
 .popup {
   position: fixed;
   left: 50%;
@@ -194,10 +208,14 @@ function shuffle() {
   render();
 }
 
+/* =========================
+   FLIP RENDER (stabil + mjuk rörelse)
+========================= */
 function render() {
+  const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
+
   grid.innerHTML = "";
 
-  // 🔥 1. lösta grupper (SORTERADE I RÄTT ORDNING)
   solvedGroups.forEach(g => {
     const div = document.createElement("div");
     div.className = `cell group ${g.color}`;
@@ -205,7 +223,6 @@ function render() {
     grid.appendChild(div);
   });
 
-  // 🔥 2. ord
   allWords.forEach(w => {
     const div = document.createElement("div");
     div.className = "cell word";
@@ -225,14 +242,33 @@ function render() {
 
     grid.appendChild(div);
   });
+
+  requestAnimationFrame(() => {
+    [...grid.children].forEach(el => {
+      const old = first.get(el);
+      if (!old) return;
+
+      const now = el.getBoundingClientRect();
+
+      const dx = old.left - now.left;
+      const dy = old.top - now.top;
+
+      if (dx || dy) {
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        el.style.transition = "transform 0s";
+
+        requestAnimationFrame(() => {
+          el.style.transition = "transform 280ms ease";
+          el.style.transform = "";
+        });
+      }
+    });
+  });
 }
 
 function flashWrong(selected) {
   selected.forEach(el => el.classList.add("wrong"));
-
-  setTimeout(() => {
-    selected.forEach(el => el.classList.remove("wrong"));
-  }, 600);
+  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
 }
 
 function check() {
@@ -250,14 +286,12 @@ function check() {
 
   for (const g of remainingGroups) {
     const count = g.words.filter(w => words.includes(w)).length;
-
     if (count === 4) match = g;
     if (count === 3) almost = true;
   }
 
   if (match) {
-    // 🔥 lägg längst UPP (första lösta = överst)
-    solvedGroups.unshift(match);
+    solvedGroups.push(match); // ✔ stabil ordning (över → under)
 
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
@@ -267,14 +301,13 @@ function check() {
     show("RÄTT GRUPP!");
     win();
 
-    render(); // stabil omritning utan hopp
+    render();
 
   } else {
     bombs++;
     bombsEl.textContent = bombs;
 
     flashWrong(selected);
-
     show(almost ? "3 AV 4 RÄTT!" : "FEL");
   }
 
