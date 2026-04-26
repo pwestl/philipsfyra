@@ -6,6 +6,11 @@
 <title>PHILIPS FYRA</title>
 
 <style>
+:root {
+  --cell-h: 42px;
+  --gap: 10px;
+}
+
 body {
   font-family: system-ui, -apple-system, Arial;
   max-width: 600px;
@@ -21,30 +26,14 @@ h1 {
   margin: 6px 0 10px;
 }
 
-/* MENU */
-#menu {
-  text-align: center;
-  margin-top: 40px;
-}
-
-#menu button {
-  width: 100%;
-  margin: 8px 0;
-  padding: 16px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 800;
-  background: #222;
-  color: white;
-  border: none;
-}
-
 /* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: 42px;
-  gap: 10px;
+  grid-auto-rows: var(--cell-h);
+  gap: var(--gap);
+  align-content: start;
+  contain: layout paint;
 }
 
 /* CELL */
@@ -54,10 +43,15 @@ h1 {
   justify-content: center;
   border-radius: 10px;
   font-weight: 600;
+  text-align: center;
+  user-select: none;
+  will-change: transform;
 }
 
 /* WORDS */
 .word {
+  height: 100%;
+  font-size: 14px;
   background: #f3f3f3;
   cursor: pointer;
 }
@@ -66,14 +60,32 @@ h1 {
   background: #cfe6ff;
 }
 
+.word.wrong {
+  animation: shake 0.6s ease;
+  background: #ff4d4d !important;
+  color: white;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
 /* GROUPS */
 .group {
   grid-column: span 2;
   grid-row: span 2;
+  font-size: 14px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 10px;
+  padding: 0 14px;
+  border-radius: 12px;
+  transition: transform 280ms ease;
 }
 
 .yellow { background: #f9df6d; }
@@ -81,48 +93,72 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-button:disabled { opacity: 0.4; }
+/* BUTTONS */
+.actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
 
+button {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  background: #222;
+  color: white;
+  border: none;
+}
+
+button:disabled {
+  opacity: 0.35;
+}
+
+/* BOMB */
+.bombar {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+/* POPUP */
 .popup {
   position: fixed;
   left: 50%;
-  top: 20%;
+  top: 18%;
   transform: translateX(-50%);
   background: rgba(0,0,0,0.85);
   color: white;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 10px;
   opacity: 0;
+  transition: 0.25s;
 }
 
 .popup.show {
   opacity: 1;
+  top: 22%;
 }
 </style>
 </head>
 
 <body>
 
-<div id="menu">
-  <h1>PHILIPS FYRA</h1>
-  <div id="menuButtons"></div>
-</div>
-
-<h1 id="title"></h1>
+<h1>PHILIPS FYRA</h1>
 
 <div id="grid" class="grid"></div>
 
-<div style="text-align:center; margin-top:10px;">
+<div class="actions">
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
-  <button id="shareBtn" onclick="share()" disabled>DELA</button>
+  <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
 </div>
 
-<div style="text-align:center;">BOMMAR: <span id="bombs">0</span></div>
+<div class="bombar">BOMMAR: <span id="bombs">0</span></div>
 
 <div id="popup" class="popup"></div>
 
 <script>
-
 let groups = [];
 let remainingGroups = [];
 let solvedGroups = [];
@@ -133,44 +169,15 @@ let locked = false;
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
 const bombsEl = document.getElementById("bombs");
-
 const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
-async function buildMenu() {
-  const res = await fetch("manifest.json");
-  const data = await res.json();
-
-  const max = data.games;
-  const container = document.getElementById("menuButtons");
-
-  for (let i = 1; i <= max; i++) {
-    const btn = document.createElement("button");
-
-    if (i === max) {
-      btn.textContent = "SPELA DEN SENASTE FYRAN";
-      btn.onclick = () => startGame(i);
-      container.prepend(btn);
-    } else {
-      btn.textContent = `SPELA PHILIPS FYRA #${i}`;
-      btn.onclick = () => startGame(i);
-      container.appendChild(btn);
-    }
-  }
-}
-
-function startGame(n) {
-  window.location.href = `?game=${n}`;
-}
-
 async function load() {
   const params = new URLSearchParams(window.location.search);
-  const game = params.get("game");
+  const game = params.get("game") || "1";
 
-  if (!game) return;
-
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("title").textContent = `PHILIPS FYRA #${game}`;
+  // ✔ RUBRIK MED SPELNUMMER
+  document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
 
   const res = await fetch(`puzzle${game}.json?v=` + Date.now());
   groups = await res.json();
@@ -179,10 +186,18 @@ async function load() {
   solvedGroups = [];
   allWords = remainingGroups.flatMap(g => g.words);
 
+  shuffle();
+}
+
+function shuffle() {
+  allWords.sort(() => Math.random() - 0.5);
   render();
 }
 
+/* FLIP RENDER */
 function render() {
+  const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
+
   grid.innerHTML = "";
 
   solvedGroups.forEach(g => {
@@ -202,75 +217,133 @@ function render() {
 
       div.classList.toggle("selected");
 
+      if (document.querySelectorAll(".selected").length > 4) {
+        div.classList.remove("selected");
+      }
+
       testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
     };
 
     grid.appendChild(div);
   });
+
+  requestAnimationFrame(() => {
+    [...grid.children].forEach(el => {
+      const old = first.get(el);
+      if (!old) return;
+
+      const now = el.getBoundingClientRect();
+
+      const dx = old.left - now.left;
+      const dy = old.top - now.top;
+
+      if (dx || dy) {
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        el.style.transition = "transform 0s";
+
+        requestAnimationFrame(() => {
+          el.style.transition = "transform 280ms ease";
+          el.style.transform = "";
+        });
+      }
+    });
+  });
+}
+
+function flashWrong(selected) {
+  selected.forEach(el => el.classList.add("wrong"));
+  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
 }
 
 function check() {
+  if (locked) return;
+
   const selected = [...document.querySelectorAll(".selected")];
   if (selected.length !== 4) return;
+
+  locked = true;
 
   const words = selected.map(e => e.textContent);
 
   let match = null;
+  let almost = false;
 
   for (const g of remainingGroups) {
-    if (g.words.every(w => words.includes(w))) {
-      match = g;
-      break;
-    }
+    const count = g.words.filter(w => words.includes(w)).length;
+    if (count === 4) match = g;
+    if (count === 3) almost = true;
   }
 
   if (match) {
     solvedGroups.push(match);
+
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
-    selected.forEach(e => e.classList.remove("selected"));
+    selected.forEach(el => el.classList.remove("selected"));
 
-    show("RÄTT!");
+    show("RÄTT GRUPP!");
     win();
+
     render();
 
   } else {
     bombs++;
     bombsEl.textContent = bombs;
-    show("FEL");
-  }
-}
 
-function win() {
-  if (remainingGroups.length === 0) {
-    show("KLAR!");
-    shareBtn.disabled = false;
+    flashWrong(selected);
+    show(almost ? "3 AV 4 RÄTT!" : "FEL");
   }
+
+  setTimeout(() => locked = false, 500);
 }
 
 function show(t) {
   popup.textContent = t;
   popup.classList.add("show");
-  setTimeout(() => popup.classList.remove("show"), 800);
+  setTimeout(() => popup.classList.remove("show"), 900);
+}
+
+function win() {
+  if (remainingGroups.length === 0) {
+    show(`KLAR PÅ ${bombs} BOMMAR`);
+    shareBtn.disabled = false;
+    testBtn.disabled = true;
+  }
 }
 
 function share() {
   const params = new URLSearchParams(window.location.search);
   const game = params.get("game") || "1";
 
-  const msg =
-`Jag klarade PHILIPS FYRA #${game} med ${bombs} bommar!
+  let message;
+
+  if (bombs === 0) {
+    message =
+`Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!
 
 https://pwestl.github.io/philipsfyra/?game=${game}`;
 
-  navigator.clipboard.writeText(msg);
-  show("KOPIERAT");
+  } else if (bombs > 10) {
+    message =
+`Jag klarade PHILIPS FYRA #${game} med 10 bommar. Shit vad svårt :( testa med om du vill
+
+https://pwestl.github.io/philipsfyra/?game=${game}`;
+
+  } else {
+    message =
+`Jag klarade PHILIPS FYRA #${game} med ${bombs} bommar! Testa du med!
+
+https://pwestl.github.io/philipsfyra/?game=${game}`;
+  }
+
+  navigator.clipboard.writeText(message);
+
+  show("RESULTAT KOPIERAT!");
 }
 
-buildMenu();
 load();
-
 </script>
+
 </body>
 </html>
