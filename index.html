@@ -37,7 +37,7 @@ h1 {
   cursor: pointer;
   user-select: none;
 
-  transition: background-color 0.25s ease, transform 0.25s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
   font-size: clamp(14px, 3.5vw, 16px);
 }
 
@@ -129,40 +129,40 @@ button:disabled {
   top: 25%;
 }
 
-/* 🔴 FEL (stabil och tydlig) */
+/* 🔴 MJUK FEL-FEEDBACK (långsammare fade) */
 .word.wrong-flash {
   background-color: #ff4d4d !important;
   color: white !important;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background-color 0.6s ease, color 0.6s ease;
 }
 
-/* 🫨 SHAKE */
+/* 🫨 MJUKARE & LÅNGSAMMARE SHAKE */
 @keyframes shake {
   0% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
+  15% { transform: translateX(-3px); }
+  30% { transform: translateX(3px); }
+  45% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
+  75% { transform: translateX(-1px); }
   100% { transform: translateX(0); }
 }
 
 .word.shake {
-  animation: shake 0.55s cubic-bezier(.36,.07,.19,.97);
+  animation: shake 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* GRID SHAKE */
+/* 🌐 MJUK GRID-SHAKE */
 @keyframes gridShake {
   0% { transform: translateX(0); }
-  15% { transform: translateX(-6px); }
-  30% { transform: translateX(6px); }
-  45% { transform: translateX(-4px); }
-  60% { transform: translateX(4px); }
-  75% { transform: translateX(-2px); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
   100% { transform: translateX(0); }
 }
 
 .grid-shake {
-  animation: gridShake 0.6s ease;
+  animation: gridShake 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 </style>
 </head>
@@ -269,7 +269,7 @@ function flashWrong(selected) {
     selected.forEach(el => {
       el.classList.remove("wrong-flash", "shake");
     });
-  }, 550);
+  }, 700);
 }
 
 /* GRID SHAKE */
@@ -278,7 +278,7 @@ function shakeGrid() {
 
   setTimeout(() => {
     grid.classList.remove("grid-shake");
-  }, 600);
+  }, 900);
 }
 
 /* CHECK */
@@ -325,7 +325,7 @@ function check() {
     updateTestButton();
   }
 
-  setTimeout(() => locked = false, 800);
+  setTimeout(() => locked = false, 900);
 }
 
 /* POPUP */
@@ -333,7 +333,7 @@ function showPopup(text) {
   popup.textContent = text;
   popup.classList.add("show");
 
-  setTimeout(() => popup.classList.remove("show"), 1200);
+  setTimeout(() => popup.classList.remove("show"), 1300);
 }
 
 /* WIN */
