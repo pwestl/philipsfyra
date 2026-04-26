@@ -25,19 +25,18 @@ h1 {
   letter-spacing: 1px;
 }
 
-/* GAME AREA */
-.game-area {
-  flex: 1;
-}
-
-/* GRID */
+/* =========================
+   GRID
+========================= */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
 }
 
-/* WORDS */
+/* =========================
+   WORD BOXES
+========================= */
 .word {
   padding: 7px 9px;
   font-size: 12.5px;
@@ -84,12 +83,23 @@ h1 {
   100% { transform: translateX(0); }
 }
 
-/* GROUPS */
+/* =========================
+   GROUP BOXES (VIKTIG FIX)
+========================= */
 .group-box {
-  padding: 12px;
+  grid-column: span 2; /* tar hela bredden */
+  min-height: calc(32px * 2 + 8px); /* exakt samma höjd som 4 ord */
+
+  background: #ddd;
   border-radius: 12px;
-  margin-bottom: 10px;
+
+  padding: 12px;
   text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
   animation: pop 0.3s ease;
 }
 
@@ -103,7 +113,9 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* POPUP */
+/* =========================
+   POPUP
+========================= */
 .popup {
   position: fixed;
   left: 50%;
@@ -123,7 +135,7 @@ h1 {
 }
 
 /* =========================
-   BUTTONS UNDER GRID
+   CONTROLS
 ========================= */
 .action-grid {
   display: grid;
@@ -154,6 +166,11 @@ button:disabled {
   gap: 8px;
   font-weight: 600;
 }
+
+/* GAME AREA */
+.game-area {
+  flex: 1;
+}
 </style>
 </head>
 
@@ -162,10 +179,9 @@ button:disabled {
 <h1>PHILIPS FYRA</h1>
 
 <div class="game-area">
-  <div id="solved"></div>
+  <div id="solved" class="grid"></div>
   <div id="grid" class="grid"></div>
 
-  <!-- KNAPPAR DIREKT UNDER GRID -->
   <div class="action-grid">
     <button id="testBtn" onclick="check()" disabled>TESTA</button>
     <button id="shareBtn" onclick="shareResult()" disabled>DELA RESULTAT</button>
