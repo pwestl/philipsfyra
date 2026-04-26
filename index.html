@@ -11,6 +11,7 @@ body {
   max-width: 600px;
   margin: 0 auto;
   padding: 14px;
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -24,42 +25,53 @@ h1 {
   margin: 12px 0 18px;
 }
 
-/* GAME AREA */
+/* =========================
+   GAME LAYOUT (OPTIMERAD)
+========================= */
 .game-area {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-/* SOLVED */
+/* solved */
 #solved {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
-/* GRID */
+/* GRID TAR MAX UTRYMME */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 
-  padding-bottom: 90px; /* 👈 viktigt: stoppar footer overlap */
+  flex: 1;
+  min-height: 0;
+  align-content: start;
 }
 
-/* WORDS (UPDATED) */
+/* =========================
+   WORDS (MER LUFT + KOMPRESSAT)
+========================= */
 .word {
-  padding: 10px 12px;      /* 👈 mindre höjd */
+  padding: 10px 12px;
   background: #f3f3f3;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   user-select: none;
-  transition: all 0.25s ease;
-  font-size: 14px;
 
+  font-size: 14px;
   text-align: center;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  min-height: 38px;        /* 👈 jämn mobilhöjd */
+  min-height: 36px;
+
+  transition: all 0.25s ease;
 }
 
 .word:active {
@@ -70,11 +82,14 @@ h1 {
   background: #cfe6ff;
 }
 
-/* WRONG */
+/* =========================
+   FEL (MJUKARE + LÄNGRE)
+========================= */
 .word.wrong {
-  animation: shake 0.55s ease;
-  background: #ff5a5a !important;
+  animation: shake 0.7s ease;
+  background: #ff4d4d !important;
   color: white;
+  transition: background-color 0.5s ease;
 }
 
 @keyframes shake {
@@ -86,18 +101,16 @@ h1 {
   100% { transform: translateX(0); }
 }
 
-/* GROUPS (UPDATED CENTERED) */
+/* =========================
+   GROUPS
+========================= */
 .group-box {
   padding: 12px;
   border-radius: 12px;
   margin-bottom: 10px;
-  animation: pop 0.4s ease;
+  animation: pop 0.35s ease;
 
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 @keyframes pop {
@@ -110,7 +123,9 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* POPUP */
+/* =========================
+   POPUP
+========================= */
 .popup {
   position: fixed;
   left: 50%;
@@ -130,13 +145,19 @@ h1 {
   top: 22%;
 }
 
-/* FOOTER */
+/* =========================
+   FOOTER (FLOATING UI BAR)
+========================= */
 .footer {
   position: sticky;
   bottom: 0;
-  background: rgba(255,255,255,0.9);
+
+  background: rgba(255,255,255,0.92);
   backdrop-filter: blur(10px);
+
   padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+
+  box-shadow: 0 -10px 25px rgba(0,0,0,0.06);
 }
 
 /* BUTTONS */
@@ -160,7 +181,7 @@ button:disabled {
   opacity: 0.35;
 }
 
-/* BOMBAR */
+/* BOMMAR */
 .bombar {
   display: flex;
   justify-content: center;
@@ -264,14 +285,15 @@ function updateBtn() {
   testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
 }
 
+/* =========================
+   FEEDBACK (MJUK + LÄNGRE)
+========================= */
 function flashWrong(selected) {
-  selected.forEach(el => {
-    el.classList.add("wrong");
-  });
+  selected.forEach(el => el.classList.add("wrong"));
 
   setTimeout(() => {
     selected.forEach(el => el.classList.remove("wrong"));
-  }, 550);
+  }, 900); // 👈 längre feedback
 }
 
 function check() {
