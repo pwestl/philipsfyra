@@ -26,42 +26,29 @@ h1 {
   margin: 6px 0 10px;
 }
 
-/* =========================
-   GRID (EXAKT ENHETSSYSTEM)
-========================= */
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-
-  /* 🔥 avgör ALL höjd i systemet */
   grid-auto-rows: var(--cell-h);
-
   gap: var(--gap);
-
   align-content: start;
   contain: layout paint;
 }
 
-/* =========================
-   CELL BASE
-========================= */
+/* CELL */
 .cell {
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 10px;
-
   font-weight: 600;
   text-align: center;
   user-select: none;
-
   will-change: transform;
 }
 
-/* =========================
-   WORDS (EXAKT 1 GRID-RAD)
-========================= */
+/* WORDS */
 .word {
   height: 100%;
   font-size: 14px;
@@ -73,7 +60,6 @@ h1 {
   background: #cfe6ff;
 }
 
-/* WRONG */
 .word.wrong {
   animation: shake 0.6s ease;
   background: #ff4d4d !important;
@@ -89,22 +75,16 @@ h1 {
   100% { transform: translateX(0); }
 }
 
-/* =========================
-   GROUPS (EXAKT 2x2 GRID)
-========================= */
+/* GROUPS */
 .group {
   grid-column: span 2;
   grid-row: span 2;
-
   font-size: 14px;
-
   display: flex;
   flex-direction: column;
   justify-content: center;
-
-  padding: 0 14px; /* 🔥 ingen vertikal padding som förstör höjd */
+  padding: 0 14px;
   border-radius: 12px;
-
   transition: transform 280ms ease;
 }
 
@@ -113,9 +93,7 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* =========================
-   BUTTONS
-========================= */
+/* BUTTONS */
 .actions {
   display: grid;
   gap: 8px;
@@ -137,18 +115,14 @@ button:disabled {
   opacity: 0.35;
 }
 
-/* =========================
-   BOMB COUNTER
-========================= */
+/* BOMB */
 .bombar {
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
 }
 
-/* =========================
-   POPUP
-========================= */
+/* POPUP */
 .popup {
   position: fixed;
   left: 50%;
@@ -202,6 +176,9 @@ async function load() {
   const params = new URLSearchParams(window.location.search);
   const game = params.get("game") || "1";
 
+  // ✔ RUBRIK MED SPELNUMMER
+  document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+
   const res = await fetch(`puzzle${game}.json?v=` + Date.now());
   groups = await res.json();
 
@@ -217,15 +194,12 @@ function shuffle() {
   render();
 }
 
-/* =========================
-   FLIP RENDER (stabil + mjuk flytt)
-========================= */
+/* FLIP RENDER */
 function render() {
   const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
 
   grid.innerHTML = "";
 
-  // 🔥 solved groups (överst → nedåt)
   solvedGroups.forEach(g => {
     const div = document.createElement("div");
     div.className = `cell group ${g.color}`;
@@ -233,7 +207,6 @@ function render() {
     grid.appendChild(div);
   });
 
-  // 🔥 words
   allWords.forEach(w => {
     const div = document.createElement("div");
     div.className = "cell word";
@@ -347,19 +320,19 @@ function share() {
 
   if (bombs === 0) {
     message =
-`Jag klarade PHILIPS FYRA med 0 bommar! Ha! Så enkelt! Testa du med!
+`Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!
 
 https://pwestl.github.io/philipsfyra/?game=${game}`;
 
   } else if (bombs > 10) {
     message =
-`Jag klarade PHILIPS FYRA med 10 bommar. Shit vad svårt :( testa med om du vill
+`Jag klarade PHILIPS FYRA #${game} med 10 bommar. Shit vad svårt :( testa med om du vill
 
 https://pwestl.github.io/philipsfyra/?game=${game}`;
 
   } else {
     message =
-`Jag klarade PHILIPS FYRA med ${bombs} bommar! Testa du med!
+`Jag klarade PHILIPS FYRA #${game} med ${bombs} bommar! Testa du med!
 
 https://pwestl.github.io/philipsfyra/?game=${game}`;
   }
