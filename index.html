@@ -26,9 +26,10 @@ h1 {
 }
 
 /* =========================
-   GRID
+   GRID (ENHETLIGT SYSTEM)
 ========================= */
-.grid {
+.grid,
+#solved {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
@@ -67,7 +68,7 @@ h1 {
   background: #cfe6ff;
 }
 
-/* WRONG */
+/* WRONG FEEDBACK */
 .word.wrong {
   animation: shake 0.65s ease;
   background: #ff4d4d !important;
@@ -84,22 +85,21 @@ h1 {
 }
 
 /* =========================
-   GROUP BOXES (VIKTIG FIX)
+   GROUP BOXES (FIXAD GRID-LOGIK)
 ========================= */
 .group-box {
-  grid-column: span 2; /* tar hela bredden */
-  min-height: calc(32px * 2 + 8px); /* exakt samma höjd som 4 ord */
-
-  background: #ddd;
-  border-radius: 12px;
-
-  padding: 12px;
-  text-align: center;
+  grid-column: span 2;
 
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
 
+  padding: 12px;
+  border-radius: 12px;
+
+  min-height: 32px;
+
+  text-align: center;
   animation: pop 0.3s ease;
 }
 
@@ -302,9 +302,7 @@ function check() {
 
     show(almost ? "3 AV 4 RÄTT!" : "FEL");
 
-    setTimeout(() => {
-      selected.forEach(el => el.classList.remove("selected"));
-    }, 400);
+    // VIKTIGT: INGEN AVMARKERING LÄNGRE
   }
 
   setTimeout(() => locked = false, 600);
