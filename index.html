@@ -188,6 +188,9 @@ async function load() {
   document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
   document.title = `PHILIPS FYRA #${game}`; // Uppdaterar både sidrubrik och flik-titel
 
+  // Uppdatera Open Graph meta-taggar för att reflektera rätt spelets nummer
+  updateOpenGraph(game);
+
   const res = await fetch(`puzzle${game}.json?v=` + Date.now());
   groups = await res.json();
 
