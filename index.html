@@ -340,18 +340,28 @@ function win() {
 }
 
 function share() {
+  const params = new URLSearchParams(window.location.search);
+  const game = params.get("game") || "1";
+
   let message;
 
   if (bombs === 0) {
     message =
 `Jag klarade PHILIPS FYRA med 0 bommar! Ha! Så enkelt! Testa du med!
 
-https://pwestl.github.io/philipsfyra/`;
+https://pwestl.github.io/philipsfyra/?game=${game}`;
+
+  } else if (bombs > 10) {
+    message =
+`Jag klarade PHILIPS FYRA med 10 bommar. Shit vad svårt :( testa med om du vill
+
+https://pwestl.github.io/philipsfyra/?game=${game}`;
+
   } else {
     message =
 `Jag klarade PHILIPS FYRA med ${bombs} bommar! Testa du med!
 
-https://pwestl.github.io/philipsfyra/`;
+https://pwestl.github.io/philipsfyra/?game=${game}`;
   }
 
   navigator.clipboard.writeText(message);
