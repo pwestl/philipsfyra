@@ -6,6 +6,11 @@
 <title>PHILIPS FYRA</title>
 
 <style>
+:root {
+  --cell-h: 32px;
+  --gap: 8px;
+}
+
 body {
   font-family: system-ui, -apple-system, Arial;
   max-width: 600px;
@@ -25,14 +30,14 @@ h1 {
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: var(--gap);
+
+  align-content: start;
+  contain: layout paint;
 }
 
 /* CELL */
 .cell {
-  min-height: 32px;
-  padding: 7px 9px;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,6 +53,7 @@ h1 {
 
 /* WORD */
 .word {
+  height: var(--cell-h);
   background: #f3f3f3;
   cursor: pointer;
 }
@@ -72,23 +78,24 @@ h1 {
   100% { transform: translateX(0); }
 }
 
-/* GROUP (endast när löst) */
+/* GROUP (EXAKT 2x2 = identisk höjd som 4 words) */
 .group {
   grid-column: span 2;
-  min-height: calc(32px * 2 + 8px);
+
+  height: calc((var(--cell-h) * 2) + var(--gap));
 
   display: flex;
   flex-direction: column;
   justify-content: center;
 
-  border-radius: 12px;
   padding: 10px;
+  border-radius: 12px;
 
-  animation: pop 0.25s ease;
+  animation: pop 0.18s ease-out;
 }
 
 @keyframes pop {
-  from { transform: scale(0.95); opacity: 0; }
+  from { transform: scale(0.96); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
@@ -190,7 +197,7 @@ function shuffle() {
 function render() {
   grid.innerHTML = "";
 
-  // 🔥 1. visa lösta grupper först (MEN bara de som finns i solvedGroups)
+  // 🔥 1. lösta grupper (SORTERADE I RÄTT ORDNING)
   solvedGroups.forEach(g => {
     const div = document.createElement("div");
     div.className = `cell group ${g.color}`;
@@ -198,7 +205,7 @@ function render() {
     grid.appendChild(div);
   });
 
-  // 🔥 2. visa ord
+  // 🔥 2. ord
   allWords.forEach(w => {
     const div = document.createElement("div");
     div.className = "cell word";
@@ -249,7 +256,9 @@ function check() {
   }
 
   if (match) {
-    solvedGroups.unshift(match); // 🔥 lägg överst
+    // 🔥 lägg längst UPP (första lösta = överst)
+    solvedGroups.unshift(match);
+
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
@@ -258,7 +267,7 @@ function check() {
     show("RÄTT GRUPP!");
     win();
 
-    render();
+    render(); // stabil omritning utan hopp
 
   } else {
     bombs++;
