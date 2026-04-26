@@ -116,11 +116,11 @@ button:disabled {
   background: #3b8be0;
 }
 
-/* INFO */
+/* CLEAN BOMBAR (NY VERSION) */
 .info {
+  margin-top: 16px;
   font-size: 18px;
   font-weight: 900;
-  margin-top: 18px;
   color: #111;
 }
 
@@ -163,8 +163,9 @@ button:disabled {
   </button>
 </div>
 
+<!-- CLEAN BOMBAR -->
 <div class="info">
-  Bommar: <span id="attempts">0</span>
+  <span id="attemptsLabel">💥 0</span>
 </div>
 
 <div id="popup" class="popup"></div>
@@ -179,7 +180,7 @@ let locked = false;
 const grid = document.getElementById("grid");
 const solvedDiv = document.getElementById("solved");
 const popup = document.getElementById("popup");
-const attemptsEl = document.getElementById("attempts");
+const attemptsLabel = document.getElementById("attemptsLabel");
 const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
@@ -232,7 +233,7 @@ function render() {
   });
 }
 
-/* TEST BUTTON ENABLE */
+/* TEST BUTTON */
 function updateTestButton() {
   const count = document.querySelectorAll(".selected").length;
   testBtn.disabled = count !== 4;
@@ -274,7 +275,7 @@ function check() {
     checkWin();
   } else {
     bommar++;
-    attemptsEl.textContent = bommar;
+    attemptsLabel.textContent = `💥 ${bommar}`;
 
     selected.forEach(el => el.classList.remove("selected"));
     showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
