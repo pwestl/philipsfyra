@@ -37,7 +37,6 @@ h1 {
   cursor: pointer;
   user-select: none;
 
-  /* 🧠 mjukare övergångar */
   transition: background-color 0.25s ease, transform 0.25s ease;
   font-size: clamp(14px, 3.5vw, 16px);
 }
@@ -52,8 +51,6 @@ h1 {
 
 /* GROUP BOX */
 .group-box {
-  position: relative;
-  overflow: hidden;
   padding: 12px;
   border-radius: 10px;
   margin: 10px 0;
@@ -132,14 +129,14 @@ button:disabled {
   top: 25%;
 }
 
-/* 🔴 MJUK FEL-FEEDBACK */
+/* 🔴 FEL (stabil och tydlig) */
 .word.wrong-flash {
   background-color: #ff4d4d !important;
   color: white !important;
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* 🫨 MJUK SHAKE */
+/* 🫨 SHAKE */
 @keyframes shake {
   0% { transform: translateX(0); }
   20% { transform: translateX(-4px); }
@@ -153,7 +150,7 @@ button:disabled {
   animation: shake 0.55s cubic-bezier(.36,.07,.19,.97);
 }
 
-/* GRID SHAKE (lite mjukare också) */
+/* GRID SHAKE */
 @keyframes gridShake {
   0% { transform: translateX(0); }
   15% { transform: translateX(-6px); }
@@ -262,7 +259,7 @@ function updateTestButton() {
   testBtn.disabled = count !== 4;
 }
 
-/* ❌ FEL FEEDBACK (MJUK) */
+/* ❌ FEL FEEDBACK */
 function flashWrong(selected) {
   selected.forEach(el => {
     el.classList.add("wrong-flash", "shake");
@@ -324,14 +321,7 @@ function check() {
     flashWrong(selected);
     shakeGrid();
 
-    setTimeout(() => {
-      selected.forEach(el => el.classList.remove("selected"));
-    }, 650);
-
-    setTimeout(() => {
-      showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
-    }, 120);
-
+    showPopup(almost ? "3 av 4 rätt!" : "Fel kombination");
     updateTestButton();
   }
 
