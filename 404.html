@@ -3,20 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <script>
-  const path = window.location.pathname;
-  const game = path.split("/").filter(Boolean).pop();
+const path = window.location.pathname;
 
-  // ladda game.html innehåll utan att ändra URL
-  fetch("./game.html")
-    .then(res => res.text())
-    .then(html => {
-      document.open();
-      document.write(html);
-      document.close();
+// plocka sista delen (/3)
+const game = path.split("/").filter(Boolean).pop();
 
-      // skicka med spelnumret
-      window.GAME_NUMBER = game;
-    });
+// om det är ett nummer → starta spelet
+if (!isNaN(game)) {
+  window.location.replace(`/philipsfyra/game.html?game=${game}`);
+} else {
+  window.location.replace(`/philipsfyra/`);
+}
 </script>
 </head>
 <body></body>
