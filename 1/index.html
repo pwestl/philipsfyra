@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>PHILIPS FYRA</title>
 
-  <meta property="og:title" content="PHILIPS FYRA #1">
-<meta property="og:url" content="https://pwestl.github.io/philipsfyra/1/">
+<meta property="og:title" content="PHILIPS FYRA #2">
+<meta property="og:url" content="https://pwestl.github.io/philipsfyra/2/">
 
 <style>
 :root {
@@ -90,10 +90,17 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
+/* BUTTONS */
 .actions {
   display: grid;
   gap: 8px;
   margin-top: 12px;
+}
+
+.actions .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 button {
@@ -143,7 +150,11 @@ button:disabled { opacity: 0.35; }
 
 <div class="actions">
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
-  <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
+
+  <div class="row">
+    <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
+    <button onclick="goHome()">ARKIV</button>
+  </div>
 </div>
 
 <div class="bombar">BOMMAR: <span id="bombs">0</span></div>
@@ -165,17 +176,14 @@ const shareBtn = document.getElementById("shareBtn");
 
 async function load() {
   try {
-    // ✅ STABIL GAME DETECTION (FIXAR /1/ PROBLEM)
     const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
 
     document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
     document.title = `PHILIPS FYRA #${game}`;
 
-    // ✅ FIX: rätt mappstruktur
     const res = await fetch(`puzzle.json?v=${Date.now()}`);
     groups = await res.json();
 
-    // ✅ iOS SAFE CLONE (ersätter structuredClone)
     remainingGroups = JSON.parse(JSON.stringify(groups));
 
     solvedGroups = [];
@@ -357,6 +365,10 @@ ${url}`;
 
   navigator.clipboard.writeText(message);
   show("RESULTAT KOPIERAT!");
+}
+
+function goHome() {
+  window.location.href = "/philipsfyra/";
 }
 
 load();
