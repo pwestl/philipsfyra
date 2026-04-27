@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>PHILIPS FYRA</title>
 
-  <meta property="og:title" content="PHILIPS FYRA #3">
+<meta property="og:title" content="PHILIPS FYRA #3">
 <meta property="og:url" content="https://pwestl.github.io/philipsfyra/3/">
 
 <style>
@@ -90,10 +90,17 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
+/* BUTTONS */
 .actions {
   display: grid;
   gap: 8px;
   margin-top: 12px;
+}
+
+.actions .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 button {
@@ -143,7 +150,11 @@ button:disabled { opacity: 0.35; }
 
 <div class="actions">
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
-  <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
+
+  <div class="row">
+    <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
+    <button onclick="goHome()">ARKIV</button>
+  </div>
 </div>
 
 <div class="bombar">BOMMAR: <span id="bombs">0</span></div>
@@ -165,17 +176,14 @@ const shareBtn = document.getElementById("shareBtn");
 
 async function load() {
   try {
-    // ✅ STABIL GAME DETECTION (FIXAR /1/ PROBLEM)
     const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
 
     document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
     document.title = `PHILIPS FYRA #${game}`;
 
-    // ✅ FIX: rätt mappstruktur
     const res = await fetch(`puzzle.json?v=${Date.now()}`);
     groups = await res.json();
 
-    // ✅ iOS SAFE CLONE (ersätter structuredClone)
     remainingGroups = JSON.parse(JSON.stringify(groups));
 
     solvedGroups = [];
@@ -313,50 +321,18 @@ function share() {
 
   const url = `https://pwestl.github.io/philipsfyra/${game}/`;
 
-  let message;
-
-  if (bombs === 0) {
-    message =
-`Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!
-
-${url}`;
-
-  } else if (bombs <= 3) {
-    message =
-`😎 Ganska snyggt!
-
-PHILIPS FYRA #${game}
-Slutresultat: ${bombs} bommar
-
-Nästan perfekt.
-
-${url}`;
-
-  } else if (bombs <= 10) {
-    message =
-`😅 Inte min bästa runda...
-
-PHILIPS FYRA #${game}
-${bombs} bommar
-
-Testa själv om du tror du är bättre 😏
-
-${url}`;
-
-  } else {
-    message =
-`💀 TOTAL KAOS
-
-PHILIPS FYRA #${game}
-${bombs} bommar...
-
-Jag säger bara: prova själv.
-
-${url}`;
-  }
+  let message =
+    bombs === 0
+      ? `Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!\n\n${url}`
+      : `Jag klarade PHILIPS FYRA #${game} med ${bombs} bommar!\n\n${url}`;
 
   navigator.clipboard.writeText(message);
   show("RESULTAT KOPIERAT!");
+}
+
+/* NY: tillbaka till startsidan */
+function goHome() {
+  window.location.href = "/philipsfyra/";
 }
 
 load();
