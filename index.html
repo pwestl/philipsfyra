@@ -8,20 +8,15 @@
 <style>
 body {
   font-family: system-ui;
-  max-width: 520px;
+  max-width: 500px;
   margin: 40px auto;
   padding: 16px;
   text-align: center;
 }
 
 h1 {
-  font-size: 30px;
-  margin-bottom: 10px;
-}
-
-p {
-  opacity: 0.7;
-  margin-bottom: 25px;
+  font-size: 28px;
+  margin-bottom: 30px;
 }
 
 button {
@@ -29,7 +24,7 @@ button {
   padding: 18px;
   margin: 8px 0;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: bold;
   border-radius: 12px;
   border: none;
   background: black;
@@ -37,8 +32,10 @@ button {
   cursor: pointer;
 }
 
-button.secondary {
-  background: #333;
+small {
+  display: block;
+  margin-top: 20px;
+  opacity: 0.6;
 }
 </style>
 </head>
@@ -46,44 +43,37 @@ button.secondary {
 <body>
 
 <h1>PHILIPS FYRA</h1>
-<p>Välj ett spel att spela</p>
 
 <div id="menu"></div>
 
 <script>
-const menu = document.getElementById("menu");
-
-// 🔥 ÄNDRA DETTA NÄR DU LÄGGER TILL NYTT SPEL
+// 🔥 ÄNDRA DENNA NÄR DU LÄGGER TILL NYTT SPEL
 const latestGame = 3;
 
-// =========================
-// SENASTE SPELET
-// =========================
+const menu = document.getElementById("menu");
+
+// SENASTE SPEL
 const latestBtn = document.createElement("button");
-latestBtn.textContent = `SPELA DEN SENASTE FYRAN (#${latestGame})`;
+latestBtn.textContent = `SPELA SENASTE FYRAN (#${latestGame})`;
 latestBtn.onclick = () => {
-  window.location.href = `./${latestGame}`;
+  window.location.href = `/${latestGame}/`;
 };
 menu.appendChild(latestBtn);
 
-// =========================
 // ARKIV
-// =========================
-const archiveTitle = document.createElement("p");
-archiveTitle.textContent = "Arkiv";
-archiveTitle.style.marginTop = "25px";
-menu.appendChild(archiveTitle);
-
-for (let i = latestGame - 1; i >= 1; i--) {
+for (let i = latestGame; i >= 1; i--) {
   const btn = document.createElement("button");
-  btn.className = "secondary";
   btn.textContent = `SPELA PHILIPS FYRA #${i}`;
   btn.onclick = () => {
-    window.location.href = `./${i}`;
+    window.location.href = `/${i}/`;
   };
   menu.appendChild(btn);
 }
 </script>
+
+<small>
+PHILIPS FYRA • GitHub Pages version
+</small>
 
 </body>
 </html>
