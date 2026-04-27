@@ -47,8 +47,8 @@ small {
 <div id="menu"></div>
 
 <script>
-// 🔥 ÄNDRA DENNA NÄR DU LÄGGER TILL NYTT SPEL
 const latestGame = 3;
+const basePath = "/philipsfyra";
 
 const menu = document.getElementById("menu");
 
@@ -56,23 +56,23 @@ const menu = document.getElementById("menu");
 const latestBtn = document.createElement("button");
 latestBtn.textContent = `SPELA SENASTE FYRAN (#${latestGame})`;
 latestBtn.onclick = () => {
-  window.location.href = `/${latestGame}/`;
+  window.location.href = `${basePath}/${latestGame}/`;
 };
 menu.appendChild(latestBtn);
 
 // ARKIV
-for (let i = latestGame; i >= 1; i--) {
+for (let i = latestGame - 1; i >= 1; i--) {
   const btn = document.createElement("button");
   btn.textContent = `SPELA PHILIPS FYRA #${i}`;
   btn.onclick = () => {
-    window.location.href = `/${i}/`;
+    window.location.href = `${basePath}/${i}/`;
   };
   menu.appendChild(btn);
 }
 </script>
 
 <small>
-PHILIPS FYRA • GitHub Pages version
+PHILIPS FYRA
 </small>
 
 </body>
