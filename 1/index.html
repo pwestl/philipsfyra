@@ -308,12 +308,49 @@ function win() {
 function share() {
   const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
 
-  const url = `https://pwestl.github.io/philipsfyra/${game}`;
+  const url = `https://pwestl.github.io/philipsfyra/${game}/`;
 
-  let message =
-    bombs === 0
-      ? `Jag klarade PHILIPS FYRA #${game} med 0 bommar!\n\n${url}`
-      : `Jag klarade PHILIPS FYRA #${game} med ${bombs} bommar!\n\n${url}`;
+  let message;
+
+  if (bombs === 0) {
+    message =
+`Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!
+
+${url}`;
+
+  } else if (bombs <= 3) {
+    message =
+`😎 Ganska snyggt!
+
+PHILIPS FYRA #${game}
+Slutresultat: ${bombs} bommar
+
+Nästan perfekt.
+
+${url}`;
+
+  } else if (bombs <= 10) {
+    message =
+`😅 Inte min bästa runda...
+
+PHILIPS FYRA #${game}
+${bombs} bommar
+
+Testa själv om du tror du är bättre 😏
+
+${url}`;
+
+  } else {
+    message =
+`💀 TOTAL KAOS
+
+PHILIPS FYRA #${game}
+${bombs} bommar...
+
+Jag säger bara: prova själv.
+
+${url}`;
+  }
 
   navigator.clipboard.writeText(message);
   show("RESULTAT KOPIERAT!");
