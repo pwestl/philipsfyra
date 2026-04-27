@@ -1,22 +1,22 @@
 [
   {
-    "name": "TEST 1",
+    "name": "Norrköpingskoppling",
     "color": "yellow",
-    "words": ["1","1","1","1"]
+    "words": ["Plura","Peking","De Geer","Krunegård"]
   },
   {
-    "name": "TEST 2",
+    "name": "De fyra senaste sommar-os-städerna",
     "color": "green",
-    "words": ["2","2","2","2"]
+    "words": ["Paris","Tokyo","Rio","London"]
   },
   {
-    "name": "TEST 3",
+    "name": "Är det en stad eller artist? Båda!",
     "color": "blue",
-    "words": ["3","3","3","3"]
+    "words": ["Timbuktu","Chicago","Boston","Phoenix"]
   },
   {
-    "name": "TEST 4",
+    "name": "Kända svensk konstnärer",
     "color": "purple",
-    "words": ["4","4","4","4"]
+    "words": ["af Klint","Zorn","Larsson","Milles"]
   }
 ]
