@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHILIPS FYRA</title>
+
+<style>
+body {
+  font-family: system-ui;
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 16px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+button {
+  width: 100%;
+  padding: 18px;
+  margin: 8px 0;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: none;
+  background: black;
+  color: white;
+}
+</style>
+</head>
+
+<body>
+
+<h1>PHILIPS FYRA</h1>
+
+<div id="menu"></div>
+
+<script>
+const latestGame = 5; // 🔥 ÄNDRA DENNA NÄR DU LÄGGER TILL NYTT SPEL
+
+const menu = document.getElementById("menu");
+
+// SENASTE
+const latestBtn = document.createElement("button");
+latestBtn.textContent = `SPELA DEN SENASTE FYRAN (#${latestGame})`;
+latestBtn.onclick = () => {
+  window.location.href = `./${latestGame}`;
+};
+menu.appendChild(latestBtn);
+
+// ARKIV (2 senaste bakåt)
+for (let i = latestGame - 1; i >= latestGame - 2; i--) {
+  if (i <= 0) continue;
+
+  const btn = document.createElement("button");
+  btn.textContent = `SPELA PHILIPS FYRA #${i}`;
+  btn.onclick = () => {
+    window.location.href = `./${i}`;
+  };
+  menu.appendChild(btn);
+}
+</script>
+
+</body>
+</html>
