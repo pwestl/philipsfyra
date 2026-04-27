@@ -173,11 +173,14 @@ const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
 async function load() {
-  const params = new URLSearchParams(window.location.search);
-  const game = params.get("game") || "1";
+  const path = window.location.pathname;
+  let game = path.split("/").filter(Boolean).pop();
 
-  // ✔ RUBRIK MED SPELNUMMER
+  // fallback om man går via index eller fel URL
+  if (!game || isNaN(game)) game = "1";
+
   document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+  document.title = `PHILIPS FYRA #${game}`;
 
   const res = await fetch(`puzzle${game}.json?v=` + Date.now());
   groups = await res.json();
