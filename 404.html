@@ -6,15 +6,15 @@
   const path = window.location.pathname;
   const game = path.split("/").filter(Boolean).pop();
 
-  // Ladda game.html MEN behåll URLEN (/3)
-  fetch(`/philipsfyra/game.html`)
+  // ladda game.html innehåll utan att ändra URL
+  fetch("./game.html")
     .then(res => res.text())
     .then(html => {
       document.open();
       document.write(html);
       document.close();
 
-      // sätt global variabel som spelet kan läsa
+      // skicka med spelnumret
       window.GAME_NUMBER = game;
     });
 </script>
