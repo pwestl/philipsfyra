@@ -173,12 +173,11 @@ const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
 async function load() {
-  const path = window.location.pathname;
-  let game = path.split("/").filter(Boolean).pop();
+  // 🔥 HÄMTA SPELNUMMER FRÅN URL-PATH (/3, /2, /1)
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  const game = pathParts.pop() || "1";
 
-  // fallback om man går via index eller fel URL
-  if (!game || isNaN(game)) game = "1";
-
+  // ✔ RUBRIK
   document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
   document.title = `PHILIPS FYRA #${game}`;
 
@@ -316,8 +315,8 @@ function win() {
 }
 
 function share() {
-  const params = new URLSearchParams(window.location.search);
-  const game = params.get("game") || "1";
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
+  const game = pathParts.pop() || "1";
 
   let message;
 
@@ -326,14 +325,11 @@ function share() {
 `Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!
 
 https://pwestl.github.io/philipsfyra/${game}`;
-
   } else if (bombs > 10) {
     message =
 `Jag klarade PHILIPS FYRA #${game} med 10 bommar. Shit vad svårt :( testa med om du vill
 
 https://pwestl.github.io/philipsfyra/${game}`;
-    
-
   } else {
     message =
 `Jag klarade PHILIPS FYRA #${game} med ${bombs} bommar! Testa du med!
@@ -342,7 +338,6 @@ https://pwestl.github.io/philipsfyra/${game}`;
   }
 
   navigator.clipboard.writeText(message);
-
   show("RESULTAT KOPIERAT!");
 }
 
