@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>PHILIPS FYRA</title>
 
-<meta property="og:title" content="PHILIPS FYRA #3">
-<meta property="og:url" content="https://pwestl.github.io/philipsfyra/3/">
+<meta property="og:title" content="PHILIPS FYRA">
+<meta property="og:url" content="https://pwestl.github.io/philipsfyra/">
 
 <style>
 :root {
@@ -29,6 +29,7 @@ h1 {
   margin: 6px 0 10px;
 }
 
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -38,6 +39,7 @@ h1 {
   contain: layout paint;
 }
 
+/* CELL */
 .cell {
   display: flex;
   align-items: center;
@@ -47,17 +49,33 @@ h1 {
   text-align: center;
   user-select: none;
   will-change: transform;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* WORDS */
 .word {
   height: 100%;
   font-size: 14px;
   background: #f3f3f3;
   cursor: pointer;
+
+  transition: background 0.12s ease, transform 0.08s ease;
 }
 
-.selected { background: #cfe6ff; }
+.word:hover {
+  background: #ededed;
+}
 
+.word:active {
+  transform: scale(0.98);
+}
+
+.selected {
+  background: #cfe6ff;
+}
+
+/* WRONG */
 .word.wrong {
   animation: shake 0.6s ease;
   background: #ff4d4d !important;
@@ -73,6 +91,7 @@ h1 {
   100% { transform: translateX(0); }
 }
 
+/* GROUPS (MATCHAR SPELETS FÄRGER EXAKT) */
 .group {
   grid-column: span 2;
   grid-row: span 2;
@@ -82,9 +101,9 @@ h1 {
   justify-content: center;
   padding: 0 14px;
   border-radius: 12px;
-  transition: transform 280ms ease;
 }
 
+/* 🎨 SPEL-FÄRGER */
 .yellow { background: #f9df6d; }
 .green  { background: #a0c35a; }
 .blue   { background: #b0c4ef; }
@@ -112,16 +131,26 @@ button {
   background: #222;
   color: white;
   border: none;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
-button:disabled { opacity: 0.35; }
+button:active {
+  transform: scale(0.99);
+}
 
+button:disabled {
+  opacity: 0.35;
+}
+
+/* BOMB COUNTER */
 .bombar {
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
 }
 
+/* POPUP */
 .popup {
   position: fixed;
   left: 50%;
@@ -185,7 +214,6 @@ async function load() {
     groups = await res.json();
 
     remainingGroups = JSON.parse(JSON.stringify(groups));
-
     solvedGroups = [];
     allWords = remainingGroups.flatMap(g => g.words);
 
@@ -281,7 +309,6 @@ function check() {
 
   if (match) {
     solvedGroups.push(match);
-
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
@@ -290,7 +317,6 @@ function check() {
     show("RÄTT GRUPP!");
     win();
     render();
-
   } else {
     bombs++;
     bombsEl.textContent = bombs;
@@ -318,50 +344,13 @@ function win() {
 
 function share() {
   const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-
   const url = `https://pwestl.github.io/philipsfyra/${game}/`;
 
-  let message;
-
-  if (bombs === 0) {
-    message =
-`Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!
-
-${url}`;
-
-  } else if (bombs <= 3) {
-    message =
-`😎 Ganska snyggt!
-
-PHILIPS FYRA #${game}
-Slutresultat: ${bombs} bommar
-
-Nästan perfekt.
-
-${url}`;
-
-  } else if (bombs <= 10) {
-    message =
-`😅 Inte min bästa runda...
-
-PHILIPS FYRA #${game}
+  let message =
+`PHILIPS FYRA #${game}
 ${bombs} bommar
 
-Testa själv om du tror du är bättre 😏
-
 ${url}`;
-
-  } else {
-    message =
-`💀 TOTAL KAOS
-
-PHILIPS FYRA #${game}
-${bombs} bommar...
-
-Jag säger bara: prova själv.
-
-${url}`;
-  }
 
   navigator.clipboard.writeText(message);
   show("RESULTAT KOPIERAT!");
