@@ -16,29 +16,50 @@ h1 {
   text-align: center;
 }
 
-/* 🔥 NY: alla kort i rad */
-.grid {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding-bottom: 10px;
+/* container */
+.container {
+  max-width: 600px;
+  margin: auto;
 }
 
-.card {
+/* accordion wrapper */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* header (klickbar del) */
+.accordion-item {
   background: white;
-  padding: 15px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  min-width: 220px;
-  flex: 0 0 auto;
+  overflow: hidden;
 }
 
-.card h3 {
-  margin-top: 0;
+/* header button */
+.accordion-header {
+  padding: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
+/* content (inputs) */
+.accordion-content {
+  display: none;
+  padding: 15px;
+  border-top: 1px solid #eee;
+}
+
+/* open state */
+.accordion-item.active .accordion-content {
+  display: block;
+}
+
+/* inputs */
 input {
   width: 100%;
   padding: 8px;
@@ -48,7 +69,8 @@ input {
   box-sizing: border-box;
 }
 
-button {
+/* button */
+button.submit {
   display: block;
   margin: 30px auto;
   padding: 12px 20px;
@@ -60,26 +82,16 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+button.submit:hover {
   background: #555;
 }
 
-/* färgindikator */
-.color-bar {
-  height: 6px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
+/* färger */
+.yellow { border-left: 8px solid #f1c40f; }
+.green  { border-left: 8px solid #2ecc71; }
+.blue   { border-left: 8px solid #3498db; }
+.purple { border-left: 8px solid #9b59b6; }
 
-.yellow { background: #f1c40f; }
-.green  { background: #2ecc71; }
-.blue   { background: #3498db; }
-.purple { background: #9b59b6; }
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-}
 </style>
 
 </head>
@@ -90,51 +102,55 @@ button:hover {
 <div class="container">
 <form id="form">
 
-<div class="grid">
+<div class="accordion">
 
-  <div class="card">
-    <div class="color-bar yellow"></div>
-    <h3>Kategori 1</h3>
-    <input class="name" placeholder="Kategori-namn" required>
-    <input class="word" placeholder="Ord 1" required>
-    <input class="word" placeholder="Ord 2" required>
-    <input class="word" placeholder="Ord 3" required>
-    <input class="word" placeholder="Ord 4" required>
+  <div class="accordion-item yellow">
+    <div class="accordion-header">Kategori 1 <span>▼</span></div>
+    <div class="accordion-content">
+      <input class="name" placeholder="Kategori-namn" required>
+      <input class="word" placeholder="Ord 1" required>
+      <input class="word" placeholder="Ord 2" required>
+      <input class="word" placeholder="Ord 3" required>
+      <input class="word" placeholder="Ord 4" required>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="color-bar green"></div>
-    <h3>Kategori 2</h3>
-    <input class="name" placeholder="Kategori-namn" required>
-    <input class="word" placeholder="Ord 1" required>
-    <input class="word" placeholder="Ord 2" required>
-    <input class="word" placeholder="Ord 3" required>
-    <input class="word" placeholder="Ord 4" required>
+  <div class="accordion-item green">
+    <div class="accordion-header">Kategori 2 <span>▼</span></div>
+    <div class="accordion-content">
+      <input class="name" placeholder="Kategori-namn" required>
+      <input class="word" placeholder="Ord 1" required>
+      <input class="word" placeholder="Ord 2" required>
+      <input class="word" placeholder="Ord 3" required>
+      <input class="word" placeholder="Ord 4" required>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="color-bar blue"></div>
-    <h3>Kategori 3</h3>
-    <input class="name" placeholder="Kategori-namn" required>
-    <input class="word" placeholder="Ord 1" required>
-    <input class="word" placeholder="Ord 2" required>
-    <input class="word" placeholder="Ord 3" required>
-    <input class="word" placeholder="Ord 4" required>
+  <div class="accordion-item blue">
+    <div class="accordion-header">Kategori 3 <span>▼</span></div>
+    <div class="accordion-content">
+      <input class="name" placeholder="Kategori-namn" required>
+      <input class="word" placeholder="Ord 1" required>
+      <input class="word" placeholder="Ord 2" required>
+      <input class="word" placeholder="Ord 3" required>
+      <input class="word" placeholder="Ord 4" required>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="color-bar purple"></div>
-    <h3>Kategori 4</h3>
-    <input class="name" placeholder="Kategori-namn" required>
-    <input class="word" placeholder="Ord 1" required>
-    <input class="word" placeholder="Ord 2" required>
-    <input class="word" placeholder="Ord 3" required>
-    <input class="word" placeholder="Ord 4" required>
+  <div class="accordion-item purple">
+    <div class="accordion-header">Kategori 4 <span>▼</span></div>
+    <div class="accordion-content">
+      <input class="name" placeholder="Kategori-namn" required>
+      <input class="word" placeholder="Ord 1" required>
+      <input class="word" placeholder="Ord 2" required>
+      <input class="word" placeholder="Ord 3" required>
+      <input class="word" placeholder="Ord 4" required>
+    </div>
   </div>
 
 </div>
 
-<button type="submit">Ladda ner JSON</button>
+<button class="submit" type="submit">Ladda ner JSON</button>
 
 </form>
 </div>
@@ -142,16 +158,25 @@ button:hover {
 <script>
 const colors = ["yellow", "green", "blue", "purple"];
 
+/* accordion toggle */
+document.querySelectorAll(".accordion-header").forEach(header => {
+  header.addEventListener("click", () => {
+    const item = header.parentElement;
+    item.classList.toggle("active");
+  });
+});
+
+/* JSON export */
 document.getElementById("form").addEventListener("submit", function(e) {
   e.preventDefault();
 
-  const categories = document.querySelectorAll(".card");
+  const items = document.querySelectorAll(".accordion-item");
 
-  const result = Array.from(categories).map((card, index) => {
-    const name = card.querySelector(".name").value;
+  const result = Array.from(items).map((item, index) => {
+    const name = item.querySelector(".name").value;
 
-    const words = Array.from(card.querySelectorAll(".word"))
-      .map(input => input.value);
+    const words = Array.from(item.querySelectorAll(".word"))
+      .map(i => i.value);
 
     return {
       name: name,
