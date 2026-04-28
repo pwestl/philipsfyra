@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Skapa JSON</title>
+</head>
+<body>
+
+<h2>Skapa kategori</h2>
+
+<form id="form">
+  <select id="name" required>
+    <option value="">Välj kategori</option>
+    <option value="Norrköpingskoppling">Norrköpingskoppling</option>
+    <option value="De fyra senaste sommar-os-städerna">De fyra senaste sommar-os-städerna</option>
+    <option value="Är det en stad eller artist? Båda!">Är det en stad eller artist? Båda!</option>
+    <option value="Kända svensk konstnärer">Kända svensk konstnärer</option>
+  </select>
+
+  <br><br>
+
+  <input class="word" placeholder="Ord 1" required><br>
+  <input class="word" placeholder="Ord 2" required><br>
+  <input class="word" placeholder="Ord 3" required><br>
+  <input class="word" placeholder="Ord 4" required><br><br>
+
+  <button type="submit">Ladda ner JSON</button>
+</form>
+
+<script>
+const colorMap = {
+  "Norrköpingskoppling": "yellow",
+  "De fyra senaste sommar-os-städerna": "green",
+  "Är det en stad eller artist? Båda!": "blue",
+  "Kända svensk konstnärer": "purple"
+};
+
+document.getElementById("form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const color = colorMap[name];
+
+  const words = Array.from(document.querySelectorAll(".word"))
+    .map(input => input.value);
+
+  const data = {
+    name: name,
+    color: color,
+    words: words
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  );
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "kategori.json";
+  a.click();
+});
+</script>
+
+</body>
+</html>
