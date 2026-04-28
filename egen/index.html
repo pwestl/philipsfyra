@@ -1,63 +1,166 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <title>Skapa JSON</title>
+<meta charset="UTF-8">
+<title>Skapa JSON</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button {
+  display: block;
+  margin: 30px auto;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #555;
+}
+
+/* färgindikator */
+.color-bar {
+  height: 6px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.yellow { background: #f1c40f; }
+.green  { background: #2ecc71; }
+.blue   { background: #3498db; }
+.purple { background: #9b59b6; }
+</style>
+
 </head>
 <body>
 
-<h2>Skapa kategori</h2>
+<h1>Skapa dina kategorier</h1>
 
+<div class="container">
 <form id="form">
-  <select id="name" required>
-    <option value="">Välj kategori</option>
-    <option value="Norrköpingskoppling">Norrköpingskoppling</option>
-    <option value="De fyra senaste sommar-os-städerna">De fyra senaste sommar-os-städerna</option>
-    <option value="Är det en stad eller artist? Båda!">Är det en stad eller artist? Båda!</option>
-    <option value="Kända svensk konstnärer">Kända svensk konstnärer</option>
-  </select>
 
-  <br><br>
+<div class="grid">
 
-  <input class="word" placeholder="Ord 1" required><br>
-  <input class="word" placeholder="Ord 2" required><br>
-  <input class="word" placeholder="Ord 3" required><br>
-  <input class="word" placeholder="Ord 4" required><br><br>
+  <div class="card">
+    <div class="color-bar yellow"></div>
+    <h3>Kategori 1</h3>
+    <input class="name" placeholder="Kategori-namn" required>
+    <input class="word" placeholder="Ord 1" required>
+    <input class="word" placeholder="Ord 2" required>
+    <input class="word" placeholder="Ord 3" required>
+    <input class="word" placeholder="Ord 4" required>
+  </div>
 
-  <button type="submit">Ladda ner JSON</button>
+  <div class="card">
+    <div class="color-bar green"></div>
+    <h3>Kategori 2</h3>
+    <input class="name" placeholder="Kategori-namn" required>
+    <input class="word" placeholder="Ord 1" required>
+    <input class="word" placeholder="Ord 2" required>
+    <input class="word" placeholder="Ord 3" required>
+    <input class="word" placeholder="Ord 4" required>
+  </div>
+
+  <div class="card">
+    <div class="color-bar blue"></div>
+    <h3>Kategori 3</h3>
+    <input class="name" placeholder="Kategori-namn" required>
+    <input class="word" placeholder="Ord 1" required>
+    <input class="word" placeholder="Ord 2" required>
+    <input class="word" placeholder="Ord 3" required>
+    <input class="word" placeholder="Ord 4" required>
+  </div>
+
+  <div class="card">
+    <div class="color-bar purple"></div>
+    <h3>Kategori 4</h3>
+    <input class="name" placeholder="Kategori-namn" required>
+    <input class="word" placeholder="Ord 1" required>
+    <input class="word" placeholder="Ord 2" required>
+    <input class="word" placeholder="Ord 3" required>
+    <input class="word" placeholder="Ord 4" required>
+  </div>
+
+</div>
+
+<button type="submit">Ladda ner JSON</button>
+
 </form>
+</div>
 
 <script>
-const colorMap = {
-  "Norrköpingskoppling": "yellow",
-  "De fyra senaste sommar-os-städerna": "green",
-  "Är det en stad eller artist? Båda!": "blue",
-  "Kända svensk konstnärer": "purple"
-};
+const colors = ["yellow", "green", "blue", "purple"];
 
 document.getElementById("form").addEventListener("submit", function(e) {
   e.preventDefault();
 
-  const name = document.getElementById("name").value;
-  const color = colorMap[name];
+  const categories = document.querySelectorAll(".card");
 
-  const words = Array.from(document.querySelectorAll(".word"))
-    .map(input => input.value);
+  const result = Array.from(categories).map((card, index) => {
+    const name = card.querySelector(".name").value;
 
-  const data = {
-    name: name,
-    color: color,
-    words: words
-  };
+    const words = Array.from(card.querySelectorAll(".word"))
+      .map(input => input.value);
+
+    return {
+      name: name,
+      color: colors[index],
+      words: words
+    };
+  });
 
   const blob = new Blob(
-    [JSON.stringify(data, null, 2)],
+    [JSON.stringify(result, null, 2)],
     { type: "application/json" }
   );
 
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "kategori.json";
+  a.download = "kategorier.json";
   a.click();
 });
 </script>
