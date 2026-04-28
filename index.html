@@ -26,6 +26,13 @@ h1 {
   margin: 6px 0 10px;
 }
 
+h2 {
+  font-size: 14px;
+  text-align: left;
+  margin: 18px 4px 6px;
+  opacity: 0.6;
+}
+
 /* GRID */
 .grid {
   display: grid;
@@ -34,7 +41,7 @@ h1 {
   gap: var(--gap);
 }
 
-/* CELL */
+/* 🧠 NYT-style cell */
 .cell {
   display: flex;
   align-items: center;
@@ -45,53 +52,38 @@ h1 {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+
+  transition: transform 0.12s ease, background-color 0.12s ease, opacity 0.12s ease;
+}
+
+.cell:active {
+  transform: scale(0.985);
+  opacity: 0.85;
 }
 
 /* 🟢 SENASTE */
 .group {
   grid-column: span 2;
   grid-row: span 2;
-  font-size: 14px;
+  font-size: 13px;
+  flex-direction: column;
   color: black;
 }
 
-/* 🎨 GRADIENT STRIPES */
+/* 🎨 STRIPES (background) */
 .stripes {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to bottom,
-    #f9df6d 0%,
-    #f9df6d 25%,
-    #a0c35a 25%,
-    #a0c35a 50%,
-    #b0c4ef 50%,
-    #b0c4ef 75%,
-    #ba81c5 75%,
-    #ba81c5 100%
+    #f9df6d 0% 25%,
+    #a0c35a 25% 50%,
+    #b0c4ef 50% 75%,
+    #ba81c5 75% 100%
   );
-}
-
-/* 🪟 GLASS OVERLAY */
-.glass {
-  position: absolute;
-  inset: 0;
-  backdrop-filter: blur(6px);
-  background: rgba(255,255,255,0.15);
-  border-radius: inherit;
-}
-
-/* ✨ subtle highlight */
-.glass::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.05)
-  );
-  border-radius: inherit;
 }
 
 /* TEXT */
@@ -101,15 +93,21 @@ h1 {
   font-weight: 800;
 }
 
+.sub {
+  position: relative;
+  z-index: 2;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 /* 🔵 ARKIV */
 .word {
   background: #f3f3f3;
   font-size: 14px;
-  transition: 0.15s;
 }
 
 .word:hover {
-  background: #e0e0e0;
+  background: #ececec;
 }
 </style>
 </head>
@@ -120,9 +118,13 @@ h1 {
 
 <div id="grid" class="grid"></div>
 
+<h2>KATEGORI</h2>
+<div id="archive" class="grid"></div>
+
 <script>
 const basePath = "/philipsfyra";
 const grid = document.getElementById("grid");
+const archive = document.getElementById("archive");
 
 function animateAndGo(el, url) {
   const rect = el.getBoundingClientRect();
@@ -159,14 +161,14 @@ async function loadMenu() {
 
   const latestGame = data.latest;
 
-  // 🟢 SENASTE
+  // 🟢 SENASTE (NYT STRIPES)
   const latest = document.createElement("div");
   latest.className = "cell group";
 
   latest.innerHTML = `
     <div class="stripes"></div>
-    <div class="glass"></div>
-    <div class="label">FYRA #${latestGame}</div>
+    <div class="label">SENASTE FYRAN</div>
+    <div class="sub">#${latestGame}</div>
   `;
 
   latest.onclick = () => {
@@ -189,7 +191,7 @@ async function loadMenu() {
       animateAndGo(div, `${basePath}/${i}/`);
     };
 
-    grid.appendChild(div);
+    archive.appendChild(div);
   });
 }
 
