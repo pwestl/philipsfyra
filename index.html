@@ -34,7 +34,7 @@ h1 {
   gap: var(--gap);
 }
 
-/* BAS CELL */
+/* CELL */
 .cell {
   display: flex;
   align-items: center;
@@ -55,24 +55,46 @@ h1 {
   color: black;
 }
 
-/* 🎨 STRIPES */
+/* 🎨 GRADIENT STRIPES */
 .stripes {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
+  background: linear-gradient(
+    to bottom,
+    #f9df6d 0%,
+    #f9df6d 25%,
+    #a0c35a 25%,
+    #a0c35a 50%,
+    #b0c4ef 50%,
+    #b0c4ef 75%,
+    #ba81c5 75%,
+    #ba81c5 100%
+  );
 }
 
-.stripes div {
-  flex: 1;
+/* 🪟 GLASS OVERLAY */
+.glass {
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,0.15);
+  border-radius: inherit;
 }
 
-.stripes div:nth-child(1) { background: #f9df6d; } /* gul */
-.stripes div:nth-child(2) { background: #a0c35a; } /* grön */
-.stripes div:nth-child(3) { background: #b0c4ef; } /* blå */
-.stripes div:nth-child(4) { background: #ba81c5; } /* lila */
+/* ✨ subtle highlight */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.05)
+  );
+  border-radius: inherit;
+}
 
-/* text ovanpå */
+/* TEXT */
 .label {
   position: relative;
   z-index: 2;
@@ -83,6 +105,7 @@ h1 {
 .word {
   background: #f3f3f3;
   font-size: 14px;
+  transition: 0.15s;
 }
 
 .word:hover {
@@ -136,17 +159,13 @@ async function loadMenu() {
 
   const latestGame = data.latest;
 
-  // 🟢 SENASTE (STRIPES)
+  // 🟢 SENASTE
   const latest = document.createElement("div");
   latest.className = "cell group";
 
   latest.innerHTML = `
-    <div class="stripes">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+    <div class="stripes"></div>
+    <div class="glass"></div>
     <div class="label">FYRA #${latestGame}</div>
   `;
 
