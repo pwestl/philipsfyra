@@ -26,6 +26,13 @@ h1 {
   margin: 6px 0 10px;
 }
 
+h2 {
+  font-size: 14px;
+  text-align: left;
+  margin: 18px 4px 6px;
+  opacity: 0.6;
+}
+
 /* GRID */
 .grid {
   display: grid;
@@ -34,7 +41,7 @@ h1 {
   gap: var(--gap);
 }
 
-/* 🧠 CLEAN NYT CELL */
+/* CELL */
 .cell {
   display: flex;
   align-items: center;
@@ -57,7 +64,7 @@ h1 {
   opacity: 0.85;
 }
 
-/* 🟢 SENASTE */
+/* SENASTE */
 .group {
   grid-column: span 2;
   grid-row: span 2;
@@ -66,7 +73,7 @@ h1 {
   color: black;
 }
 
-/* 🎨 STRIPES */
+/* STRIPES */
 .stripes {
   position: absolute;
   inset: 0;
@@ -79,21 +86,21 @@ h1 {
   );
 }
 
-/* TEXT */
-.label {
+.label, .sub {
   position: relative;
   z-index: 2;
+}
+
+.label {
   font-weight: 800;
 }
 
 .sub {
-  position: relative;
-  z-index: 2;
   font-size: 12px;
   margin-top: 4px;
 }
 
-/* 🔵 ARKIV */
+/* ARKIV */
 .word {
   background: #f3f3f3;
   font-size: 14px;
@@ -103,11 +110,8 @@ h1 {
   background: #ececec;
 }
 
-/* ARKIV TITLE */
+/* ARKIV RUBRIK */
 h2 {
-  font-size: 14px;
-  text-align: left;
-  margin: 18px 4px 6px;
   opacity: 0.6;
 }
 </style>
@@ -127,33 +131,26 @@ const basePath = "/philipsfyra";
 const grid = document.getElementById("grid");
 const archive = document.getElementById("archive");
 
-function animateAndGo(el, url) {
-  const rect = el.getBoundingClientRect();
+/* ✨ DELUXE TRANSITION (clean fade) */
+function animateAndGo(url) {
+  const overlay = document.createElement("div");
 
-  const clone = el.cloneNode(true);
-  clone.style.position = "fixed";
-  clone.style.left = rect.left + "px";
-  clone.style.top = rect.top + "px";
-  clone.style.width = rect.width + "px";
-  clone.style.height = rect.height + "px";
-  clone.style.margin = "0";
-  clone.style.zIndex = "999";
-  clone.style.borderRadius = "12px";
+  overlay.style.position = "fixed";
+  overlay.style.inset = "0";
+  overlay.style.background = "#ffffff";
+  overlay.style.opacity = "0";
+  overlay.style.zIndex = "9999";
+  overlay.style.transition = "opacity 160ms ease";
 
-  document.body.appendChild(clone);
+  document.body.appendChild(overlay);
 
   requestAnimationFrame(() => {
-    clone.style.transition = "all 0.45s ease";
-    clone.style.left = "0px";
-    clone.style.top = "0px";
-    clone.style.width = "100vw";
-    clone.style.height = "100vh";
-    clone.style.borderRadius = "0px";
+    overlay.style.opacity = "1";
   });
 
   setTimeout(() => {
     window.location.href = url;
-  }, 420);
+  }, 160);
 }
 
 async function loadMenu() {
@@ -162,7 +159,7 @@ async function loadMenu() {
 
   const latestGame = data.latest;
 
-  // 🟢 SENASTE (STRIPES)
+  // 🟢 SENASTE
   const latest = document.createElement("div");
   latest.className = "cell group";
 
@@ -172,9 +169,7 @@ async function loadMenu() {
     <div class="sub">#${latestGame}</div>
   `;
 
-  latest.onclick = () => {
-    animateAndGo(latest, `${basePath}/${latestGame}/`);
-  };
+  latest.onclick = () => animateAndGo(`${basePath}/${latestGame}/`);
 
   grid.appendChild(latest);
 
@@ -188,9 +183,7 @@ async function loadMenu() {
     div.className = "cell word";
     div.textContent = `FYRA #${i}`;
 
-    div.onclick = () => {
-      animateAndGo(div, `${basePath}/${i}/`);
-    };
+    div.onclick = () => animateAndGo(`${basePath}/${i}/`);
 
     archive.appendChild(div);
   });
