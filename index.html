@@ -76,7 +76,7 @@ async function loadMenu() {
   // 🟢 senaste spelet
   const latestBtn = document.createElement("button");
   latestBtn.className = "big-btn";
-  latestBtn.textContent = `SPELA SENASTE FYRAN (#${latestGame})`;
+  latestBtn.textContent = `SENASTE FYRAN #${latestGame}`;
   latestBtn.onclick = () => {
     window.location.href = `${basePath}/${latestGame}/`;
   };
@@ -93,7 +93,7 @@ async function loadMenu() {
   games.forEach(i => {
     const btn = document.createElement("button");
     btn.className = "tile";
-    btn.textContent = `Fyra #${i}`; // ✅ rätt text nu
+    btn.textContent = `FYRA #${i}`;
     btn.onclick = () => {
       window.location.href = `${basePath}/${i}/`;
     };
