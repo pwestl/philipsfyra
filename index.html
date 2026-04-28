@@ -26,13 +26,6 @@ h1 {
   margin: 6px 0 10px;
 }
 
-h2 {
-  font-size: 14px;
-  text-align: left;
-  margin: 18px 4px 6px;
-  opacity: 0.6;
-}
-
 /* GRID */
 .grid {
   display: grid;
@@ -41,7 +34,7 @@ h2 {
   gap: var(--gap);
 }
 
-/* 🧠 NYT-style cell */
+/* 🧠 CLEAN NYT CELL */
 .cell {
   display: flex;
   align-items: center;
@@ -53,14 +46,14 @@ h2 {
   position: relative;
   overflow: hidden;
 
-  -webkit-tap-highlight-color: transparent;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 
-  transition: transform 0.12s ease, background-color 0.12s ease, opacity 0.12s ease;
+  transition: opacity 0.08s ease, background-color 0.08s ease;
 }
 
 .cell:active {
-  transform: scale(0.985);
   opacity: 0.85;
 }
 
@@ -73,7 +66,7 @@ h2 {
   color: black;
 }
 
-/* 🎨 STRIPES (background) */
+/* 🎨 STRIPES */
 .stripes {
   position: absolute;
   inset: 0;
@@ -109,6 +102,14 @@ h2 {
 .word:hover {
   background: #ececec;
 }
+
+/* ARKIV TITLE */
+h2 {
+  font-size: 14px;
+  text-align: left;
+  margin: 18px 4px 6px;
+  opacity: 0.6;
+}
 </style>
 </head>
 
@@ -118,7 +119,7 @@ h2 {
 
 <div id="grid" class="grid"></div>
 
-<h2>KATEGORI</h2>
+<h2>ARKIV</h2>
 <div id="archive" class="grid"></div>
 
 <script>
@@ -161,7 +162,7 @@ async function loadMenu() {
 
   const latestGame = data.latest;
 
-  // 🟢 SENASTE (NYT STRIPES)
+  // 🟢 SENASTE (STRIPES)
   const latest = document.createElement("div");
   latest.className = "cell group";
 
