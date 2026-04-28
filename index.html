@@ -26,7 +26,7 @@ h1 {
   margin: 6px 0 10px;
 }
 
-/* 🔲 samma grid som spelet */
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -34,7 +34,7 @@ h1 {
   gap: var(--gap);
 }
 
-/* 🔲 bas cell */
+/* BAS CELL */
 .cell {
   display: flex;
   align-items: center;
@@ -43,19 +43,38 @@ h1 {
   font-weight: 600;
   text-align: center;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-/* 🟢 senaste (som en "group") */
+/* 🟢 SENASTE (4 färger) */
 .group {
   grid-column: span 2;
   grid-row: span 2;
   font-size: 14px;
-  background: #222;
-  color: white;
-  border-radius: 12px;
+  color: black;
 }
 
-/* 🔵 arkiv (som words) */
+.quad {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.quad div:nth-child(1) { background: #f9df6d; }
+.quad div:nth-child(2) { background: #a0c35a; }
+.quad div:nth-child(3) { background: #b0c4ef; }
+.quad div:nth-child(4) { background: #ba81c5; }
+
+.label {
+  position: relative;
+  z-index: 2;
+  font-weight: 800;
+}
+
+/* 🔵 ARKIV */
 .word {
   background: #f3f3f3;
   font-size: 14px;
@@ -77,19 +96,57 @@ h1 {
 const basePath = "/philipsfyra";
 const grid = document.getElementById("grid");
 
+function animateAndGo(el, url) {
+  const rect = el.getBoundingClientRect();
+
+  const clone = el.cloneNode(true);
+  clone.style.position = "fixed";
+  clone.style.left = rect.left + "px";
+  clone.style.top = rect.top + "px";
+  clone.style.width = rect.width + "px";
+  clone.style.height = rect.height + "px";
+  clone.style.margin = "0";
+  clone.style.zIndex = "999";
+  clone.style.borderRadius = "12px";
+
+  document.body.appendChild(clone);
+
+  requestAnimationFrame(() => {
+    clone.style.transition = "all 0.45s ease";
+    clone.style.left = "0px";
+    clone.style.top = "0px";
+    clone.style.width = "100vw";
+    clone.style.height = "100vh";
+    clone.style.borderRadius = "0px";
+  });
+
+  setTimeout(() => {
+    window.location.href = url;
+  }, 420);
+}
+
 async function loadMenu() {
   const res = await fetch(`${basePath}/manifest.json?v=${Date.now()}`);
   const data = await res.json();
 
   const latestGame = data.latest;
 
-  // 🟢 SENASTE (stor som group)
+  // 🟢 SENASTE
   const latest = document.createElement("div");
   latest.className = "cell group";
-  latest.innerHTML = `SPELA SENASTE FYRAN<br>#${latestGame}`;
+
+  latest.innerHTML = `
+    <div class="quad">
+      <div></div><div></div>
+      <div></div><div></div>
+    </div>
+    <div class="label">FYRA #${latestGame}</div>
+  `;
+
   latest.onclick = () => {
-    window.location.href = `${basePath}/${latestGame}/`;
+    animateAndGo(latest, `${basePath}/${latestGame}/`);
   };
+
   grid.appendChild(latest);
 
   // 🔵 ARKIV
@@ -101,9 +158,11 @@ async function loadMenu() {
     const div = document.createElement("div");
     div.className = "cell word";
     div.textContent = `FYRA #${i}`;
+
     div.onclick = () => {
-      window.location.href = `${basePath}/${i}/`;
+      animateAndGo(div, `${basePath}/${i}/`);
     };
+
     grid.appendChild(div);
   });
 }
