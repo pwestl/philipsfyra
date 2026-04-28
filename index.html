@@ -74,21 +74,32 @@ h2 {
   color: black;
 }
 
-/* 🎨 MJUK GRADIENT (fade mellan färger) */
+/* 🎨 SPEL-FÄRGER (exakt matchning) */
 .stripes {
   position: absolute;
   inset: 0;
 
   background: linear-gradient(
     to bottom,
-    #f9df6d 0%,
-    #e3db78 20%,
-    #a0c35a 40%,
-    #91bf74 60%,
-    #b0c4ef 78%,
-    #a2b2e8 90%,
-    #ba81c5 100%
+    #f9df6d 0% 25%,   /* yellow */
+    #a0c35a 25% 50%,  /* green  */
+    #b0c4ef 50% 75%,  /* blue   */
+    #ba81c5 75% 100%  /* purple */
   );
+}
+
+/* subtil mjukhet så det inte känns “blockigt” */
+.stripes::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: radial-gradient(
+    circle at top,
+    rgba(255,255,255,0.15),
+    transparent 60%
+  );
+  opacity: 0.4;
 }
 
 /* TEXT */
@@ -133,7 +144,7 @@ const basePath = "/philipsfyra";
 const grid = document.getElementById("grid");
 const archive = document.getElementById("archive");
 
-/* CLEAN FADE TRANSITION */
+/* CLEAN FADE TRANSITION (NYT-style) */
 function animateAndGo(url) {
   const overlay = document.createElement("div");
 
