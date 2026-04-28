@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Djur på latin! ",
+    "color": "yellow",
+    "words": [
+      "Pica",
+      "Ursus",
+      "Grus grus",
+      "Castor fiber"
+    ]
+  },
+  {
+    "name": "Ben i kroppen",
+    "color": "green",
+    "words": [
+      "Tibia",
+      "Fibula",
+      "Radius",
+      "Ulna "
+    ]
+  },
+  {
+    "name": "Produktioner med zendaya",
+    "color": "blue",
+    "words": [
+      "Euphoria",
+      "Dune",
+      "Spider man ",
+      "The drama"
+    ]
+  },
+  {
+    "name": "Pokémons! ",
+    "color": "purple",
+    "words": [
+      "Charizard",
+      "Pidgey",
+      "Bulbasaur",
+      "Drowsee"
+    ]
+  }
+]
