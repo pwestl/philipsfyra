@@ -24,27 +24,6 @@ h1 {
   margin: auto;
 }
 
-/* 📦 kortlayout */
-.card {
-  background: white;
-  padding: 14px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  margin-bottom: 16px;
-}
-
-/* färgstripe */
-.color-bar {
-  height: 6px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-
-.yellow { background: #f1c40f; }
-.green  { background: #2ecc71; }
-.blue   { background: #3498db; }
-.purple { background: #9b59b6; }
-
 /* inputs */
 input {
   width: 100%;
@@ -55,6 +34,26 @@ input {
   font-size: 14px;
   box-sizing: border-box;
 }
+
+/* kort */
+.card {
+  background: white;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+
+.color-bar {
+  height: 6px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.yellow { background: #f1c40f; }
+.green  { background: #2ecc71; }
+.blue   { background: #3498db; }
+.purple { background: #9b59b6; }
 
 /* knapp */
 button {
@@ -73,30 +72,24 @@ button:hover {
   background: #555;
 }
 
-/* 📱 mobiloptimering */
-@media (max-width: 600px) {
-  body {
-    padding: 10px;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  .card {
-    padding: 12px;
-  }
-}
 </style>
-
 </head>
+
 <body>
 
-<h1>Skapa dina kategorier</h1>
+<h1>Skapa egen fyra</h1>
 
 <div class="container">
+
 <form id="form">
 
+  <!-- 👤 spelarnamn -->
+  <div class="card">
+    <h3>Spelare</h3>
+    <input id="playerName" placeholder="Skriv ditt namn" required>
+  </div>
+
+  <!-- kategori 1 -->
   <div class="card">
     <div class="color-bar yellow"></div>
     <h3>Kategori 1</h3>
@@ -107,6 +100,7 @@ button:hover {
     <input class="word" placeholder="Ord 4" required>
   </div>
 
+  <!-- kategori 2 -->
   <div class="card">
     <div class="color-bar green"></div>
     <h3>Kategori 2</h3>
@@ -117,6 +111,7 @@ button:hover {
     <input class="word" placeholder="Ord 4" required>
   </div>
 
+  <!-- kategori 3 -->
   <div class="card">
     <div class="color-bar blue"></div>
     <h3>Kategori 3</h3>
@@ -127,6 +122,7 @@ button:hover {
     <input class="word" placeholder="Ord 4" required>
   </div>
 
+  <!-- kategori 4 -->
   <div class="card">
     <div class="color-bar purple"></div>
     <h3>Kategori 4</h3>
@@ -140,15 +136,26 @@ button:hover {
   <button type="submit">Ladda ner JSON</button>
 
 </form>
+
 </div>
 
 <script>
 const colors = ["yellow", "green", "blue", "purple"];
 
+/* rensa namn för filnamn */
+function cleanName(name) {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, "")     // ta bort mellanslag
+    .replace(/[^a-z0-9]/g, ""); // ta bort specialtecken
+}
+
 document.getElementById("form").addEventListener("submit", function(e) {
   e.preventDefault();
 
-  const cards = document.querySelectorAll(".card");
+  const playerName = document.getElementById("playerName").value;
+
+  const cards = document.querySelectorAll(".card:not(:first-child)");
 
   const result = Array.from(cards).map((card, index) => {
     const name = card.querySelector(".name").value;
@@ -163,14 +170,15 @@ document.getElementById("form").addEventListener("submit", function(e) {
     };
   });
 
-  const blob = new Blob(
-    [JSON.stringify(result, null, 2)],
-    { type: "application/json" }
-  );
+  const json = JSON.stringify(result, null, 2);
+
+  const blob = new Blob([json], { type: "application/json" });
+
+  const fileName = cleanName(playerName) + "sfyra.json";
 
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "kategorier.json";
+  a.download = fileName;
   a.click();
 });
 </script>
