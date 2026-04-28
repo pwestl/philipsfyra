@@ -47,7 +47,7 @@ h1 {
   overflow: hidden;
 }
 
-/* 🟢 SENASTE (4 färger) */
+/* 🟢 SENASTE */
 .group {
   grid-column: span 2;
   grid-row: span 2;
@@ -55,19 +55,24 @@ h1 {
   color: black;
 }
 
-.quad {
+/* 🎨 STRIPES */
+.stripes {
   position: absolute;
   inset: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
 }
 
-.quad div:nth-child(1) { background: #f9df6d; }
-.quad div:nth-child(2) { background: #a0c35a; }
-.quad div:nth-child(3) { background: #b0c4ef; }
-.quad div:nth-child(4) { background: #ba81c5; }
+.stripes div {
+  flex: 1;
+}
 
+.stripes div:nth-child(1) { background: #f9df6d; } /* gul */
+.stripes div:nth-child(2) { background: #a0c35a; } /* grön */
+.stripes div:nth-child(3) { background: #b0c4ef; } /* blå */
+.stripes div:nth-child(4) { background: #ba81c5; } /* lila */
+
+/* text ovanpå */
 .label {
   position: relative;
   z-index: 2;
@@ -131,14 +136,16 @@ async function loadMenu() {
 
   const latestGame = data.latest;
 
-  // 🟢 SENASTE
+  // 🟢 SENASTE (STRIPES)
   const latest = document.createElement("div");
   latest.className = "cell group";
 
   latest.innerHTML = `
-    <div class="quad">
-      <div></div><div></div>
-      <div></div><div></div>
+    <div class="stripes">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
     <div class="label">FYRA #${latestGame}</div>
   `;
