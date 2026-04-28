@@ -2,57 +2,67 @@
 <html lang="sv">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>PHILIPS FYRA</title>
 
 <style>
+:root {
+  --cell-h: 42px;
+  --gap: 10px;
+}
+
 body {
-  font-family: system-ui;
-  max-width: 500px;
-  margin: 40px auto;
-  padding: 16px;
-  text-align: center;
+  font-family: system-ui, -apple-system, Arial;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 14px;
+  text-transform: uppercase;
 }
 
 h1 {
-  font-size: 28px;
-  margin-bottom: 30px;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+  margin: 6px 0 10px;
 }
 
-/* 🟢 stor knapp */
-.big-btn {
-  width: 100%;
-  height: 64px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 12px;
-  border: none;
-  background: black;
-  color: white;
-  cursor: pointer;
-  margin-bottom: 16px;
-}
-
-/* 🔵 grid */
+/* 🔲 samma grid som spelet */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-auto-rows: var(--cell-h);
+  gap: var(--gap);
 }
 
-/* 🔵 arkiv-knappar */
-.tile {
-  height: 64px;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 12px;
-  border: none;
-  background: #e6e6e6;
+/* 🔲 bas cell */
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: 600;
+  text-align: center;
   cursor: pointer;
 }
 
-.tile:hover {
-  background: #d0d0d0;
+/* 🟢 senaste (som en "group") */
+.group {
+  grid-column: span 2;
+  grid-row: span 2;
+  font-size: 14px;
+  background: #222;
+  color: white;
+  border-radius: 12px;
+}
+
+/* 🔵 arkiv (som words) */
+.word {
+  background: #f3f3f3;
+  font-size: 14px;
+}
+
+.word:hover {
+  background: #e0e0e0;
 }
 </style>
 </head>
@@ -61,11 +71,11 @@ h1 {
 
 <h1>PHILIPS FYRA</h1>
 
-<div id="menu"></div>
+<div id="grid" class="grid"></div>
 
 <script>
 const basePath = "/philipsfyra";
-const menu = document.getElementById("menu");
+const grid = document.getElementById("grid");
 
 async function loadMenu() {
   const res = await fetch(`${basePath}/manifest.json?v=${Date.now()}`);
@@ -73,34 +83,29 @@ async function loadMenu() {
 
   const latestGame = data.latest;
 
-  // 🟢 senaste spelet
-  const latestBtn = document.createElement("button");
-  latestBtn.className = "big-btn";
-  latestBtn.textContent = `SENASTE FYRAN #${latestGame}`;
-  latestBtn.onclick = () => {
+  // 🟢 SENASTE (stor som group)
+  const latest = document.createElement("div");
+  latest.className = "cell group";
+  latest.innerHTML = `SPELA SENASTE FYRAN<br>#${latestGame}`;
+  latest.onclick = () => {
     window.location.href = `${basePath}/${latestGame}/`;
   };
-  menu.appendChild(latestBtn);
+  grid.appendChild(latest);
 
-  // 🔵 arkiv
-  const grid = document.createElement("div");
-  grid.className = "grid";
-
+  // 🔵 ARKIV
   const games = data.games
     .filter(g => g !== latestGame)
     .sort((a, b) => b - a);
 
   games.forEach(i => {
-    const btn = document.createElement("button");
-    btn.className = "tile";
-    btn.textContent = `FYRA #${i}`;
-    btn.onclick = () => {
+    const div = document.createElement("div");
+    div.className = "cell word";
+    div.textContent = `FYRA #${i}`;
+    div.onclick = () => {
       window.location.href = `${basePath}/${i}/`;
     };
-    grid.appendChild(btn);
+    grid.appendChild(div);
   });
-
-  menu.appendChild(grid);
 }
 
 loadMenu();
