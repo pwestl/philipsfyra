@@ -19,10 +19,11 @@ h1 {
   margin-bottom: 30px;
 }
 
-button {
+/* 🟢 stor knapp */
+.big-btn {
   width: 100%;
   padding: 18px;
-  margin: 8px 0;
+  margin: 8px 0 16px;
   font-size: 16px;
   font-weight: bold;
   border-radius: 12px;
@@ -32,10 +33,26 @@ button {
   cursor: pointer;
 }
 
-small {
-  display: block;
-  margin-top: 20px;
-  opacity: 0.6;
+/* 🔵 grid för äldre levels */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+/* 🔵 små tiles */
+.tile {
+  padding: 22px 0;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: none;
+  background: #e6e6e6;
+  cursor: pointer;
+}
+
+.tile:hover {
+  background: #d0d0d0;
 }
 </style>
 </head>
@@ -47,30 +64,47 @@ small {
 <div id="menu"></div>
 
 <script>
-const latestGame = 4;
 const basePath = "/philipsfyra";
-
 const menu = document.getElementById("menu");
 
-// SENASTE SPEL
-const latestBtn = document.createElement("button");
-latestBtn.textContent = `SPELA SENASTE FYRAN (#${latestGame})`;
-latestBtn.onclick = () => {
-  window.location.href = `${basePath}/${latestGame}/`;
-};
-menu.appendChild(latestBtn);
+async function loadMenu() {
+  const res = await fetch(`${basePath}/manifest.json?v=${Date.now()}`);
+  const data = await res.json();
 
-// ARKIV
-for (let i = latestGame - 1; i >= 1; i--) {
-  const btn = document.createElement("button");
-  btn.textContent = `SPELA PHILIPS FYRA #${i}`;
-  btn.onclick = () => {
-    window.location.href = `${basePath}/${i}/`;
+  const latestGame = data.latest;
+
+  // 🟢 senaste spelet
+  const latestBtn = document.createElement("button");
+  latestBtn.className = "big-btn";
+  latestBtn.textContent = `SPELA SENASTE FYRAN (#${latestGame})`;
+  latestBtn.onclick = () => {
+    window.location.href = `${basePath}/${latestGame}/`;
   };
-  menu.appendChild(btn);
-}
-</script>
+  menu.appendChild(latestBtn);
 
+  // 🔵 arkiv
+  const grid = document.createElement("div");
+  grid.className = "grid";
+
+  const games = data.games
+    .filter(g => g !== latestGame)
+    .sort((a, b) => b - a);
+
+  games.forEach(i => {
+    const btn = document.createElement("button");
+    btn.className = "tile";
+    btn.textContent = `#${i}`;
+    btn.onclick = () => {
+      window.location.href = `${basePath}/${i}/`;
+    };
+    grid.appendChild(btn);
+  });
+
+  menu.appendChild(grid);
+}
+
+loadMenu();
+</script>
 
 </body>
 </html>
