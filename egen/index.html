@@ -16,15 +16,14 @@ h1 {
   text-align: center;
 }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-}
-
+/* 🔥 NY: alla kort i rad */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
   gap: 20px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 10px;
 }
 
 .card {
@@ -32,6 +31,8 @@ h1 {
   padding: 15px;
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  min-width: 220px;
+  flex: 0 0 auto;
 }
 
 .card h3 {
@@ -44,6 +45,7 @@ input {
   margin: 5px 0;
   border-radius: 6px;
   border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 button {
@@ -73,6 +75,11 @@ button:hover {
 .green  { background: #2ecc71; }
 .blue   { background: #3498db; }
 .purple { background: #9b59b6; }
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
 </style>
 
 </head>
