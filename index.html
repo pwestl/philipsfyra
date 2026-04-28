@@ -27,10 +27,11 @@ h1 {
 }
 
 h2 {
-  font-size: 14px;
+  font-size: 13px;
   text-align: left;
-  margin: 18px 4px 6px;
-  opacity: 0.6;
+  margin: 22px 2px 8px;
+  opacity: 0.55;
+  letter-spacing: 0.5px;
 }
 
 /* GRID */
@@ -61,10 +62,10 @@ h2 {
 }
 
 .cell:active {
-  opacity: 0.85;
+  opacity: 0.82;
 }
 
-/* SENASTE */
+/* 🟢 SENASTE */
 .group {
   grid-column: span 2;
   grid-row: span 2;
@@ -73,31 +74,37 @@ h2 {
   color: black;
 }
 
-/* STRIPES */
+/* 🎨 MJUK GRADIENT (fade mellan färger) */
 .stripes {
   position: absolute;
   inset: 0;
+
   background: linear-gradient(
     to bottom,
-    #f9df6d 0% 25%,
-    #a0c35a 25% 50%,
-    #b0c4ef 50% 75%,
-    #ba81c5 75% 100%
+    #f9df6d 0%,
+    #e3db78 20%,
+    #a0c35a 40%,
+    #91bf74 60%,
+    #b0c4ef 78%,
+    #a2b2e8 90%,
+    #ba81c5 100%
   );
 }
 
-.label, .sub {
+/* TEXT */
+.label {
   position: relative;
   z-index: 2;
-}
-
-.label {
   font-weight: 800;
+  letter-spacing: 0.3px;
 }
 
 .sub {
+  position: relative;
+  z-index: 2;
   font-size: 12px;
   margin-top: 4px;
+  opacity: 0.9;
 }
 
 /* ARKIV */
@@ -107,12 +114,7 @@ h2 {
 }
 
 .word:hover {
-  background: #ececec;
-}
-
-/* ARKIV RUBRIK */
-h2 {
-  opacity: 0.6;
+  background: #ededed;
 }
 </style>
 </head>
@@ -131,7 +133,7 @@ const basePath = "/philipsfyra";
 const grid = document.getElementById("grid");
 const archive = document.getElementById("archive");
 
-/* ✨ DELUXE TRANSITION (clean fade) */
+/* CLEAN FADE TRANSITION */
 function animateAndGo(url) {
   const overlay = document.createElement("div");
 
@@ -140,7 +142,7 @@ function animateAndGo(url) {
   overlay.style.background = "#ffffff";
   overlay.style.opacity = "0";
   overlay.style.zIndex = "9999";
-  overlay.style.transition = "opacity 160ms ease";
+  overlay.style.transition = "opacity 140ms ease";
 
   document.body.appendChild(overlay);
 
@@ -150,7 +152,7 @@ function animateAndGo(url) {
 
   setTimeout(() => {
     window.location.href = url;
-  }, 160);
+  }, 140);
 }
 
 async function loadMenu() {
@@ -159,7 +161,7 @@ async function loadMenu() {
 
   const latestGame = data.latest;
 
-  // 🟢 SENASTE
+  // 🟢 SENASTE FYRAN
   const latest = document.createElement("div");
   latest.className = "cell group";
 
