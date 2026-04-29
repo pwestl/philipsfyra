@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Krigsfartyg",
+    "color": "yellow",
+    "words": [
+      "Victory",
+      "Yamato",
+      "Bismarck",
+      "Tirpitz"
+    ]
+  },
+  {
+    "name": "Nobelpristagare i litteratur ",
+    "color": "green",
+    "words": [
+      "Dylan",
+      "Morrison",
+      "Churchill",
+      "Quasimodo"
+    ]
+  },
+  {
+    "name": "Borgerliga statsministrar",
+    "color": "blue",
+    "words": [
+      "Ekman",
+      "Lindman",
+      "Staaf",
+      "Ullsten"
+    ]
+  },
+  {
+    "name": "Nobelpristagare- fredspris",
+    "color": "purple",
+    "words": [
+      "Kissinger",
+      "Obama",
+      "Carter",
+      "Branting"
+    ]
+  }
+]
