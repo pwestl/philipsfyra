@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>PHILIPS FYRA</title>
 
-<meta property="og:title" content="PHILIPS FYRA #1">
-<meta property="og:url" content="https://pwestl.github.io/philipsfyra/1/">
-
 <style>
 :root {
   --cell-h: 42px;
@@ -29,15 +26,16 @@ h1 {
   margin: 6px 0 10px;
 }
 
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-auto-rows: var(--cell-h);
   gap: var(--gap);
   align-content: start;
-  contain: layout paint;
 }
 
+/* CELL */
 .cell {
   display: flex;
   align-items: center;
@@ -47,17 +45,40 @@ h1 {
   text-align: center;
   user-select: none;
   will-change: transform;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* WORD */
 .word {
   height: 100%;
   font-size: 14px;
   background: #f3f3f3;
   cursor: pointer;
+
+  transition: background 0.12s ease, transform 0.08s ease;
 }
 
-.selected { background: #cfe6ff; }
+.word:hover {
+  background: #ececec;
+}
 
+.word:active {
+  transform: scale(0.97);
+}
+
+/* SELECTED */
+.selected {
+  background: #cfe6ff;
+  outline: 2px solid #5aa9ff;
+}
+
+/* ALMOST (3/4 rätt) */
+.almost {
+  background: #fff3cd !important;
+}
+
+/* WRONG */
 .word.wrong {
   animation: shake 0.6s ease;
   background: #ff4d4d !important;
@@ -73,6 +94,7 @@ h1 {
   100% { transform: translateX(0); }
 }
 
+/* GROUP */
 .group {
   grid-column: span 2;
   grid-row: span 2;
@@ -82,9 +104,22 @@ h1 {
   justify-content: center;
   padding: 0 14px;
   border-radius: 12px;
-  transition: transform 280ms ease;
+
+  animation: fadeIn 0.25s ease;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* COLORS */
 .yellow { background: #f9df6d; }
 .green  { background: #a0c35a; }
 .blue   { background: #b0c4ef; }
@@ -109,35 +144,43 @@ button {
   border-radius: 12px;
   font-size: 15px;
   font-weight: 800;
-  background: #222;
+  background: #111;
   color: white;
   border: none;
 }
 
-button:disabled { opacity: 0.35; }
+button:active {
+  transform: scale(0.98);
+}
 
+button:disabled {
+  opacity: 0.35;
+}
+
+/* BOMB */
 .bombar {
   text-align: center;
   margin-top: 10px;
   font-weight: 600;
 }
 
+/* POPUP */
 .popup {
   position: fixed;
   left: 50%;
-  top: 18%;
-  transform: translateX(-50%);
+  top: 20%;
+  transform: translate(-50%, 10px);
   background: rgba(0,0,0,0.85);
   color: white;
   padding: 12px 16px;
   border-radius: 10px;
   opacity: 0;
-  transition: 0.25s;
+  transition: all 0.2s ease;
 }
 
 .popup.show {
   opacity: 1;
-  top: 22%;
+  transform: translate(-50%, 0);
 }
 </style>
 </head>
@@ -175,25 +218,18 @@ const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
 async function load() {
-  try {
-    const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
 
-    document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
-    document.title = `PHILIPS FYRA #${game}`;
+  document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
 
-    const res = await fetch(`puzzle.json?v=${Date.now()}`);
-    groups = await res.json();
+  const res = await fetch(`puzzle.json?v=${Date.now()}`);
+  groups = await res.json();
 
-    remainingGroups = JSON.parse(JSON.stringify(groups));
+  remainingGroups = JSON.parse(JSON.stringify(groups));
+  solvedGroups = [];
+  allWords = remainingGroups.flatMap(g => g.words);
 
-    solvedGroups = [];
-    allWords = remainingGroups.flatMap(g => g.words);
-
-    shuffle();
-  } catch (err) {
-    console.error(err);
-    show("KUNDE INTE LADDA SPEL");
-  }
+  shuffle();
 }
 
 function shuffle() {
@@ -202,7 +238,6 @@ function shuffle() {
 }
 
 function render() {
-  const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
   grid.innerHTML = "";
 
   solvedGroups.forEach(g => {
@@ -231,33 +266,6 @@ function render() {
 
     grid.appendChild(div);
   });
-
-  requestAnimationFrame(() => {
-    [...grid.children].forEach(el => {
-      const old = first.get(el);
-      if (!old) return;
-
-      const now = el.getBoundingClientRect();
-
-      const dx = old.left - now.left;
-      const dy = old.top - now.top;
-
-      if (dx || dy) {
-        el.style.transform = `translate(${dx}px, ${dy}px)`;
-        el.style.transition = "transform 0s";
-
-        requestAnimationFrame(() => {
-          el.style.transition = "transform 280ms ease";
-          el.style.transform = "";
-        });
-      }
-    });
-  });
-}
-
-function flashWrong(selected) {
-  selected.forEach(el => el.classList.add("wrong"));
-  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
 }
 
 function check() {
@@ -271,32 +279,48 @@ function check() {
   const words = selected.map(e => e.textContent);
 
   let match = null;
-  let almost = false;
+  let almostGroup = null;
 
   for (const g of remainingGroups) {
     const count = g.words.filter(w => words.includes(w)).length;
     if (count === 4) match = g;
-    if (count === 3) almost = true;
+    if (count === 3) almostGroup = g;
   }
 
   if (match) {
     solvedGroups.push(match);
-
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
     selected.forEach(el => el.classList.remove("selected"));
 
     show("RÄTT GRUPP!");
-    win();
     render();
+
+    if (remainingGroups.length === 0) {
+      setTimeout(() => {
+        show(`KLAR PÅ ${bombs} BOMMAR`);
+        shareBtn.disabled = false;
+      }, 300);
+    }
 
   } else {
     bombs++;
     bombsEl.textContent = bombs;
 
-    flashWrong(selected);
-    show(almost ? "3 AV 4 RÄTT!" : "FEL");
+    if (almostGroup) {
+      selected.forEach(el => el.classList.add("almost"));
+      show("3 AV 4 RÄTT!");
+      setTimeout(() => {
+        selected.forEach(el => el.classList.remove("almost"));
+      }, 500);
+    } else {
+      selected.forEach(el => el.classList.add("wrong"));
+      show("FEL");
+      setTimeout(() => {
+        selected.forEach(el => el.classList.remove("wrong"));
+      }, 600);
+    }
   }
 
   setTimeout(() => locked = false, 500);
@@ -308,60 +332,15 @@ function show(t) {
   setTimeout(() => popup.classList.remove("show"), 1200);
 }
 
-function win() {
-  if (remainingGroups.length === 0) {
-    show(`KLAR PÅ ${bombs} BOMMAR`);
-    shareBtn.disabled = false;
-    testBtn.disabled = true;
-  }
-}
-
 function share() {
   const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-
   const url = `https://pwestl.github.io/philipsfyra/${game}/`;
 
-  let message;
-
-  if (bombs === 0) {
-    message =
-`Jag klarade PHILIPS FYRA #${game} med 0 bommar! Ha! Så enkelt! Testa du med!
+  const message =
+`PHILIPS FYRA #${game}
+${bombs} BOMMAR
 
 ${url}`;
-
-  } else if (bombs <= 3) {
-    message =
-`😎 Ganska snyggt!
-
-PHILIPS FYRA #${game}
-Slutresultat: ${bombs} bommar
-
-Nästan perfekt.
-
-${url}`;
-
-  } else if (bombs <= 10) {
-    message =
-`😅 Inte min bästa runda...
-
-PHILIPS FYRA #${game}
-${bombs} bommar
-
-Testa själv om du tror du är bättre 😏
-
-${url}`;
-
-  } else {
-    message =
-`💀 TOTAL KAOS
-
-PHILIPS FYRA #${game}
-${bombs} bommar...
-
-Jag säger bara: prova själv.
-
-${url}`;
-  }
 
   navigator.clipboard.writeText(message);
   show("RESULTAT KOPIERAT!");
