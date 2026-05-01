@@ -29,21 +29,6 @@ h1 {
   margin: 6px 0 10px;
 }
 
-/* ARKIV TOPP */
-.topbar {
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.topbar button {
-  background: #444;
-  font-size: 12px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: none;
-  color: white;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -105,7 +90,6 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
-/* BUTTONS */
 .actions {
   display: grid;
   gap: 8px;
@@ -131,53 +115,10 @@ button {
 
 button:disabled { opacity: 0.35; }
 
-/* SHARE hidden until win */
-#shareBtn {
-  display: none;
-}
-
-#shareBtn.show {
-  display: block;
-}
-
-/* BOMB UI */
-.bomb-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.bombar {
+  text-align: center;
   margin-top: 10px;
-  font-weight: 700;
-  gap: 6px;
-}
-
-.bomb-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #222;
-  color: white;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 16px;
-  font-weight: 800;
-
-  transition: background 0.25s ease, transform 0.25s ease;
-}
-
-#bombText {
-  font-size: 12px;
-  color: #444;
-}
-
-.bomb-badge.good { background: #a0c35a; }
-.bomb-badge.warn { background: #f9df6d; }
-.bomb-badge.bad  { background: #ff4d4d; }
-
-.bomb-badge.flash {
-  transform: scale(1.15);
+  font-weight: 600;
 }
 
 .popup {
@@ -202,24 +143,20 @@ button:disabled { opacity: 0.35; }
 
 <body>
 
-<div class="topbar">
-  <button onclick="goHome()">ARKIV</button>
-</div>
-
 <h1>PHILIPS FYRA</h1>
 
 <div id="grid" class="grid"></div>
 
 <div class="actions">
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
-  <button id="shareBtn" onclick="share()">DELA RESULTAT</button>
+
+  <div class="row">
+    <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
+    <button onclick="goHome()">ARKIV</button>
+  </div>
 </div>
 
-<div class="bomb-wrap">
-  <div id="bombBadge" class="bomb-badge">0</div>
-  <div id="bombText">BOMMAR</div>
-</div>
-
+<div class="bombar">BOMMAR: <span id="bombs">0</span></div>
 <div id="popup" class="popup"></div>
 
 <script>
@@ -233,11 +170,9 @@ let locked = false;
 
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
+const bombsEl = document.getElementById("bombs");
 const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
-
-const bombBadge = document.getElementById("bombBadge");
-const bombText = document.getElementById("bombText");
 
 function getEmoji(color) {
   if (color === "yellow") return "🟨";
@@ -247,22 +182,64 @@ function getEmoji(color) {
   return "⬜";
 }
 
-function setBombFeedback(text, type = "neutral", temp = false) {
-  bombText.textContent = text;
-  bombBadge.textContent = bombs;
+async function load() {
+  try {
+    const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
 
-  bombBadge.classList.remove("good","warn","bad","flash");
+    document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+    document.title = `PHILIPS FYRA #${game}`;
 
-  if (type === "good") bombBadge.classList.add("good");
-  if (type === "warn") bombBadge.classList.add("warn");
-  if (type === "bad") bombBadge.classList.add("bad");
+    const res = await fetch(`puzzle.json?v=${Date.now()}`);
+    groups = await res.json();
 
-  bombBadge.classList.add("flash");
-  setTimeout(() => bombBadge.classList.remove("flash"), 200);
+    remainingGroups = JSON.parse(JSON.stringify(groups));
 
-  if (temp) {
-    setTimeout(() => bombText.textContent = "BOMMAR", 900);
+    solvedGroups = [];
+    solveOrder = [];
+    allWords = remainingGroups.flatMap(g => g.words);
+
+    shuffle();
+  } catch (err) {
+    console.error(err);
+    show("KUNDE INTE LADDA SPEL");
   }
+}
+
+function shuffle() {
+  allWords.sort(() => Math.random() - 0.5);
+  render();
+}
+
+function render() {
+  const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
+  grid.innerHTML = "";
+
+  solvedGroups.forEach(g => {
+    const div = document.createElement("div");
+    div.className = `cell group ${g.color}`;
+    div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
+    grid.appendChild(div);
+  });
+
+  allWords.forEach(w => {
+    const div = document.createElement("div");
+    div.className = "cell word";
+    div.textContent = w;
+
+    div.onclick = () => {
+      if (locked) return;
+
+      div.classList.toggle("selected");
+
+      if (document.querySelectorAll(".selected").length > 4) {
+        div.classList.remove("selected");
+      }
+
+      testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+    };
+
+    grid.appendChild(div);
+  });
 }
 
 function check() {
@@ -291,19 +268,27 @@ function check() {
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
-    setBombFeedback("RÄTT GRUPP", "good", true);
+    bombsEl.textContent = bombs;
+    show("RÄTT GRUPP!");
 
     if (remainingGroups.length === 0) {
-      shareBtn.classList.add("show");
+      shareBtn.disabled = false;
     }
 
   } else {
     bombs++;
-    if (almost) setBombFeedback("3 AV 4 RÄTT", "warn", true);
-    else setBombFeedback("FEL", "bad", true);
+    bombsEl.textContent = bombs;
+
+    show(almost ? "3 AV 4 RÄTT!" : "FEL");
   }
 
   setTimeout(() => locked = false, 500);
+}
+
+function show(t) {
+  popup.textContent = t;
+  popup.classList.add("show");
+  setTimeout(() => popup.classList.remove("show"), 1200);
 }
 
 function share() {
@@ -322,12 +307,14 @@ Bommar: ${bombs}
 ${url}`;
 
   navigator.clipboard.writeText(message);
-  setBombFeedback("RESULTAT KOPIERAT", "good");
+  show("RESULTAT KOPIERAT!");
 }
 
 function goHome() {
   window.location.href = "/philipsfyra/";
 }
+
+load();
 </script>
 
 </body>
