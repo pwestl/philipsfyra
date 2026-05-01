@@ -209,6 +209,7 @@ let bombs = 0;
 let locked = false;
 let solveOrder = [];
 let gameWon = false;
+let feedbackTimeout = null;
 
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
@@ -230,8 +231,14 @@ function setBombFeedback(text, type = "neutral", temporary = false) {
   bombBadge.classList.add("flash");
   setTimeout(() => bombBadge.classList.remove("flash"), 200);
 
-  if (temporary && !gameWon) {
-    setTimeout(() => {
+  // ❗ viktigt: stoppa gammal timeout innan ny
+  if (feedbackTimeout) {
+    clearTimeout(feedbackTimeout);
+    feedbackTimeout = null;
+  }
+
+  if (temporary) {
+    feedbackTimeout = setTimeout(() => {
       bombText.textContent = "BOMMAR";
       bombBadge.classList.remove("good", "warn", "bad");
     }, 1500);
@@ -343,11 +350,15 @@ function check() {
 function win() {
   if (remainingGroups.length === 0) {
 
-    gameWon = true; 
-
     testBtn.textContent = "DELA RESULTAT";
     testBtn.onclick = share;
     testBtn.disabled = false;
+
+    // viktig: stoppa ev gamla timers direkt
+    if (feedbackTimeout) {
+      clearTimeout(feedbackTimeout);
+      feedbackTimeout = null;
+    }
 
     setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
   }
