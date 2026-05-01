@@ -336,7 +336,7 @@ function check() {
     setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
   }
 
-  setTimeout(() => locked = false, 500);
+  setTimeout(() => locked = false, 1200);
 }
 
 function win() {
@@ -345,7 +345,7 @@ function win() {
     testBtn.onclick = share;
     testBtn.disabled = false;
 
-    setBombFeedback(`KLAR PÅ ${bombs} BOMMAR`, "good");
+    setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
   }
 }
 
