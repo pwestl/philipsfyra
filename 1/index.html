@@ -9,33 +9,34 @@
 :root {
   --cell-h: 42px;
   --gap: 8px;
-
   --bg: #f8f9fb;
-  --card: #ffffff;
+  --card: #fff;
   --text: #1c1e21;
   --muted: #6b7280;
-
   --primary: #3b82f6;
   --primary-soft: #dbeafe;
-
   --danger: #ef4444;
-
-  --shadow: 0 6px 18px rgba(0,0,0,0.06);
+  --shadow: 0 6px 18px rgba(0,0,0,.06);
   --radius: 14px;
 }
 
+/* GLOBAL */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
+  margin: 0 auto;
+  max-width: 600px;
+  padding: 12px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 12px;
   text-transform: uppercase;
   -webkit-font-smoothing: antialiased;
 }
 
-/* 🔝 TOPBAR */
+/* TOPBAR */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -46,8 +47,8 @@ body {
 .title {
   font-size: 13px;
   font-weight: 800;
-  opacity: 0.85;
-  letter-spacing: 0.6px;
+  opacity: .85;
+  letter-spacing: .6px;
 }
 
 .top-actions {
@@ -62,15 +63,20 @@ body {
   border-radius: 999px;
   border: none;
   background: #111827;
-  color: white;
+  color: #fff;
+  box-shadow: var(--shadow);
   display: flex;
   align-items: center;
   gap: 4px;
-  box-shadow: var(--shadow);
 }
 
 .top-btn:active {
-  transform: scale(0.96);
+  transform: scale(.96);
+}
+
+.top-btn:disabled {
+  opacity: .3;
+  pointer-events: none;
 }
 
 /* GRID */
@@ -81,30 +87,28 @@ body {
   gap: var(--gap);
 }
 
-/* CELLS */
+/* CELL */
 .cell {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius);
-  font-weight: 600;
-  text-align: center;
-  user-select: none;
   background: var(--card);
   box-shadow: var(--shadow);
+  font-weight: 600;
 }
 
 /* WORD */
 .word {
   font-size: 13px;
   cursor: pointer;
-  transition: 0.1s;
+  transition: .1s;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .word:active {
-  transform: scale(0.96);
+  transform: scale(.96);
 }
 
 .selected {
@@ -113,9 +117,9 @@ body {
 }
 
 .word.wrong {
-  animation: shake 0.6s ease;
-  background: var(--danger) !important;
-  color: white;
+  animation: shake .6s ease;
+  background: var(--danger)!important;
+  color: #fff;
 }
 
 /* GROUP */
@@ -128,59 +132,41 @@ body {
   line-height: 1.4;
 }
 
-/* ORIGINAL COLORS */
-.yellow { background: #f9df6d; }
-.green  { background: #a0c35a; }
-.blue   { background: #b0c4ef; }
-.purple { background: #ba81c5; }
+/* COLORS */
+.yellow { background:#f9df6d; }
+.green  { background:#a0c35a; }
+.blue   { background:#b0c4ef; }
+.purple { background:#ba81c5; }
 
 /* ACTIONS */
 .actions {
-  display: grid;
-  gap: 10px;
   margin-top: 12px;
 }
 
-.actions .row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
 button {
+  width: 100%;
   padding: 14px;
+  border: none;
   border-radius: 12px;
   font-size: 14px;
   font-weight: 800;
-  border: none;
   background: #111827;
-  color: white;
+  color: #fff;
   box-shadow: var(--shadow);
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
 }
 
 button:active {
-  transform: scale(0.96);
+  transform: scale(.96);
 }
 
 button:disabled {
-  opacity: 0.35;
+  opacity: .35;
 }
 
-/* secondary */
-.actions .row button:last-child {
-  background: #e5e7eb;
-  color: #111;
-}
-
-/* 💣 BOMMAR */
-.bomb-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* BOMB */
+.bomb {
   margin-top: 10px;
-  gap: 2px;
+  text-align: center;
 }
 
 .bomb-value {
@@ -199,15 +185,14 @@ button:disabled {
   position: fixed;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) scale(0.96);
-  background: rgba(20,20,20,0.85);
-  backdrop-filter: blur(8px);
-  color: white;
+  transform: translate(-50%, -50%) scale(.96);
+  background: rgba(20,20,20,.85);
+  color: #fff;
   padding: 14px 18px;
   border-radius: 14px;
   font-weight: 700;
   opacity: 0;
-  transition: 0.2s;
+  transition: .2s;
 }
 
 .popup.show {
@@ -215,31 +200,24 @@ button:disabled {
   transform: translate(-50%, -50%) scale(1);
 }
 
+/* ANIM */
 @keyframes shake {
-  0% { transform: translateX(0); }
+  0%,100% { transform: translateX(0); }
   20% { transform: translateX(-4px); }
   40% { transform: translateX(4px); }
   60% { transform: translateX(-3px); }
   80% { transform: translateX(3px); }
-  100% { transform: translateX(0); }
-}
-
-/* 🔵 remove blue focus ring */
-button:focus,
-button:focus-visible {
-  outline: none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔝 TOPBAR -->
 <div class="topbar">
   <div class="title" id="title">PHILIPS FYRA</div>
 
   <div class="top-actions">
-    <button class="top-btn" onclick="share()">📤 DELA</button>
+    <button class="top-btn" onclick="share()" id="shareBtn" disabled>📤 DELA</button>
     <button class="top-btn" onclick="goHome()">🗂 ARKIV</button>
   </div>
 </div>
@@ -250,7 +228,7 @@ button:focus-visible {
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
 </div>
 
-<div class="bomb-wrap">
+<div class="bomb">
   <div class="bomb-value" id="bombs">0</div>
   <div class="bomb-label">BOMMAR</div>
 </div>
@@ -258,160 +236,124 @@ button:focus-visible {
 <div id="popup" class="popup"></div>
 
 <script>
-let groups = [];
-let remainingGroups = [];
-let solvedGroups = [];
-let allWords = [];
-let bombs = 0;
-let locked = false;
+let groups=[], remaining=[], solved=[], words=[], bombs=0, locked=false;
 
-const colorEmoji = {
-  yellow: "🟨",
-  green: "🟩",
-  blue: "🟦",
-  purple: "🟪"
+const emoji = {
+  yellow:"🟨", green:"🟩", blue:"🟦", purple:"🟪"
 };
 
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
 const bombsEl = document.getElementById("bombs");
 const testBtn = document.getElementById("testBtn");
+const shareBtn = document.getElementById("shareBtn");
 
-async function load() {
-  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-
+async function load(){
+  const game = location.pathname.split("/").filter(Boolean).pop()||"1";
   document.getElementById("title").textContent = `PHILIPS FYRA #${game}`;
 
-  const res = await fetch(`puzzle.json?v=${Date.now()}`);
-  groups = await res.json();
+  groups = await (await fetch(`puzzle.json?v=${Date.now()}`)).json();
+  remaining = structuredClone(groups);
+  solved = [];
+  words = remaining.flatMap(g=>g.words);
 
-  remainingGroups = JSON.parse(JSON.stringify(groups));
-  solvedGroups = [];
-  allWords = remainingGroups.flatMap(g => g.words);
-
-  shuffle();
-}
-
-function shuffle() {
-  allWords.sort(() => Math.random() - 0.5);
   render();
 }
 
-function render() {
-  grid.innerHTML = "";
+function render(){
+  grid.innerHTML="";
 
-  solvedGroups.forEach(g => {
-    const div = document.createElement("div");
-    div.className = `cell group ${g.color}`;
-    div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
-    grid.appendChild(div);
+  solved.forEach(g=>{
+    const d=document.createElement("div");
+    d.className=`cell group ${g.color}`;
+    d.innerHTML=`<strong>${g.name}</strong><br>${g.words.join(", ")}`;
+    grid.appendChild(d);
   });
 
-  allWords.forEach(w => {
-    const div = document.createElement("div");
-    div.className = "cell word";
-    div.textContent = w;
+  words.forEach(w=>{
+    const d=document.createElement("div");
+    d.className="cell word";
+    d.textContent=w;
 
-    div.onclick = () => {
-      if (locked) return;
+    d.onclick=()=>{
+      if(locked) return;
+      d.classList.toggle("selected");
 
-      div.classList.toggle("selected");
+      if(document.querySelectorAll(".selected").length>4)
+        d.classList.remove("selected");
 
-      if (document.querySelectorAll(".selected").length > 4) {
-        div.classList.remove("selected");
-      }
-
-      testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+      testBtn.disabled=document.querySelectorAll(".selected").length!==4;
     };
 
-    grid.appendChild(div);
+    grid.appendChild(d);
   });
 
-  testBtn.disabled = true;
+  testBtn.disabled=true;
 }
 
-function flashWrong(selected) {
-  selected.forEach(el => el.classList.add("wrong"));
-  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
-}
+function check(){
+  if(locked) return;
+  const sel=[...document.querySelectorAll(".selected")];
+  if(sel.length!==4) return;
 
-function check() {
-  if (locked) return;
+  locked=true;
+  const picked=sel.map(e=>e.textContent);
 
-  const selected = [...document.querySelectorAll(".selected")];
-  if (selected.length !== 4) return;
+  let match=null, almost=false;
 
-  locked = true;
-
-  const words = selected.map(e => e.textContent);
-
-  let match = null;
-  let almost = false;
-
-  for (const g of remainingGroups) {
-    const count = g.words.filter(w => words.includes(w)).length;
-    if (count === 4) match = g;
-    if (count === 3 && !match) almost = true;
+  for(const g of remaining){
+    const c=g.words.filter(w=>picked.includes(w)).length;
+    if(c===4) match=g;
+    if(c===3&&!match) almost=true;
   }
 
-  if (match) {
-    solvedGroups.push(match);
-    remainingGroups = remainingGroups.filter(g => g !== match);
-    allWords = allWords.filter(w => !match.words.includes(w));
+  if(match){
+    solved.push(match);
+    remaining=remaining.filter(g=>g!==match);
+    words=words.filter(w=>!match.words.includes(w));
 
-    selected.forEach(el => el.classList.remove("selected"));
-
-    show("RÄTT GRUPP!", 1800);
+    show("RÄTT GRUPP!",1800);
     render();
-    win();
-
+    if(!remaining.length) shareBtn.disabled=false;
   } else {
     bombs++;
-    bombsEl.textContent = bombs;
-
-    flashWrong(selected);
-    show(almost ? "3 AV 4 RÄTT!" : "FEL", 2000);
+    bombsEl.textContent=bombs;
+    shake(sel);
+    show(almost?"3 AV 4":"FEL",1500);
   }
 
-  setTimeout(() => locked = false, 400);
+  setTimeout(()=>locked=false,300);
 }
 
-function show(t, d = 2000) {
-  popup.textContent = t;
+function shake(a){
+  a.forEach(x=>x.classList.add("wrong"));
+  setTimeout(()=>a.forEach(x=>x.classList.remove("wrong")),600);
+}
+
+function show(t,d=1500){
+  popup.textContent=t;
   popup.classList.add("show");
-
-  setTimeout(() => popup.classList.remove("show"), d);
+  setTimeout(()=>popup.classList.remove("show"),d);
 }
 
-function win() {
-  if (remainingGroups.length === 0) {
-    show(`KLAR PÅ ${bombs} BOMMAR`, 2500);
-  }
-}
+function share(){
+  const g=location.pathname.split("/").filter(Boolean).pop()||"1";
+  const url=`https://pwestl.github.io/philipsfyra/${g}/`;
+  const e=solved.map(x=>emoji[x.color]).join("");
 
-async function share() {
-  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-  const url = `https://pwestl.github.io/philipsfyra/${game}/`;
-
-  const emojiLine = solvedGroups.map(g => colorEmoji[g.color]).join("");
-
-  const message =
-`PHILIPS FYRA #${game}
-${emojiLine}
+  navigator.clipboard.writeText(
+`PHILIPS FYRA #${g}
+${e}
 ${bombs} BOMMAR
 
-${url}`;
+${url}`
+  );
 
-  try {
-    await navigator.clipboard.writeText(message);
-    show("KOPIERAT!", 1500);
-  } catch {
-    prompt("Kopiera:", message);
-  }
+  show("KOPIERAT!");
 }
 
-function goHome() {
-  window.location.href = "/philipsfyra/";
+function goHome(){
+  location.href="/philipsfyra/";
 }
 
 load();
