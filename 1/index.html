@@ -6,317 +6,314 @@
 <title>PHILIPS FYRA</title>
 
 <style>
-:root {
-  --cell-h: 42px;
-  --gap: 8px;
-
-  --bg: #f8f9fb;
-  --shadow: 0 6px 18px rgba(0,0,0,.06);
-  --radius: 14px;
-}
-
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
 body {
+  background: #ffffff;
+  font-family: system-ui, -apple-system, Arial;
+  max-width: 640px;
   margin: 0 auto;
-  max-width: 600px;
-  padding: 12px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg);
+  padding: 18px 14px;
   text-transform: uppercase;
+  color: #111;
 }
 
-/* HEADER */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.title {
-  font-size: 14px;
+h1 {
+  font-size: 20px;
   font-weight: 800;
+  text-align: center;
+  margin: 12px 0 18px;
+  letter-spacing: 1px;
 }
 
-.actions {
-  display: flex;
-  gap: 12px;
-}
-
-.link-btn {
-  background: none;
-  border: none;
-  font-size: 12px;
-  font-weight: 700;
-  opacity: .6;
-  padding: 4px;
-}
-
-/* GRID */
+/* GRID (mer luft, mindre “spelruta”) */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: var(--cell-h);
-  gap: var(--gap);
-  margin-bottom: 10px;
+  gap: 16px;
 }
 
-.cell {
+/* WORD CARDS (match screenshot) */
+.word {
+  background: #f6f3ee;
+  border-radius: 14px;
+  height: 56px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius);
-  background: white;
-  box-shadow: var(--shadow);
+
+  font-size: 14px;
   font-weight: 600;
-  user-select: none;
-}
 
-.word {
-  font-size: 13px;
   cursor: pointer;
-  transition: .1s;
+  user-select: none;
+
+  transition: transform 0.12s ease, background 0.15s ease;
 }
 
-.word:active {
-  transform: scale(.96);
+.word:hover {
+  transform: scale(1.02);
 }
 
-.selected {
-  background: #dbeafe;
-  outline: 2px solid #3b82f6;
+.word.selected {
+  background: #e8eefc;
 }
 
+/* FEL */
 .word.wrong {
-  animation: shake .6s ease;
-  background: #ef4444 !important;
-  color: white;
+  background: #ffd7d7 !important;
 }
 
+/* GROUP CARDS (resultatblock) */
 .group {
   grid-column: span 2;
-  grid-row: span 2;
-  flex-direction: column;
-  padding: 10px;
-  font-size: 12px;
+  background: #f2efe9;
+  border-radius: 16px;
+  padding: 14px;
+
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
 }
 
-/* COLORS */
-.yellow { background:#f9df6d; }
-.green  { background:#a0c35a; }
-.blue   { background:#b0c4ef; }
-.purple { background:#ba81c5; }
+/* BUTTONS (match screenshot: stor rund grå knapp) */
+.actions {
+  margin-top: 16px;
+  display: grid;
+  gap: 10px;
+}
 
-/* BUTTON */
+.actions .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 button {
   width: 100%;
-  padding: 14px;
-  border-radius: 12px;
+  padding: 18px;
+  border-radius: 999px;
+
   border: none;
-  background: #111827;
-  color: white;
-  font-weight: 800;
-}
+  background: #efefef;
+  color: #444;
 
-/* STATUS */
-.test-status {
-  text-align: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
-  min-height: 16px;
-  margin: 6px 0;
-  opacity: .75;
+
+  cursor: pointer;
 }
 
-/* BOM UI */
-.bomb-inline {
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 6px;
-  margin: 6px 0 8px;
+button:active {
+  transform: scale(0.98);
 }
 
-.bomb-num {
-  font-size: 18px;
-  font-weight: 800;
+button:disabled {
+  opacity: 0.4;
 }
 
-.bomb-text {
-  font-size: 11px;
-  opacity: .7;
+/* BOMBAR (minimalistiskt som screenshot) */
+.bombar {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 14px;
+  color: #444;
 }
 
-/* ANIMATION */
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
+/* POPUP (subtil) */
+.popup {
+  position: fixed;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  opacity: 0;
+  transition: 0.2s;
+}
+
+.popup.show {
+  opacity: 1;
+  top: 20%;
 }
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-  <div class="title" id="title">PHILIPS FYRA</div>
-
-  <div class="actions">
-    <button class="link-btn" onclick="share()" id="shareBtn" disabled>DELA</button>
-    <button class="link-btn" onclick="goHome()">ARKIV</button>
-  </div>
-</div>
+<h1>PHILIPS FYRA</h1>
 
 <div id="grid" class="grid"></div>
 
-<button id="testBtn" onclick="check()" disabled>TESTA</button>
+<div class="actions">
+  <button id="testBtn" onclick="check()" disabled>TESTA</button>
 
-<div class="test-status" id="testStatus"></div>
-
-<div class="bomb-inline">
-  <span class="bomb-num" id="bombs">0</span>
-  <span class="bomb-text" id="bombLabel">BOMMAR</span>
+  <div class="row">
+    <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
+    <button onclick="goHome()">ARKIV</button>
+  </div>
 </div>
 
+<div class="bombar">BOMMAR: <span id="bombs">0</span></div>
+<div id="popup" class="popup"></div>
+
 <script>
-let groups=[],remaining=[],solved=[],words=[],bombs=0,locked=false;
+let groups = [];
+let remainingGroups = [];
+let solvedGroups = [];
+let allWords = [];
+let bombs = 0;
+let locked = false;
 
-const grid=document.getElementById("grid");
-const testBtn=document.getElementById("testBtn");
-const shareBtn=document.getElementById("shareBtn");
-const bombsEl=document.getElementById("bombs");
+const grid = document.getElementById("grid");
+const popup = document.getElementById("popup");
+const bombsEl = document.getElementById("bombs");
+const testBtn = document.getElementById("testBtn");
+const shareBtn = document.getElementById("shareBtn");
 
-function setStatus(text){
-  const el=document.getElementById("testStatus");
-  el.textContent=text;
-  clearTimeout(el._t);
-  el._t=setTimeout(()=>el.textContent="",1200);
+const colorEmoji = {
+  yellow: "🟨",
+  green: "🟩",
+  blue: "🟦",
+  purple: "🟪"
+};
+
+async function load() {
+  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+
+  document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+  document.title = `PHILIPS FYRA #${game}`;
+
+  const res = await fetch(`puzzle.json?v=${Date.now()}`);
+  groups = await res.json();
+
+  remainingGroups = JSON.parse(JSON.stringify(groups));
+  solvedGroups = [];
+  allWords = remainingGroups.flatMap(g => g.words);
+
+  shuffle();
 }
 
-function setBombText(text){
-  document.getElementById("bombLabel").textContent=text;
-}
-
-function shuffle(a){
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
-}
-
-async function load(){
-  const g=location.pathname.split("/").filter(Boolean).pop()||"1";
-  document.getElementById("title").textContent=`PHILIPS FYRA #${g}`;
-
-  groups=await(await fetch(`puzzle.json?v=${Date.now()}`)).json();
-
-  remaining=structuredClone(groups);
-  solved=[];
-  words=shuffle(remaining.flatMap(g=>g.words));
-
+function shuffle() {
+  allWords.sort(() => Math.random() - 0.5);
   render();
 }
 
-function render(){
-  grid.innerHTML="";
+function render() {
+  grid.innerHTML = "";
 
-  solved.forEach(g=>{
-    const d=document.createElement("div");
-    d.className=`cell group ${g.color}`;
-    d.innerHTML=`<strong>${g.name}</strong><br>${g.words.join(", ")}`;
-    grid.appendChild(d);
+  solvedGroups.forEach(g => {
+    const div = document.createElement("div");
+    div.className = "group";
+    div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
+    grid.appendChild(div);
   });
 
-  words.forEach(w=>{
-    const d=document.createElement("div");
-    d.className="cell word";
-    d.textContent=w;
+  allWords.forEach(w => {
+    const div = document.createElement("div");
+    div.className = "word";
+    div.textContent = w;
 
-    d.onclick=()=>{
-      if(locked) return;
-      d.classList.toggle("selected");
+    div.onclick = () => {
+      if (locked) return;
 
-      if(document.querySelectorAll(".selected").length>4)
-        d.classList.remove("selected");
+      div.classList.toggle("selected");
 
-      testBtn.disabled=document.querySelectorAll(".selected").length!==4;
+      if (document.querySelectorAll(".selected").length > 4) {
+        div.classList.remove("selected");
+      }
+
+      testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
     };
 
-    grid.appendChild(d);
+    grid.appendChild(div);
   });
-
-  testBtn.disabled=true;
 }
 
-function check(){
-  if(locked) return;
+function flashWrong(selected) {
+  selected.forEach(el => el.classList.add("wrong"));
+  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
+}
 
-  const sel=[...document.querySelectorAll(".selected")];
-  if(sel.length!==4) return;
+function check() {
+  if (locked) return;
 
-  locked=true;
+  const selected = [...document.querySelectorAll(".selected")];
+  if (selected.length !== 4) return;
 
-  const picked=sel.map(e=>e.textContent);
+  locked = true;
 
-  let match=null;
-  let correctCount=0;
+  const words = selected.map(e => e.textContent);
 
-  for(const g of remaining){
-    const count=g.words.filter(w=>picked.includes(w)).length;
-    correctCount=Math.max(correctCount,count);
-    if(count===4) match=g;
+  let match = null;
+  let almost = false;
+
+  for (const g of remainingGroups) {
+    const count = g.words.filter(w => words.includes(w)).length;
+    if (count === 4) match = g;
+    if (count === 3) almost = true;
   }
 
-  if(match){
-    solved.push(match);
-    remaining=remaining.filter(g=>g!==match);
-    words=shuffle(words.filter(w=>!match.words.includes(w)));
+  if (match) {
+    solvedGroups.push(match);
+    remainingGroups = remainingGroups.filter(g => g !== match);
+    allWords = allWords.filter(w => !match.words.includes(w));
 
-    setStatus("BRA JOBBAT! DU HITTADE EN FYRA!");
-    shareBtn.disabled=false;
+    selected.forEach(el => el.classList.remove("selected"));
 
+    show("RÄTT GRUPP!");
+    win();
+    render();
   } else {
     bombs++;
-    bombsEl.textContent=bombs;
+    bombsEl.textContent = bombs;
 
-    sel.forEach(e=>e.classList.add("wrong"));
-    setTimeout(()=>sel.forEach(e=>e.classList.remove("wrong")),600);
-
-    if(correctCount===3){
-      setBombText("NÄSTAN! 3 AV 4 RÄTT");
-      setStatus("NÄSTAN! 3 AV 4 RÄTT");
-    } else {
-      setBombText("BOM! DET VAR FEL!");
-      setStatus("BOM! DET VAR FEL!");
-    }
+    flashWrong(selected);
+    show(almost ? "3 AV 4 RÄTT!" : "FEL");
   }
 
-  render();
-  setTimeout(()=>locked=false,300);
+  setTimeout(() => locked = false, 400);
 }
 
-function share(){
-  const g=location.pathname.split("/").filter(Boolean).pop()||"1";
-  const url=`https://pwestl.github.io/philipsfyra/${g}/`;
-
-  navigator.clipboard.writeText(
-`PHILIPS FYRA #${g}
-${bombs} FEL
-
-${url}`
-  );
-
-  setStatus("KOPIERAT!");
+function show(t) {
+  popup.textContent = t;
+  popup.classList.add("show");
+  setTimeout(() => popup.classList.remove("show"), 1200);
 }
 
-function goHome(){
-  location.href="/philipsfyra/";
+function win() {
+  if (remainingGroups.length === 0) {
+    show(`KLAR PÅ ${bombs} BOMMAR`);
+    shareBtn.disabled = false;
+    testBtn.disabled = true;
+  }
+}
+
+/* SHARE (som tidigare fix) */
+function share() {
+  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+  const url = `https://pwestl.github.io/philipsfyra/${game}/`;
+
+  const emojis = solvedGroups.map(g => colorEmoji[g.color] || "⬜").join("");
+
+  const message =
+`PHILIPS FYRA #${game}
+
+Bommar: ${bombs}
+
+Kategorier:
+${emojis}
+
+${url}`;
+
+  navigator.clipboard.writeText(message);
+  show("RESULTAT KOPIERAT!");
+}
+
+function goHome() {
+  window.location.href = "/philipsfyra/";
 }
 
 load();
