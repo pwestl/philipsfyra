@@ -12,7 +12,6 @@
 
   --bg: #f8f9fb;
   --text: #1c1e21;
-  --muted: #6b7280;
 
   --primary: #3b82f6;
   --primary-soft: #dbeafe;
@@ -23,7 +22,7 @@
   --radius: 14px;
 }
 
-/* 🔵 HARD iOS FIX (verkligen bort nu) */
+/* 🔵 REMOVE iOS BLUE EVERYTHING */
 * {
   -webkit-tap-highlight-color: transparent;
 }
@@ -55,10 +54,9 @@ body {
   background: var(--bg);
   color: var(--text);
   text-transform: uppercase;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* 🔝 HEADER (ren + spelkänsla) */
+/* HEADER */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -70,10 +68,8 @@ body {
   font-size: 14px;
   font-weight: 800;
   letter-spacing: .5px;
-  opacity: .9;
 }
 
-/* actions = subtila länkar (inte knappar) */
 .actions {
   display: flex;
   gap: 12px;
@@ -84,7 +80,6 @@ body {
   border: none;
   font-size: 12px;
   font-weight: 700;
-  color: #111;
   opacity: .6;
   padding: 4px;
 }
@@ -117,10 +112,10 @@ body {
 /* WORD */
 .word {
   font-size: 13px;
-  cursor: pointer;
   user-select: none;
-  touch-action: manipulation;
+  cursor: pointer;
   transition: .1s;
+  touch-action: manipulation;
 }
 
 .word:active {
@@ -147,13 +142,13 @@ body {
   font-size: 12px;
 }
 
-/* COLORS (original preserved) */
+/* COLORS */
 .yellow { background:#f9df6d; }
 .green  { background:#a0c35a; }
 .blue   { background:#b0c4ef; }
 .purple { background:#ba81c5; }
 
-/* TEST BUTTON */
+/* BUTTON */
 button {
   width: 100%;
   padding: 14px;
@@ -174,10 +169,10 @@ button:disabled {
   opacity: .35;
 }
 
-/* BOMMAR (renare + tight) */
+/* STATUS UNDER GRID */
 .bomb {
-  margin-top: 10px;
   text-align: center;
+  margin-top: 8px;
 }
 
 .bomb-value {
@@ -187,28 +182,19 @@ button:disabled {
 
 .bomb-label {
   font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 1px;
+  opacity: .7;
+  min-height: 14px;
+  transition: .15s;
 }
 
-/* POPUP CENTER */
-.popup {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(.96);
-  background: rgba(20,20,20,.9);
-  color: white;
-  padding: 14px 18px;
-  border-radius: 14px;
+/* STATUS ABOVE BUTTON */
+.test-status {
+  text-align: center;
+  font-size: 12px;
   font-weight: 700;
-  opacity: 0;
-  transition: .2s;
-}
-
-.popup.show {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+  min-height: 16px;
+  margin: 6px 0;
+  opacity: .75;
 }
 
 /* ANIMATION */
@@ -224,7 +210,6 @@ button:disabled {
 
 <body>
 
-<!-- HEADER -->
 <div class="topbar">
   <div class="title" id="title">PHILIPS FYRA</div>
 
@@ -238,27 +223,23 @@ button:disabled {
 
 <button id="testBtn" onclick="check()" disabled>TESTA</button>
 
+<div class="test-status" id="testStatus"></div>
+
 <div class="bomb">
   <div class="bomb-value" id="bombs">0</div>
-  <div class="bomb-label">BOMMAR</div>
+  <div class="bomb-label" id="bombLabel">BOMMAR</div>
 </div>
-
-<div id="popup" class="popup"></div>
 
 <script>
 let groups=[], remaining=[], solved=[], words=[], bombs=0, locked=false;
 
-const emoji = {
-  yellow:"🟨", green:"🟩", blue:"🟦", purple:"🟪"
-};
+const emoji={yellow:"🟨",green:"🟩",blue:"🟦",purple:"🟪"};
 
-const grid = document.getElementById("grid");
-const popup = document.getElementById("popup");
-const bombsEl = document.getElementById("bombs");
-const testBtn = document.getElementById("testBtn");
-const shareBtn = document.getElementById("shareBtn");
+const grid=document.getElementById("grid");
+const bombsEl=document.getElementById("bombs");
+const testBtn=document.getElementById("testBtn");
+const shareBtn=document.getElementById("shareBtn");
 
-/* proper shuffle */
 function shuffle(arr){
   for(let i=arr.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
@@ -267,16 +248,36 @@ function shuffle(arr){
   return arr;
 }
 
+function setStatus(text,temp=true){
+  const el=document.getElementById("testStatus");
+  el.textContent=text;
+
+  if(temp){
+    clearTimeout(el._t);
+    el._t=setTimeout(()=>el.textContent="",1200);
+  }
+}
+
+function setBombLabel(text,temp=false){
+  const el=document.getElementById("bombLabel");
+  el.textContent=text;
+
+  if(temp){
+    clearTimeout(el._t);
+    el._t=setTimeout(()=>el.textContent="BOMMAR",1200);
+  }
+}
+
 async function load(){
-  const game = location.pathname.split("/").filter(Boolean).pop()||"1";
-  document.getElementById("title").textContent = `PHILIPS FYRA #${game}`;
+  const g=location.pathname.split("/").filter(Boolean).pop()||"1";
+  document.getElementById("title").textContent=`PHILIPS FYRA #${g}`;
 
-  groups = await (await fetch(`puzzle.json?v=${Date.now()}`)).json();
+  groups=await(await fetch(`puzzle.json?v=${Date.now()}`)).json();
 
-  remaining = structuredClone(groups);
-  solved = [];
+  remaining=structuredClone(groups);
+  solved=[];
 
-  words = shuffle(remaining.flatMap(g=>g.words));
+  words=shuffle(remaining.flatMap(g=>g.words));
 
   render();
 }
@@ -323,7 +324,7 @@ function check(){
 
   const picked=sel.map(e=>e.textContent);
 
-  let match=null, almost=false;
+  let match=null,almost=false;
 
   for(const g of remaining){
     const c=g.words.filter(w=>picked.includes(w)).length;
@@ -335,10 +336,9 @@ function check(){
     solved.push(match);
     remaining=remaining.filter(g=>g!==match);
 
-    words = shuffle(words.filter(w=>!match.words.includes(w)));
+    words=shuffle(words.filter(w=>!match.words.includes(w)));
 
-    show("RÄTT GRUPP!");
-    render();
+    setStatus("RÄTT GRUPP!");
 
     if(!remaining.length) shareBtn.disabled=false;
 
@@ -346,19 +346,14 @@ function check(){
     bombs++;
     bombsEl.textContent=bombs;
 
+    setBombLabel(almost?"3 AV 4 RÄTT":"FEL",true);
+
     sel.forEach(x=>x.classList.add("wrong"));
     setTimeout(()=>sel.forEach(x=>x.classList.remove("wrong")),600);
-
-    show(almost?"3 AV 4":"FEL");
   }
 
+  render();
   setTimeout(()=>locked=false,300);
-}
-
-function show(t){
-  popup.textContent=t;
-  popup.classList.add("show");
-  setTimeout(()=>popup.classList.remove("show"),1500);
 }
 
 function share(){
@@ -368,12 +363,12 @@ function share(){
   navigator.clipboard.writeText(
 `PHILIPS FYRA #${g}
 ${solved.map(x=>emoji[x.color]).join("")}
-${bombs} BOMMAR
+${bombs} FEL
 
 ${url}`
   );
 
-  show("KOPIERAT!");
+  setStatus("KOPIERAT!");
 }
 
 function goHome(){
