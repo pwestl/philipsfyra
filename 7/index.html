@@ -65,14 +65,16 @@ h1 {
   animation: shake 0.6s ease;
   background: #ff4d4d !important;
   color: white;
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
 }
 
 @keyframes shake {
-  0% { transform: translateY(0); }
-  20% { transform: translateY(-4px); }
-  40% { transform: translateY(4px); }
-  60% { transform: translateY(-3px); }
-  80% { transform: translateY(3px); }
+  0%   { transform: translateY(0); }
+  25%  { transform: translateY(-2px); }
+  50%  { transform: translateY(2px); }
+  75%  { transform: translateY(-1px); }
   100% { transform: translateY(0); }
 }
 
@@ -294,7 +296,7 @@ function render() {
 
 function flashWrong(selected) {
   selected.forEach(el => el.classList.add("wrong"));
-  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
+  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 450);
 }
 
 function check() {
