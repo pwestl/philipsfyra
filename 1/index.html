@@ -90,6 +90,7 @@ h1 {
 .blue   { background: #b0c4ef; }
 .purple { background: #ba81c5; }
 
+/* BUTTONS */
 .actions {
   display: grid;
   gap: 8px;
@@ -115,12 +116,52 @@ button {
 
 button:disabled { opacity: 0.35; }
 
-.bombar {
-  text-align: center;
+/* =========================
+   🔥 NY BOMMAR UI (UPPGRADERAD)
+   ========================= */
+
+.bomb-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-top: 10px;
-  font-weight: 600;
+  font-weight: 700;
+  gap: 6px;
 }
 
+.bomb-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #222;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+#bombText {
+  font-size: 12px;
+  color: #444;
+  letter-spacing: 0.5px;
+}
+
+/* states */
+.bomb-badge.good { background: #a0c35a; }
+.bomb-badge.warn { background: #f9df6d; }
+.bomb-badge.bad  { background: #ff4d4d; }
+
+.bomb-badge.flash {
+  transform: scale(1.15);
+}
+
+/* popup (orörd) */
 .popup {
   position: fixed;
   left: 50%;
@@ -156,30 +197,49 @@ button:disabled { opacity: 0.35; }
   </div>
 </div>
 
-<div class="bombar">BOMMAR: <span id="bombs">0</span></div>
+<!-- 🔥 NY BOMMAR UI -->
+<div class="bomb-wrap">
+  <div id="bombBadge" class="bomb-badge">0</div>
+  <div id="bombText">BOMMAR</div>
+</div>
+
 <div id="popup" class="popup"></div>
 
 <script>
 let groups = [];
 let remainingGroups = [];
 let solvedGroups = [];
-let solveOrder = [];
 let allWords = [];
 let bombs = 0;
 let locked = false;
 
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
-const bombsEl = document.getElementById("bombs");
 const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
-function getEmoji(color) {
-  if (color === "yellow") return "🟨";
-  if (color === "green") return "🟩";
-  if (color === "blue") return "🟦";
-  if (color === "purple") return "🟪";
-  return "⬜";
+const bombBadge = document.getElementById("bombBadge");
+const bombText = document.getElementById("bombText");
+
+function setBombFeedback(text, type = "neutral", temporary = false) {
+  bombText.textContent = text;
+  bombBadge.textContent = bombs;
+
+  bombBadge.classList.remove("good", "warn", "bad", "flash");
+
+  if (type === "good") bombBadge.classList.add("good");
+  if (type === "warn") bombBadge.classList.add("warn");
+  if (type === "bad") bombBadge.classList.add("bad");
+
+  bombBadge.classList.add("flash");
+  setTimeout(() => bombBadge.classList.remove("flash"), 200);
+
+  if (temporary) {
+    setTimeout(() => {
+      bombText.textContent = "BOMMAR";
+      bombBadge.classList.remove("good", "warn", "bad");
+    }, 900);
+  }
 }
 
 async function load() {
@@ -195,13 +255,12 @@ async function load() {
     remainingGroups = JSON.parse(JSON.stringify(groups));
 
     solvedGroups = [];
-    solveOrder = [];
     allWords = remainingGroups.flatMap(g => g.words);
 
     shuffle();
   } catch (err) {
     console.error(err);
-    show("KUNDE INTE LADDA SPEL");
+    setBombFeedback("KUNDE INTE LADDA SPEL");
   }
 }
 
@@ -211,7 +270,6 @@ function shuffle() {
 }
 
 function render() {
-  const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
   grid.innerHTML = "";
 
   solvedGroups.forEach(g => {
@@ -242,6 +300,11 @@ function render() {
   });
 }
 
+function flashWrong(selected) {
+  selected.forEach(el => el.classList.add("wrong"));
+  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
+}
+
 function check() {
   if (locked) return;
 
@@ -263,51 +326,52 @@ function check() {
 
   if (match) {
     solvedGroups.push(match);
-    solveOrder.push(match);
-
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
-    bombsEl.textContent = bombs;
-    show("RÄTT GRUPP!");
+    selected.forEach(el => el.classList.remove("selected"));
 
-    if (remainingGroups.length === 0) {
-      shareBtn.disabled = false;
-    }
+    setBombFeedback("RÄTT GRUPP", "good", true);
+    win();
+    render();
 
   } else {
     bombs++;
-    bombsEl.textContent = bombs;
 
-    show(almost ? "3 AV 4 RÄTT!" : "FEL");
+    flashWrong(selected);
+
+    if (almost) {
+      setBombFeedback("3 AV 4 RÄTT", "warn", true);
+    } else {
+      setBombFeedback("FEL", "bad", true);
+    }
   }
 
   setTimeout(() => locked = false, 500);
 }
 
-function show(t) {
-  popup.textContent = t;
-  popup.classList.add("show");
-  setTimeout(() => popup.classList.remove("show"), 1200);
+function win() {
+  if (remainingGroups.length === 0) {
+    setBombFeedback(`KLAR PÅ ${bombs} BOMMAR`, "good");
+    shareBtn.disabled = false;
+    testBtn.disabled = true;
+  }
 }
 
 function share() {
   const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+
   const url = `https://pwestl.github.io/philipsfyra/${game}/`;
 
-  const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
-
-  const message =
+  let message =
 `PHILIPS FYRA #${game}
-
-${emojis}
 
 Bommar: ${bombs}
 
-${url}`;
+https://pwestl.github.io/philipsfyra/${game}/`;
 
   navigator.clipboard.writeText(message);
-  show("RESULTAT KOPIERAT!");
+  setBombFeedback("RESULTAT KOPIERAT", "good");
 }
 
 function goHome() {
