@@ -208,6 +208,7 @@ let allWords = [];
 let bombs = 0;
 let locked = false;
 let solveOrder = [];
+let gameWon = false;
 
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
@@ -229,7 +230,7 @@ function setBombFeedback(text, type = "neutral", temporary = false) {
   bombBadge.classList.add("flash");
   setTimeout(() => bombBadge.classList.remove("flash"), 200);
 
-  if (temporary) {
+  if (temporary && !gameWon) {
     setTimeout(() => {
       bombText.textContent = "BOMMAR";
       bombBadge.classList.remove("good", "warn", "bad");
@@ -341,6 +342,9 @@ function check() {
 
 function win() {
   if (remainingGroups.length === 0) {
+
+    gameWon = true; 
+
     testBtn.textContent = "DELA RESULTAT";
     testBtn.onclick = share;
     testBtn.disabled = false;
