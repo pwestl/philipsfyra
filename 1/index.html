@@ -5,121 +5,123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>PHILIPS FYRA</title>
 
+<meta property="og:title" content="PHILIPS FYRA #2">
+<meta property="og:url" content="https://pwestl.github.io/philipsfyra/2/">
+
 <style>
+:root {
+  --cell-h: 42px;
+  --gap: 10px;
+}
+
 body {
-  background: #ffffff;
   font-family: system-ui, -apple-system, Arial;
-  max-width: 640px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 18px 14px;
+  padding: 14px;
   text-transform: uppercase;
-  color: #111;
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   text-align: center;
-  margin: 12px 0 18px;
-  letter-spacing: 1px;
+  margin: 6px 0 10px;
 }
 
-/* GRID (mer luft, mindre “spelruta”) */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-auto-rows: var(--cell-h);
+  gap: var(--gap);
+  align-content: start;
+  contain: layout paint;
 }
 
-/* WORD CARDS (match screenshot) */
-.word {
-  background: #f6f3ee;
-  border-radius: 14px;
-  height: 56px;
-
+.cell {
   display: flex;
   align-items: center;
   justify-content: center;
-
-  font-size: 14px;
+  border-radius: 10px;
   font-weight: 600;
-
-  cursor: pointer;
+  text-align: center;
   user-select: none;
-
-  transition: transform 0.12s ease, background 0.15s ease;
+  will-change: transform;
 }
 
-.word:hover {
-  transform: scale(1.02);
+.word {
+  height: 100%;
+  font-size: 14px;
+  background: #f3f3f3;
+  cursor: pointer;
 }
 
-.word.selected {
-  background: #e8eefc;
-}
+.selected { background: #cfe6ff; }
 
-/* FEL */
 .word.wrong {
-  background: #ffd7d7 !important;
+  animation: shake 0.6s ease;
+  background: #ff4d4d !important;
+  color: white;
 }
 
-/* GROUP CARDS (resultatblock) */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+  100% { transform: translateX(0); }
+}
+
 .group {
   grid-column: span 2;
-  background: #f2efe9;
-  border-radius: 16px;
-  padding: 14px;
-
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
+  grid-row: span 2;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 14px;
+  border-radius: 12px;
+  transition: transform 280ms ease;
 }
 
-/* BUTTONS (match screenshot: stor rund grå knapp) */
+.yellow { background: #f9df6d; }
+.green  { background: #a0c35a; }
+.blue   { background: #b0c4ef; }
+.purple { background: #ba81c5; }
+
+/* BUTTONS */
 .actions {
-  margin-top: 16px;
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .actions .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 button {
   width: 100%;
-  padding: 18px;
-  border-radius: 999px;
-
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 800;
+  background: #222;
+  color: white;
   border: none;
-  background: #efefef;
-  color: #444;
-
-  font-size: 14px;
-  font-weight: 700;
-
-  cursor: pointer;
 }
 
-button:active {
-  transform: scale(0.98);
-}
+button:disabled { opacity: 0.35; }
 
-button:disabled {
-  opacity: 0.4;
-}
-
-/* BOMBAR (minimalistiskt som screenshot) */
 .bombar {
   text-align: center;
-  margin-top: 14px;
-  font-size: 14px;
-  color: #444;
+  margin-top: 10px;
+  font-weight: 600;
 }
 
-/* POPUP (subtil) */
 .popup {
   position: fixed;
   left: 50%;
@@ -127,16 +129,15 @@ button:disabled {
   transform: translateX(-50%);
   background: rgba(0,0,0,0.85);
   color: white;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-size: 13px;
+  padding: 12px 16px;
+  border-radius: 10px;
   opacity: 0;
-  transition: 0.2s;
+  transition: 0.25s;
 }
 
 .popup.show {
   opacity: 1;
-  top: 20%;
+  top: 22%;
 }
 </style>
 </head>
@@ -160,6 +161,14 @@ button:disabled {
 <div id="popup" class="popup"></div>
 
 <script>
+
+  const colorEmoji = {
+  yellow: "🟨",
+  green: "🟩",
+  blue: "🟦",
+  purple: "🟪"
+};
+  
 let groups = [];
 let remainingGroups = [];
 let solvedGroups = [];
@@ -173,27 +182,26 @@ const bombsEl = document.getElementById("bombs");
 const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
-const colorEmoji = {
-  yellow: "🟨",
-  green: "🟩",
-  blue: "🟦",
-  purple: "🟪"
-};
-
 async function load() {
-  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+  try {
+    const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
 
-  document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
-  document.title = `PHILIPS FYRA #${game}`;
+    document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+    document.title = `PHILIPS FYRA #${game}`;
 
-  const res = await fetch(`puzzle.json?v=${Date.now()}`);
-  groups = await res.json();
+    const res = await fetch(`puzzle.json?v=${Date.now()}`);
+    groups = await res.json();
 
-  remainingGroups = JSON.parse(JSON.stringify(groups));
-  solvedGroups = [];
-  allWords = remainingGroups.flatMap(g => g.words);
+    remainingGroups = JSON.parse(JSON.stringify(groups));
 
-  shuffle();
+    solvedGroups = [];
+    allWords = remainingGroups.flatMap(g => g.words);
+
+    shuffle();
+  } catch (err) {
+    console.error(err);
+    show("KUNDE INTE LADDA SPEL");
+  }
 }
 
 function shuffle() {
@@ -202,18 +210,19 @@ function shuffle() {
 }
 
 function render() {
+  const first = new Map([...grid.children].map(el => [el, el.getBoundingClientRect()]));
   grid.innerHTML = "";
 
   solvedGroups.forEach(g => {
     const div = document.createElement("div");
-    div.className = "group";
+    div.className = `cell group ${g.color}`;
     div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
     grid.appendChild(div);
   });
 
   allWords.forEach(w => {
     const div = document.createElement("div");
-    div.className = "word";
+    div.className = "cell word";
     div.textContent = w;
 
     div.onclick = () => {
@@ -229,6 +238,28 @@ function render() {
     };
 
     grid.appendChild(div);
+  });
+
+  requestAnimationFrame(() => {
+    [...grid.children].forEach(el => {
+      const old = first.get(el);
+      if (!old) return;
+
+      const now = el.getBoundingClientRect();
+
+      const dx = old.left - now.left;
+      const dy = old.top - now.top;
+
+      if (dx || dy) {
+        el.style.transform = `translate(${dx}px, ${dy}px)`;
+        el.style.transition = "transform 0s";
+
+        requestAnimationFrame(() => {
+          el.style.transition = "transform 280ms ease";
+          el.style.transform = "";
+        });
+      }
+    });
   });
 }
 
@@ -258,6 +289,7 @@ function check() {
 
   if (match) {
     solvedGroups.push(match);
+
     remainingGroups = remainingGroups.filter(g => g !== match);
     allWords = allWords.filter(w => !match.words.includes(w));
 
@@ -266,6 +298,7 @@ function check() {
     show("RÄTT GRUPP!");
     win();
     render();
+
   } else {
     bombs++;
     bombsEl.textContent = bombs;
@@ -274,7 +307,7 @@ function check() {
     show(almost ? "3 AV 4 RÄTT!" : "FEL");
   }
 
-  setTimeout(() => locked = false, 400);
+  setTimeout(() => locked = false, 500);
 }
 
 function show(t) {
@@ -291,7 +324,6 @@ function win() {
   }
 }
 
-/* SHARE (som tidigare fix) */
 function share() {
   const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
   const url = `https://pwestl.github.io/philipsfyra/${game}/`;
