@@ -9,22 +9,27 @@
 :root {
   --cell-h: 42px;
   --gap: 8px;
+
   --bg: #f8f9fb;
   --card: #fff;
   --text: #1c1e21;
   --muted: #6b7280;
+
   --primary: #3b82f6;
   --primary-soft: #dbeafe;
+
   --danger: #ef4444;
+
   --shadow: 0 6px 18px rgba(0,0,0,.06);
   --radius: 14px;
 }
 
-/* GLOBAL */
+/* 🔵 REMOVE IOS BLUE ANYWHERE */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* BASE */
 body {
   margin: 0 auto;
   max-width: 600px;
@@ -47,8 +52,8 @@ body {
 .title {
   font-size: 13px;
   font-weight: 800;
-  opacity: .85;
   letter-spacing: .6px;
+  opacity: .85;
 }
 
 .top-actions {
@@ -56,26 +61,32 @@ body {
   gap: 6px;
 }
 
+/* 🎯 SNYGGARE TOP KNAPPAR */
 .top-btn {
   font-size: 11px;
   font-weight: 800;
-  padding: 6px 10px;
+  padding: 7px 10px;
   border-radius: 999px;
-  border: none;
-  background: #111827;
-  color: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #fff;
+  color: #111;
   box-shadow: var(--shadow);
+
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+
+  transition: .15s;
 }
 
 .top-btn:active {
   transform: scale(.96);
 }
 
+/* disabled DELA */
 .top-btn:disabled {
-  opacity: .3;
+  opacity: .35;
+  filter: grayscale(1);
   pointer-events: none;
 }
 
@@ -103,8 +114,8 @@ body {
   font-size: 13px;
   cursor: pointer;
   transition: .1s;
-  touch-action: manipulation;
   user-select: none;
+  touch-action: manipulation;
 }
 
 .word:active {
@@ -132,17 +143,13 @@ body {
   line-height: 1.4;
 }
 
-/* COLORS */
+/* COLORS (original) */
 .yellow { background:#f9df6d; }
 .green  { background:#a0c35a; }
 .blue   { background:#b0c4ef; }
 .purple { background:#ba81c5; }
 
-/* ACTIONS */
-.actions {
-  margin-top: 12px;
-}
-
+/* TEST BUTTON */
 button {
   width: 100%;
   padding: 14px;
@@ -163,7 +170,7 @@ button:disabled {
   opacity: .35;
 }
 
-/* BOMB */
+/* BOMBAR */
 .bomb {
   margin-top: 10px;
   text-align: center;
@@ -180,13 +187,13 @@ button:disabled {
   letter-spacing: 1px;
 }
 
-/* POPUP */
+/* POPUP CENTER */
 .popup {
   position: fixed;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%) scale(.96);
-  background: rgba(20,20,20,.85);
+  background: rgba(20,20,20,.88);
   color: #fff;
   padding: 14px 18px;
   border-radius: 14px;
@@ -208,25 +215,33 @@ button:disabled {
   60% { transform: translateX(-3px); }
   80% { transform: translateX(3px); }
 }
+
+/* REMOVE FOCUS RINGS COMPLETELY */
+button:focus,
+button:focus-visible,
+.word:focus,
+.word:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
 </style>
 </head>
 
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
   <div class="title" id="title">PHILIPS FYRA</div>
 
   <div class="top-actions">
-    <button class="top-btn" onclick="share()" id="shareBtn" disabled>📤 DELA</button>
+    <button class="top-btn" id="shareBtn" onclick="share()" disabled>📤 DELA</button>
     <button class="top-btn" onclick="goHome()">🗂 ARKIV</button>
   </div>
 </div>
 
 <div id="grid" class="grid"></div>
 
-<div class="actions">
-  <button id="testBtn" onclick="check()" disabled>TESTA</button>
-</div>
+<button id="testBtn" onclick="check()" disabled>TESTA</button>
 
 <div class="bomb">
   <div class="bomb-value" id="bombs">0</div>
@@ -248,14 +263,25 @@ const bombsEl = document.getElementById("bombs");
 const testBtn = document.getElementById("testBtn");
 const shareBtn = document.getElementById("shareBtn");
 
+/* ✅ REAL SHUFFLE (FIXED) */
+function shuffleArray(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
 async function load(){
   const game = location.pathname.split("/").filter(Boolean).pop()||"1";
   document.getElementById("title").textContent = `PHILIPS FYRA #${game}`;
 
   groups = await (await fetch(`puzzle.json?v=${Date.now()}`)).json();
+
   remaining = structuredClone(groups);
   solved = [];
-  words = remaining.flatMap(g=>g.words);
+
+  words = shuffleArray(remaining.flatMap(g=>g.words));
 
   render();
 }
@@ -277,6 +303,7 @@ function render(){
 
     d.onclick=()=>{
       if(locked) return;
+
       d.classList.toggle("selected");
 
       if(document.querySelectorAll(".selected").length>4)
@@ -293,10 +320,12 @@ function render(){
 
 function check(){
   if(locked) return;
+
   const sel=[...document.querySelectorAll(".selected")];
   if(sel.length!==4) return;
 
   locked=true;
+
   const picked=sel.map(e=>e.textContent);
 
   let match=null, almost=false;
@@ -310,40 +339,40 @@ function check(){
   if(match){
     solved.push(match);
     remaining=remaining.filter(g=>g!==match);
-    words=words.filter(w=>!match.words.includes(w));
 
-    show("RÄTT GRUPP!",1800);
+    words = shuffleArray(words.filter(w=>!match.words.includes(w)));
+
+    show("RÄTT GRUPP!");
     render();
+
     if(!remaining.length) shareBtn.disabled=false;
+
   } else {
     bombs++;
     bombsEl.textContent=bombs;
-    shake(sel);
-    show(almost?"3 AV 4":"FEL",1500);
+
+    sel.forEach(x=>x.classList.add("wrong"));
+    setTimeout(()=>sel.forEach(x=>x.classList.remove("wrong")),600);
+
+    show(almost?"3 AV 4":"FEL");
   }
 
   setTimeout(()=>locked=false,300);
 }
 
-function shake(a){
-  a.forEach(x=>x.classList.add("wrong"));
-  setTimeout(()=>a.forEach(x=>x.classList.remove("wrong")),600);
-}
-
-function show(t,d=1500){
+function show(t){
   popup.textContent=t;
   popup.classList.add("show");
-  setTimeout(()=>popup.classList.remove("show"),d);
+  setTimeout(()=>popup.classList.remove("show"),1500);
 }
 
 function share(){
   const g=location.pathname.split("/").filter(Boolean).pop()||"1";
   const url=`https://pwestl.github.io/philipsfyra/${g}/`;
-  const e=solved.map(x=>emoji[x.color]).join("");
 
   navigator.clipboard.writeText(
 `PHILIPS FYRA #${g}
-${e}
+${solved.map(x=>emoji[x.color]).join("")}
 ${bombs} BOMMAR
 
 ${url}`
