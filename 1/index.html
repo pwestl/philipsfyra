@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>PHILIPS FYRA</title>
 
-<meta property="og:title" content="PHILIPS FYRA #2">
-<meta property="og:url" content="https://pwestl.github.io/philipsfyra/2/">
+<meta property="og:title" content="PHILIPS FYRA #7">
+<meta property="og:url" content="https://pwestl.github.io/philipsfyra/7/">
 
 <style>
 :root {
@@ -99,7 +99,7 @@ h1 {
 
 .actions .row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -116,58 +116,51 @@ button {
 
 button:disabled { opacity: 0.35; }
 
-/* BOM UI */
-.bomb-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
+/* =========================
+   🔥 STATUSBAR (NY DESIGN)
+   ========================= */
+
+.bomb-status {
+  margin: 10px 0 6px;
+  text-align: center;
   font-weight: 700;
+}
+
+.bomb-line {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
   gap: 6px;
 }
 
-.bomb-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #222;
-  color: white;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 16px;
+#bombBadge {
+  font-size: 22px;
   font-weight: 800;
-
-  transition: background 0.25s ease, transform 0.25s ease;
+  color: #222;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-#bombText {
-  font-size: 12px;
+.bomb-label {
+  font-size: 14px;
   color: #444;
   letter-spacing: 0.5px;
 }
 
-.bomb-badge.good { background: #a0c35a; }
-.bomb-badge.warn { background: #f9df6d; }
-.bomb-badge.bad  { background: #ff4d4d; }
+.bomb-sub {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+  min-height: 14px;
+  transition: opacity 0.2s ease;
+}
 
-.bomb-badge.flash {
+/* states */
+.bomb-good { color: #2e7d32; }
+.bomb-warn { color: #b8860b; }
+.bomb-bad  { color: #c62828; }
+
+.bomb-pop {
   transform: scale(1.15);
-}
-
-/* RESULT SCREEN */
-#endScreen {
-  display: none;
-  text-align: center;
-  margin-top: 40px;
-  padding: 10px;
-}
-
-#endTitle {
-  font-size: 18px;
-  font-weight: 800;
 }
 </style>
 </head>
@@ -187,19 +180,13 @@ button:disabled { opacity: 0.35; }
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
 </div>
 
-<!-- BOM UI -->
-<div class="bomb-wrap">
-  <div id="bombBadge" class="bomb-badge">0</div>
-  <div id="bombText">BOMMAR</div>
-</div>
-
-<!-- RESULT SCREEN -->
-<div id="endScreen">
-  <h2 id="endTitle"></h2>
-
-  <div style="margin-top:12px;">
-    <button onclick="share()">DELA RESULTAT</button>
+<!-- STATUSBAR -->
+<div class="bomb-status">
+  <div class="bomb-line">
+    <span id="bombBadge">0</span>
+    <span class="bomb-label">BOMMAR</span>
   </div>
+  <div id="bombText" class="bomb-sub"></div>
 </div>
 
 <script>
@@ -210,6 +197,8 @@ let allWords = [];
 let bombs = 0;
 let locked = false;
 let solveOrder = [];
+let gameWon = false;
+let feedbackTimeout = null;
 
 const grid = document.getElementById("grid");
 const testBtn = document.getElementById("testBtn");
@@ -217,26 +206,25 @@ const testBtn = document.getElementById("testBtn");
 const bombBadge = document.getElementById("bombBadge");
 const bombText = document.getElementById("bombText");
 
-const endScreen = document.getElementById("endScreen");
-const endTitle = document.getElementById("endTitle");
-
 function setBombFeedback(text, type = "neutral", temporary = false) {
   bombText.textContent = text;
   bombBadge.textContent = bombs;
 
-  bombBadge.classList.remove("good", "warn", "bad", "flash");
+  bombBadge.classList.remove("bomb-good", "bomb-warn", "bomb-bad", "bomb-pop");
 
-  if (type === "good") bombBadge.classList.add("good");
-  if (type === "warn") bombBadge.classList.add("warn");
-  if (type === "bad") bombBadge.classList.add("bad");
+  if (type === "good") bombBadge.classList.add("bomb-good");
+  if (type === "warn") bombBadge.classList.add("bomb-warn");
+  if (type === "bad") bombBadge.classList.add("bomb-bad");
 
-  bombBadge.classList.add("flash");
-  setTimeout(() => bombBadge.classList.remove("flash"), 200);
+  bombBadge.classList.add("bomb-pop");
+  setTimeout(() => bombBadge.classList.remove("bomb-pop"), 200);
 
-  if (temporary) {
-    setTimeout(() => {
-      bombText.textContent = "BOMMAR";
-      bombBadge.classList.remove("good", "warn", "bad");
+  if (feedbackTimeout) clearTimeout(feedbackTimeout);
+
+  if (temporary && remainingGroups.length > 0) {
+    feedbackTimeout = setTimeout(() => {
+      bombText.textContent = "";
+      bombBadge.classList.remove("bomb-good", "bomb-warn", "bomb-bad");
     }, 1200);
   }
 }
@@ -251,7 +239,6 @@ async function load() {
   groups = await res.json();
 
   remainingGroups = JSON.parse(JSON.stringify(groups));
-
   solvedGroups = [];
   allWords = remainingGroups.flatMap(g => g.words);
 
@@ -336,20 +323,18 @@ function check() {
     setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
   }
 
-  setTimeout(() => locked = false, 500);
+  setTimeout(() => locked = false, 1200);
 }
 
 function win() {
   if (remainingGroups.length === 0) {
+    testBtn.textContent = "DELA RESULTAT";
+    testBtn.onclick = share;
+    testBtn.disabled = false;
 
-    grid.style.display = "none";
-    document.querySelector(".bomb-wrap").style.display = "none";
-    document.querySelector(".actions").style.display = "none";
+    if (feedbackTimeout) clearTimeout(feedbackTimeout);
 
-    endScreen.style.display = "block";
-
-    const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-    endTitle.textContent = `DU KLARADE PHILIPS FYRA #${game} MED ${bombs} BOMMAR!`;
+    setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
   }
 }
 
@@ -360,7 +345,7 @@ function share() {
   const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
 
   const message =
-`PHILIPS FYRA #${game}
+`JAG KLARADE PHILIPS FYRA #${game}
 
 ${emojis}
 
