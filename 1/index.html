@@ -99,7 +99,7 @@ h1 {
 
 .actions .row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -116,11 +116,7 @@ button {
 
 button:disabled { opacity: 0.35; }
 
-/* =========================
-   🔥 NY BOMMAR UI (UPPGRADERAD)
-   ========================= */
-
-  
+/* BOM UI */
 .bomb-wrap {
   display: flex;
   flex-direction: column;
@@ -153,7 +149,6 @@ button:disabled { opacity: 0.35; }
   letter-spacing: 0.5px;
 }
 
-/* states */
 .bomb-badge.good { background: #a0c35a; }
 .bomb-badge.warn { background: #f9df6d; }
 .bomb-badge.bad  { background: #ff4d4d; }
@@ -162,7 +157,6 @@ button:disabled { opacity: 0.35; }
   transform: scale(1.15);
 }
 
-/* popup (orörd) */
 .popup {
   position: fixed;
   left: 50%;
@@ -185,20 +179,20 @@ button:disabled { opacity: 0.35; }
 
 <body>
 
+<!-- HEADER ARKIV -->
+<div style="text-align:left; font-size:12px; opacity:0.5; margin-bottom:6px;">
+  <span onclick="goHome()" style="cursor:pointer;">← ARKIV</span>
+</div>
+
 <h1>PHILIPS FYRA</h1>
 
 <div id="grid" class="grid"></div>
 
 <div class="actions">
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
-
-  <div class="row">
-    <button id="shareBtn" onclick="share()" disabled>DELA RESULTAT</button>
-    <button onclick="goHome()">ARKIV</button>
-  </div>
 </div>
 
-<!-- 🔥 NY BOMMAR UI -->
+<!-- BOM UI -->
 <div class="bomb-wrap">
   <div id="bombBadge" class="bomb-badge">0</div>
   <div id="bombText">BOMMAR</div>
@@ -218,7 +212,6 @@ let solveOrder = [];
 const grid = document.getElementById("grid");
 const popup = document.getElementById("popup");
 const testBtn = document.getElementById("testBtn");
-const shareBtn = document.getElementById("shareBtn");
 
 const bombBadge = document.getElementById("bombBadge");
 const bombText = document.getElementById("bombText");
@@ -240,30 +233,28 @@ function setBombFeedback(text, type = "neutral", temporary = false) {
     setTimeout(() => {
       bombText.textContent = "BOMMAR";
       bombBadge.classList.remove("good", "warn", "bad");
-    }, 900);
+    }, 1500);
   }
 }
 
 async function load() {
-  try {
-    const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
 
-    document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
-    document.title = `PHILIPS FYRA #${game}`;
+  document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+  document.title = `PHILIPS FYRA #${game}`;
 
-    const res = await fetch(`puzzle.json?v=${Date.now()}`);
-    groups = await res.json();
+  const res = await fetch(`puzzle.json?v=${Date.now()}`);
+  groups = await res.json();
 
-    remainingGroups = JSON.parse(JSON.stringify(groups));
+  remainingGroups = JSON.parse(JSON.stringify(groups));
 
-    solvedGroups = [];
-    allWords = remainingGroups.flatMap(g => g.words);
+  solvedGroups = [];
+  allWords = remainingGroups.flatMap(g => g.words);
 
-    shuffle();
-  } catch (err) {
-    console.error(err);
-    setBombFeedback("KUNDE INTE LADDA SPEL");
-  }
+  testBtn.textContent = "TESTA";
+  testBtn.onclick = check;
+
+  shuffle();
 }
 
 function shuffle() {
@@ -338,17 +329,11 @@ function check() {
     win();
     render();
 
-  
   } else {
     bombs++;
-
     flashWrong(selected);
 
-    if (almost) {
-      setBombFeedback("3 AV 4 RÄTT", "warn", true);
-    } else {
-      setBombFeedback("FEL", "bad", true);
-    }
+    setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
   }
 
   setTimeout(() => locked = false, 500);
@@ -356,9 +341,11 @@ function check() {
 
 function win() {
   if (remainingGroups.length === 0) {
+    testBtn.textContent = "DELA RESULTAT";
+    testBtn.onclick = share;
+    testBtn.disabled = false;
+
     setBombFeedback(`KLAR PÅ ${bombs} BOMMAR`, "good");
-    shareBtn.disabled = false;
-    testBtn.disabled = true;
   }
 }
 
