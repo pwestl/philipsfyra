@@ -306,7 +306,10 @@ function render() {
 
 function flashWrong(selected) {
   // Lägg till "wrong" för att färga ordet röd
-  selected.forEach(el => el.classList.add("wrong"));
+  selected.forEach(el => {
+    el.classList.add("wrong");
+    el.style.backgroundColor = "#ff4d4d"; // Sätt direkt röd bakgrund
+  });
 
   // Vänta i samma tid som feedbacken (1500ms) innan vi gör fade-out
   const fadeDuration = 1500; // Längd på fade-effekten
@@ -323,9 +326,11 @@ function flashWrong(selected) {
     selected.forEach(el => {
       el.classList.remove("fade-out");
       el.classList.remove("wrong"); // Ta bort wrong-klassen när fade-out är klar
-      // Om ordet var valt, återställ det till 'selected' stil
+      // Återställ bakgrundsfärgen beroende på om ordet var valt
       if (el.classList.contains("selected")) {
-        el.classList.add("selected");
+        el.style.backgroundColor = "#cfe6ff"; // Återställ bakgrund till den valda (blå)
+      } else {
+        el.style.backgroundColor = "#f3f3f3"; // Återställ till normal bakgrund
       }
     });
   }, fadeDuration + 500); // Vänta ytterligare 500ms så att fade-effekten syns klart
