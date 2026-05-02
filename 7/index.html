@@ -74,7 +74,7 @@ h1 {
 
 .word.wrong.fade-out {
   opacity: 0; /* Gör ordet genomskinligt under fade-out */
-  transition: opacity 1.5s ease, background 1.5s ease; /* Lägg till övergång för bakgrundsfärgen */
+  transition: opacity 1.5s ease; /* Lägg till övergången för opacity */
 }
 
 /*@keyframes shake {
@@ -313,10 +313,10 @@ function flashWrong(selected) {
   // Vänta i samma tid som feedbacken (1500ms) innan vi gör fade-out
   const fadeDuration = 1500; // Längd på fade-effekten
 
-  // Efter animationen (1500ms), gör fade-out på bakgrundsfärgen
+  // Efter animationen (1500ms), gör fade-out
   setTimeout(() => {
     selected.forEach(el => {
-      el.classList.add("fade-out"); // Lägg till fade-out klass för bakgrundsfärg
+      el.classList.add("fade-out"); // Lägg till fade-out klass
     });
   }, fadeDuration);
 
@@ -325,8 +325,7 @@ function flashWrong(selected) {
     selected.forEach(el => {
       el.classList.remove("fade-out");
       el.classList.remove("wrong"); // Ta bort wrong-klassen när fade-out är klar
-
-      // Återställ bakgrundsfärgen beroende på om ordet var valt (selected) eller inte
+      // Återställ bakgrundsfärgen beroende på om ordet var valt
       if (el.classList.contains("selected")) {
         el.style.backgroundColor = "#cfe6ff"; // Återställ bakgrund till den valda (blå)
       } else {
