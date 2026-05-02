@@ -225,22 +225,29 @@ bombBadge.style.color = "white";
       }
     }
 
-    async function load() {
-      const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-      document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
-      document.title = `PHILIPS FYRA #${game}`;
+  async function load() {
+    const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+    
+    // Hämta JSON och skaparnamn
+    const res = await fetch(`puzzle.json?v=${Date.now()}`);
+    const data = await res.json();
+    const creator = data.creator;  // Hämta skaparnamnet
 
-      const res = await fetch(`puzzle.json?v=${Date.now()}`);
-      groups = await res.json();
-      remainingGroups = JSON.parse(JSON.stringify(groups));
-      solvedGroups = [];
-      allWords = remainingGroups.flatMap(g => g.words);
+    // Uppdatera rubrik och titel baserat på skaparen
+    document.querySelector("h1").textContent = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}) FYRA #${game}`;
+    document.title = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}) FYRA #${game}`;
 
-      testBtn.textContent = "TESTA";
-      testBtn.onclick = check;
+    // Resten av din kod som hanterar spelet
+    groups = data.groups;
+    remainingGroups = JSON.parse(JSON.stringify(groups));
+    solvedGroups = [];
+    allWords = remainingGroups.flatMap(g => g.words);
 
-      shuffle();
-    }
+    testBtn.textContent = "TESTA";
+    testBtn.onclick = check;
+
+    shuffle();
+}
 
     function shuffle() {
       allWords.sort(() => Math.random() - 0.5);
