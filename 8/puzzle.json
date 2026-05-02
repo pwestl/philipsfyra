@@ -1,42 +1,45 @@
-[
-  {
-    "name": "Tandrelaterat",
-    "color": "yellow",
-    "words": [
-      "Jordan",
-      "Bländande",
-      "Parodontit",
-      "Krona"
-    ]
-  },
-  {
-    "name": "Stora basketstäder",
-    "color": "green",
-    "words": [
-      "Norrköping",
-      "Luleå",
-      "Washington DC",
-      "Boston"
-    ]
-  },
-  {
-    "name": "Hansastäder",
-    "color": "blue",
-    "words": [
-      "Lübeck",
-      "Visby",
-      "Riga",
-      "Hamburg"
-    ]
-  },
-  {
-    "name": "Evighet",
-    "color": "purple",
-    "words": [
-      "8",
-      "Eon",
-      "Länge",
-      "Döden"
-    ]
-  }
-]
+{
+  "creator": "SARA", 
+  "groups": [
+    {
+      "name": "Tandrelaterat",
+      "color": "yellow",
+      "words": [
+        "Jordan",
+        "Bländande",
+        "Parodontit",
+        "Krona"
+      ]
+    },
+    {
+      "name": "Stora basketstäder",
+      "color": "green",
+      "words": [
+        "Norrköping",
+        "Luleå",
+        "Washington DC",
+        "Boston"
+      ]
+    },
+    {
+      "name": "Hansastäder",
+      "color": "blue",
+      "words": [
+        "Lübeck",
+        "Visby",
+        "Riga",
+        "Hamburg"
+      ]
+    },
+    {
+      "name": "Evighet",
+      "color": "purple",
+      "words": [
+        "8",
+        "Eon",
+        "Länge",
+        "Döden"
+      ]
+    }
+  ]
+}
