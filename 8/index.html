@@ -226,20 +226,24 @@ bombBadge.style.color = "white";
       }
     }
 
-  async function load() {
+ async function load() {
     const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
     
     // Hämta JSON och skaparnamn
     const res = await fetch(`puzzle.json?v=${Date.now()}`);
     const data = await res.json();
-    const creator = data.creator;  // Hämta skaparnamnet
+    creator = data.creator;  // Sätt 'creator' globalt
 
-    creator = data.creator;  // Hämta skaparnamnet och sätt det globalt
-  console.log("Creator:", creator);  // Kontrollera att creator är korrekt
+    console.log("Creator:", creator);  // Kontrollera att creator är korrekt
 
     // Uppdatera rubrik och titel baserat på skaparen
-    document.querySelector("h1").textContent = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
-    document.title = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
+    document.querySelector("h1").textContent = creator === 'Philip' 
+        ? `PHILIPS FYRA #${game}` 
+        : `PHILIPS (${creator}S) FYRA #${game}`;
+    
+    document.title = creator === 'Philip' 
+        ? `PHILIPS FYRA #${game}` 
+        : `PHILIPS (${creator}S) FYRA #${game}`;
 
     // Resten av din kod som hanterar spelet
     groups = data.groups;
