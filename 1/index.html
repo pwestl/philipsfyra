@@ -342,20 +342,24 @@ function check() {
     setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
   }
 
- setTimeout(() => {
+setTimeout(() => {
   locked = false;
-  testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+
+  if (!gameWon) {
+    testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+  }
+
 }, 1200);
-}
 
 function win() {
   if (remainingGroups.length === 0) {
+
+    gameWon = true;
 
     testBtn.textContent = "DELA RESULTAT";
     testBtn.onclick = share;
     testBtn.disabled = false;
 
-    // viktig: stoppa ev gamla timers direkt
     if (feedbackTimeout) {
       clearTimeout(feedbackTimeout);
       feedbackTimeout = null;
