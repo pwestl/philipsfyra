@@ -232,7 +232,7 @@ const bombText = document.getElementById("bombText");
 
 function setBombFeedback(text, type = "neutral", temporary = false) {
   bombText.textContent = text;
-  bombBadge.textContent = bombs;
+  bombBadge.textContent = bombs;  // Uppdatera antalet bomber här direkt
 
   bombBadge.classList.remove("good", "warn", "bad", "flash");
 
@@ -351,33 +351,26 @@ function check() {
     render();
 
   } else {
-    bombs++;
+    bombs++;  // Uppdatera bombantal direkt här när ett fel sker
     flashWrong(selected);
 
-setButtonFeedback(almost ? "3 AV 4" : "FEL", almost ? "warn" : "bad");
-  
+    setButtonFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad");
   }
 
-  function setButtonFeedback(text, type = "") {
-  testBtn.textContent = text;
+  // Anropa setBombFeedback för att uppdatera UI:n med det nya antalet bomber
+  setBombFeedback("BOMMAR", "neutral");
 
-  testBtn.classList.remove("good", "warn", "bad");
+  setTimeout(() => {
+    locked = false;
 
-  if (type) testBtn.classList.add(type);
+    if (!gameWon) {
+      testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+      testBtn.textContent = "TESTA";
+      testBtn.classList.remove("good", "warn", "bad");
+    }
+
+  }, 1200);
 }
-  
-setTimeout(() => {
-  locked = false;
-
-  if (!gameWon) {
-    testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
-    testBtn.textContent = "TESTA";
-    testBtn.classList.remove("good", "warn", "bad");
-  }
-
-}, 1200);
-
-  }
 
 function win() {
   if (remainingGroups.length === 0) {
