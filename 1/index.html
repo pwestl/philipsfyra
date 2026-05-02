@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>PHILIPS FYRA</title>
-
   <meta property="og:title" content="PHILIPS FYRA #7">
   <meta property="og:url" content="https://pwestl.github.io/philipsfyra/7/">
 
@@ -64,10 +63,9 @@
     .selected { background: #cfe6ff; }
 
     .word.wrong {
-      animation: shake 0.45s ease;
+      animation: shake 0.6s ease;
       background: #ff4d4d !important;
       color: white;
-      transition: background 0.2s ease;
     }
 
     @keyframes shake {
@@ -104,12 +102,6 @@
       margin-top: 12px;
     }
 
-    .actions .row {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
     button {
       width: 100%;
       padding: 16px;
@@ -139,13 +131,13 @@
       border-radius: 50%;
       background: #f3f3f3;
       color: #222;
-      border: 1px solid #222;
+      border: 2px solid #222;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 16px;
       font-weight: 800;
-      opacity: 1;  /* Always visible */
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
     }
 
     #bombText {
@@ -160,30 +152,11 @@
 
     .bomb-badge.flash {
       transform: scale(1.15);
-      transition: transform 0.25s ease;
     }
-
-    button.good {
-      background: #a0c35a !important;
-      color: white;
-    }
-
-    button.warn {
-      background: #f9df6d !important;
-      color: #111;
-    }
-
-    button.bad {
-      background: #ff4d4d !important;
-      color: white;
-    }
-
   </style>
 </head>
 
 <body>
-
-  <!-- HEADER ARKIV -->
   <div style="text-align:left; font-size:12px; opacity:0.5; margin-bottom:6px;">
     <span onclick="goHome()" style="cursor:pointer;">← ARKIV</span>
   </div>
@@ -192,12 +165,11 @@
 
   <div id="grid" class="grid"></div>
 
-  <!-- BOM UI -->
   <div class="bomb-wrap">
     <div id="bombBadge" class="bomb-badge">0</div>
     <div id="bombText">BOMMAR</div>
   </div>
-
+  
   <div class="actions">
     <button id="testBtn" onclick="check()">TESTA</button>
   </div>
@@ -212,21 +184,16 @@
     let bombs = 0;
     let locked = false;
     let solveOrder = [];
-    let gameWon = false;
     let feedbackTimeout = null;
-
-    const FEEDBACK_TIME = 2500;
-
     const grid = document.getElementById("grid");
     const popup = document.getElementById("popup");
     const testBtn = document.getElementById("testBtn");
-
     const bombBadge = document.getElementById("bombBadge");
     const bombText = document.getElementById("bombText");
 
     function setBombFeedback(text, type = "neutral", temporary = false) {
       bombText.textContent = text;
-      bombBadge.textContent = bombs;  // Uppdatera antalet bomber här direkt
+      bombBadge.textContent = bombs;
 
       bombBadge.classList.remove("good", "warn", "bad", "flash");
 
@@ -237,33 +204,29 @@
       bombBadge.classList.add("flash");
       setTimeout(() => bombBadge.classList.remove("flash"), 200);
 
-      // Lägg till 'show' för att göra fade-in
-      bombBadge.classList.add("show");
-
+      // Stänger gammal timeout om en ny startas
       if (feedbackTimeout) {
         clearTimeout(feedbackTimeout);
         feedbackTimeout = null;
       }
 
+      // Tidsinställd feedbackåterställning (synkronisering med felaktiga ord)
       if (temporary) {
         feedbackTimeout = setTimeout(() => {
           bombText.textContent = "BOMMAR";
-          bombBadge.classList.remove("good", "warn", "bad", "show");  // Ta bort show för att göra fade-out
-        }, FEEDBACK_TIME);
+          bombBadge.classList.remove("good", "warn", "bad");
+        }, 600); // 600ms synkronisering med längden på felaktiga ords röda markering
       }
     }
 
     async function load() {
       const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-
       document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
       document.title = `PHILIPS FYRA #${game}`;
 
       const res = await fetch(`puzzle.json?v=${Date.now()}`);
       groups = await res.json();
-
       remainingGroups = JSON.parse(JSON.stringify(groups));
-
       solvedGroups = [];
       allWords = remainingGroups.flatMap(g => g.words);
 
@@ -311,19 +274,7 @@
 
     function flashWrong(selected) {
       selected.forEach(el => el.classList.add("wrong"));
-      setTimeout(() => {
-        selected.forEach(el => el.classList.remove("wrong"));
-      }, FEEDBACK_TIME);
-    }
-
-    function setButtonFeedback(text, type = "") {
-      testBtn.textContent = text;
-
-      testBtn.classList.remove("good", "warn", "bad");
-
-      if (type === "good") testBtn.classList.add("good");
-      if (type === "warn") testBtn.classList.add("warn");
-      if (type === "bad") testBtn.classList.add("bad");
+      setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600); // Synkronisera med animationens längd
     }
 
     function check() {
@@ -335,7 +286,6 @@
       locked = true;
 
       const words = selected.map(e => e.textContent);
-
       let match = null;
       let almost = false;
 
@@ -353,36 +303,23 @@
 
         selected.forEach(el => el.classList.remove("selected"));
 
-        setButtonFeedback("RÄTT GRUPP", "good");
+        setBombFeedback("RÄTT GRUPP", "good", true);
         win();
         render();
+
       } else {
-        bombs++;  // Uppdatera antalet bomber när ett fel görs
+        bombs++;
         flashWrong(selected);
 
-        setButtonFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad");
-
-        // Uppdatera bombfeedbacken med antalet bomber
-        setBombFeedback("BOMMAR", "neutral");
+        setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
       }
 
-      setTimeout(() => {
-        locked = false;
-
-        if (!gameWon) {
-          testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
-          testBtn.textContent = "TESTA";
-          testBtn.classList.remove("good", "warn", "bad");
-        }
-
-      }, 1200);
+      setTimeout(() => locked = false, 1200);
     }
 
     function win() {
       if (remainingGroups.length === 0) {
-        gameWon = true;
-
-        setButtonFeedback("DELA RESULTAT", "good");
+        testBtn.textContent = "DELA RESULTAT";
         testBtn.onclick = share;
         testBtn.disabled = false;
 
@@ -391,7 +328,6 @@
           feedbackTimeout = null;
         }
 
-        // Visa antalet bommar när spelet är vunnit
         setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
       }
     }
@@ -403,11 +339,11 @@
       const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
 
       const message =
-  `Jag klarade PHILIPS FYRA #${game}
-Kategorier:
+`JAG KLARADE PHILIPS FYRA #${game}
+
 ${emojis}
-Bommar:
-${bombs}
+
+Bommar: ${bombs}
 
 ${url}`;
 
