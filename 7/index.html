@@ -307,20 +307,27 @@ function render() {
 function flashWrong(selected) {
   // Lägg till "wrong" för att färga ordet röd
   selected.forEach(el => el.classList.add("wrong"));
-  
+
   // Vänta i samma tid som feedbacken (1500ms) innan vi gör fade-out
   const fadeDuration = 1500; // Längd på fade-effekten
-  
+
   // Efter animationen (1500ms), gör fade-out
   setTimeout(() => {
     selected.forEach(el => {
       el.classList.add("fade-out"); // Lägg till fade-out klass
     });
   }, fadeDuration);
-  
+
   // Efter fade-out (1500ms), ta bort fade-out klass för att återställa ordet
   setTimeout(() => {
-    selected.forEach(el => el.classList.remove("fade-out"));
+    selected.forEach(el => {
+      el.classList.remove("fade-out");
+      el.classList.remove("wrong"); // Ta bort wrong-klassen när fade-out är klar
+      // Om ordet var valt, återställ det till 'selected' stil
+      if (el.classList.contains("selected")) {
+        el.classList.add("selected");
+      }
+    });
   }, fadeDuration + 500); // Vänta ytterligare 500ms så att fade-effekten syns klart
 }
 
