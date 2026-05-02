@@ -167,6 +167,21 @@ button:disabled { opacity: 0.35; }
   transform: scale(1.15);
 }
 
+button.good {
+  background: #a0c35a !important;
+  color: white;
+}
+
+button.warn {
+  background: #f9df6d !important;
+  color: #111;
+}
+
+button.bad {
+  background: #ff4d4d !important;
+  color: white;
+}
+  
 </style>
 </head>
 
@@ -331,7 +346,7 @@ function check() {
 
     selected.forEach(el => el.classList.remove("selected"));
 
-    setBombFeedback("RÄTT GRUPP", "good", true);
+    setButtonFeedback("RÄTT GRUPP", "good");
     win();
     render();
 
@@ -339,14 +354,25 @@ function check() {
     bombs++;
     flashWrong(selected);
 
-    setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
+setButtonFeedback(almost ? "3 AV 4" : "FEL", almost ? "warn" : "bad");
+  
   }
 
+  function setButtonFeedback(text, type = "") {
+  testBtn.textContent = text;
+
+  testBtn.classList.remove("good", "warn", "bad");
+
+  if (type) testBtn.classList.add(type);
+}
+  
 setTimeout(() => {
   locked = false;
 
   if (!gameWon) {
     testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+    testBtn.textContent = "TESTA";
+    testBtn.classList.remove("good", "warn", "bad");
   }
 
 }, 1200);
@@ -358,9 +384,9 @@ function win() {
 
     gameWon = true;
 
-    testBtn.textContent = "DELA RESULTAT";
-    testBtn.onclick = share;
-    testBtn.disabled = false;
+    setButtonFeedback("DELA RESULTAT", "good");
+testBtn.onclick = share;
+testBtn.disabled = false;
 
     if (feedbackTimeout) {
       clearTimeout(feedbackTimeout);
@@ -378,11 +404,11 @@ function share() {
   const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
 
   const message =
-`JAG KLARADE PHILIPS FYRA #${game}
-
+`Jag klarade PHILIPS FYRA #${game}
+Kategorier:
 ${emojis}
-
-Bommar: ${bombs}
+Bommar:
+${bombs}
 
 ${url}`;
 
