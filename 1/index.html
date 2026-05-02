@@ -68,6 +68,7 @@ h1 {
   background: #ff4d4d !important;
   color: white;
   transition: background 0.2s ease;
+}
 
 @keyframes shake {
   0%   { transform: translateY(0); }
@@ -341,7 +342,10 @@ function check() {
     setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
   }
 
-  setTimeout(() => locked = false, 1200);
+ setTimeout(() => {
+  locked = false;
+  testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+}, 1200);
 }
 
 function win() {
