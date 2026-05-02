@@ -199,7 +199,6 @@
 
       bombBadge.classList.remove("good", "warn", "bad", "flash");
 
-       bombBadge.style.setProperty("color", "white", "important");
 
       if (type === "good") bombBadge.classList.add("good");
       if (type === "warn") bombBadge.classList.add("warn");
@@ -214,11 +213,14 @@
         feedbackTimeout = null;
       }
 
+bombBadge.style.color = "white";
+
       // Tidsinställd feedbackåterställning (synkronisering med felaktiga ord)
       if (temporary) {
         feedbackTimeout = setTimeout(() => {
           bombText.textContent = "BOMMAR";
           bombBadge.classList.remove("good", "warn", "bad");
+          bombBadge.style.color = "#222";
         }, 2000); // 600ms synkronisering med längden på felaktiga ords röda markering
       }
     }
