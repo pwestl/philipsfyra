@@ -199,7 +199,7 @@
 
       bombBadge.classList.remove("good", "warn", "bad", "flash");
 
-       bombBadge.style.color = "white";
+       bombBadge.style.setProperty("color", "white", "important");
 
       if (type === "good") bombBadge.classList.add("good");
       if (type === "warn") bombBadge.classList.add("warn");
