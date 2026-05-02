@@ -36,6 +36,7 @@ h1 {
   gap: var(--gap);
   align-content: start;
   contain: layout paint;
+  overflow: visible;
 }
 
 .cell {
@@ -54,23 +55,26 @@ h1 {
   font-size: 14px;
   background: #f3f3f3;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
 }
 
 .selected { background: #cfe6ff; }
 
 .word.wrong {
-  animation: shake 0.6s ease;
+  animation: shake 0.45s ease;
   background: #ff4d4d !important;
   color: white;
-}
+  transition: background 0.2s ease;
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(3px); }
-  100% { transform: translateX(0); }
+  0%   { transform: translateY(0); }
+  25%  { transform: translateY(-2px); }
+  50%  { transform: translateY(2px); }
+  75%  { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
 }
 
 .group {
@@ -80,8 +84,10 @@ h1 {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center; 
   padding: 0 14px;
-  border-radius: 12px;
+  border-radius: 10px;
   transition: transform 280ms ease;
 }
 
@@ -106,7 +112,7 @@ h1 {
 button {
   width: 100%;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 15px;
   font-weight: 800;
   background: #222;
@@ -116,52 +122,50 @@ button {
 
 button:disabled { opacity: 0.35; }
 
-/* =========================
-   🔥 STATUSBAR (NY DESIGN)
-   ========================= */
-
-.bomb-status {
-  margin: 10px 0 6px;
-  text-align: center;
-  font-weight: 700;
-}
-
-.bomb-line {
+/* BOM UI */
+.bomb-wrap {
   display: flex;
-  justify-content: center;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  font-weight: 700;
   gap: 6px;
 }
 
-#bombBadge {
-  font-size: 22px;
-  font-weight: 800;
+.bomb-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+
+  background: #f3f3f3;
   color: #222;
-  transition: transform 0.2s ease, color 0.2s ease;
+
+  border: 1px solid #222;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
 }
 
-.bomb-label {
-  font-size: 14px;
+#bombText {
+  font-size: 12px;
   color: #444;
   letter-spacing: 0.5px;
 }
 
-.bomb-sub {
-  font-size: 12px;
-  color: #666;
-  margin-top: 2px;
-  min-height: 14px;
-  transition: opacity 0.2s ease;
-}
+.bomb-badge.good { background: #a0c35a; }
+.bomb-badge.warn { background: #f9df6d; }
+.bomb-badge.bad  { background: #ff4d4d; }
 
-/* states */
-.bomb-good { color: #2e7d32; }
-.bomb-warn { color: #b8860b; }
-.bomb-bad  { color: #c62828; }
-
-.bomb-pop {
+.bomb-badge.flash {
   transform: scale(1.15);
 }
+
 </style>
 </head>
 
@@ -176,18 +180,19 @@ button:disabled { opacity: 0.35; }
 
 <div id="grid" class="grid"></div>
 
+  <!-- BOM UI -->
+<div class="bomb-wrap">
+  <div id="bombBadge" class="bomb-badge">0</div>
+  <div id="bombText">BOMMAR</div>
+</div>
+  
 <div class="actions">
   <button id="testBtn" onclick="check()" disabled>TESTA</button>
 </div>
 
-<!-- STATUSBAR -->
-<div class="bomb-status">
-  <div class="bomb-line">
-    <span id="bombBadge">0</span>
-    <span class="bomb-label">BOMMAR</span>
-  </div>
-  <div id="bombText" class="bomb-sub"></div>
-</div>
+
+
+<div id="popup" class="popup"></div>
 
 <script>
 let groups = [];
@@ -200,7 +205,10 @@ let solveOrder = [];
 let gameWon = false;
 let feedbackTimeout = null;
 
+const FEEDBACK_TIME = 1200;
+
 const grid = document.getElementById("grid");
+const popup = document.getElementById("popup");
 const testBtn = document.getElementById("testBtn");
 
 const bombBadge = document.getElementById("bombBadge");
@@ -210,22 +218,25 @@ function setBombFeedback(text, type = "neutral", temporary = false) {
   bombText.textContent = text;
   bombBadge.textContent = bombs;
 
-  bombBadge.classList.remove("bomb-good", "bomb-warn", "bomb-bad", "bomb-pop");
+  bombBadge.classList.remove("good", "warn", "bad", "flash");
 
-  if (type === "good") bombBadge.classList.add("bomb-good");
-  if (type === "warn") bombBadge.classList.add("bomb-warn");
-  if (type === "bad") bombBadge.classList.add("bomb-bad");
+  if (type === "good") bombBadge.classList.add("good");
+  if (type === "warn") bombBadge.classList.add("warn");
+  if (type === "bad") bombBadge.classList.add("bad");
 
-  bombBadge.classList.add("bomb-pop");
-  setTimeout(() => bombBadge.classList.remove("bomb-pop"), 200);
+  bombBadge.classList.add("flash");
+  setTimeout(() => bombBadge.classList.remove("flash"), 200);
 
-  if (feedbackTimeout) clearTimeout(feedbackTimeout);
+  if (feedbackTimeout) {
+    clearTimeout(feedbackTimeout);
+    feedbackTimeout = null;
+  }
 
-  if (temporary && remainingGroups.length > 0) {
+  if (temporary) {
     feedbackTimeout = setTimeout(() => {
-      bombText.textContent = "";
-      bombBadge.classList.remove("bomb-good", "bomb-warn", "bomb-bad");
-    }, 1200);
+      bombText.textContent = "BOMMAR";
+      bombBadge.classList.remove("good", "warn", "bad");
+    }, FEEDBACK_TIME);
   }
 }
 
@@ -239,8 +250,12 @@ async function load() {
   groups = await res.json();
 
   remainingGroups = JSON.parse(JSON.stringify(groups));
+
   solvedGroups = [];
   allWords = remainingGroups.flatMap(g => g.words);
+
+  testBtn.textContent = "TESTA";
+  testBtn.onclick = check;
 
   shuffle();
 }
@@ -283,7 +298,9 @@ function render() {
 
 function flashWrong(selected) {
   selected.forEach(el => el.classList.add("wrong"));
-  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600);
+  setTimeout(() => {
+    selected.forEach(el => el.classList.remove("wrong"));
+  }, FEEDBACK_TIME);
 }
 
 function check() {
@@ -320,6 +337,7 @@ function check() {
   } else {
     bombs++;
     flashWrong(selected);
+
     setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
   }
 
@@ -328,11 +346,16 @@ function check() {
 
 function win() {
   if (remainingGroups.length === 0) {
+
     testBtn.textContent = "DELA RESULTAT";
     testBtn.onclick = share;
     testBtn.disabled = false;
 
-    if (feedbackTimeout) clearTimeout(feedbackTimeout);
+    // viktig: stoppa ev gamla timers direkt
+    if (feedbackTimeout) {
+      clearTimeout(feedbackTimeout);
+      feedbackTimeout = null;
+    }
 
     setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
   }
