@@ -298,7 +298,7 @@ function render() {
 
 function flashWrong(selected) {
   selected.forEach(el => el.classList.add("wrong"));
-  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 450);
+  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 1500);
 }
 
 function check() {
@@ -339,7 +339,7 @@ function check() {
     setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
   }
 
-  setTimeout(() => locked = false, 1200);
+  setTimeout(() => locked = false, 1500);
 }
 
 function win() {
