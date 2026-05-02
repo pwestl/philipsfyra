@@ -65,16 +65,15 @@ h1 {
 .selected { background: #cfe6ff; }
 
 .word.wrong {
-  animation: shake 1.5s ease; /* Skakningseffekten varar i 1.5 sekunder */
-  background: #ff4d4d !important; /* Gör bakgrunden röd */
-  color: white; /* Gör texten vit */
-  opacity: 1; /* Starta med full opacitet */
-  transition: opacity 1.5s ease; /* Lägg till en övergångseffekt för opacitet */
+  background: #ff4d4d !important; /* Gör ordet röd */
+  color: white;
+  transition: background 1.5s ease, opacity 1.5s ease; /* Använd samma transition som för bombbadgen */
 }
 
-.word.wrong.fade-out {
-  opacity: 0; /* Gör ordet genomskinligt under fade-out */
-  transition: opacity 1.5s ease; /* Lägg till övergången för opacity */
+/* Återställ till den blå bakgrunden om ordet är "selected" */
+.word.selected {
+  background: #cfe6ff; /* Vald bakgrund */
+  transition: background 1.5s ease; /* Använd också en transition här för smooth förändring */
 }
 
 /*@keyframes shake {
@@ -304,35 +303,21 @@ function render() {
 }
 
 function flashWrong(selected) {
-  // Lägg till "wrong" för att färga ordet röd
+  // Lägg till "wrong" för att göra ordet röd
   selected.forEach(el => {
-    el.classList.add("wrong");
-    el.style.backgroundColor = "#ff4d4d"; // Sätt direkt röd bakgrund
+    el.classList.add("wrong"); // Lägg till "wrong" för röd bakgrund
+    el.style.backgroundColor = "#ff4d4d"; // Röd bakgrund direkt
   });
 
-  // Vänta i samma tid som feedbacken (1500ms) innan vi gör fade-out
-  const fadeDuration = 1500; // Längd på fade-effekten
+  const fadeDuration = 1500; // Samma fade-tid som för bombbadgen
 
-  // Efter animationen (1500ms), gör fade-out
+  // Efter 1500ms, ta bort "wrong" och låt ordet fadea tillbaka till den valda bakgrunden
   setTimeout(() => {
     selected.forEach(el => {
-      el.classList.add("fade-out"); // Lägg till fade-out klass
+      el.classList.remove("wrong"); // Ta bort "wrong"-klassen
+      el.style.backgroundColor = "#cfe6ff"; // Återställ bakgrunden till blå (selected)
     });
-  }, fadeDuration);
-
-  // Efter fade-out (1500ms), ta bort fade-out klass för att återställa ordet
-  setTimeout(() => {
-    selected.forEach(el => {
-      el.classList.remove("fade-out");
-      el.classList.remove("wrong"); // Ta bort wrong-klassen när fade-out är klar
-      // Återställ bakgrundsfärgen beroende på om ordet var valt
-      if (el.classList.contains("selected")) {
-        el.style.backgroundColor = "#cfe6ff"; // Återställ bakgrund till den valda (blå)
-      } else {
-        el.style.backgroundColor = "#f3f3f3"; // Återställ till normal bakgrund
-      }
-    });
-  }, fadeDuration + 500); // Vänta ytterligare 500ms så att fade-effekten syns klart
+  }, fadeDuration); // Vänta i 1500ms innan fade
 }
 
 function setBombFeedback(text, type = "neutral", temporary = false) {
