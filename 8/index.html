@@ -234,6 +234,9 @@ bombBadge.style.color = "white";
     const data = await res.json();
     const creator = data.creator;  // Hämta skaparnamnet
 
+    creator = data.creator;  // Hämta skaparnamnet och sätt det globalt
+  console.log("Creator:", creator);  // Kontrollera att creator är korrekt
+
     // Uppdatera rubrik och titel baserat på skaparen
     document.querySelector("h1").textContent = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
     document.title = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
