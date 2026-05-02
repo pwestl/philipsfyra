@@ -78,13 +78,13 @@ h1 {
   transition: opacity 1.5s ease; /* Lägg till övergången för opacity */
 }
 
-@keyframes shake {
+/*@keyframes shake {
   0%   { transform: translateY(0); }
   25%  { transform: translateY(-2px); }
   50%  { transform: translateY(2px); }
   75%  { transform: translateY(-1px); }
   100% { transform: translateY(0); }
-}
+}*/
 
 .group {
   grid-column: span 2;
@@ -305,16 +305,15 @@ function render() {
 }
 
 function flashWrong(selected) {
-  // Lägg till "wrong" för skakningseffekten
+  // Lägg till "wrong" för att färga ordet röd
   selected.forEach(el => el.classList.add("wrong"));
   
   // Vänta i samma tid som feedbacken (1500ms) innan vi gör fade-out
   const fadeDuration = 1500; // Längd på fade-effekten
   
-  // Efter animationen (1500ms), ta bort ordens felaktiga klass och gör fade-out
+  // Efter animationen (1500ms), gör fade-out
   setTimeout(() => {
     selected.forEach(el => {
-      el.classList.remove("wrong");
       el.classList.add("fade-out"); // Lägg till fade-out klass
     });
   }, fadeDuration);
