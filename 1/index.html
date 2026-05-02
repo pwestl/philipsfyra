@@ -145,13 +145,7 @@
       justify-content: center;
       font-size: 16px;
       font-weight: 800;
-      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease, opacity 0.5s ease-in-out;
-      opacity: 0;  /* Initial opacity */
-    }
-
-    /* Lägg till fade-in för feedback */
-    .bomb-badge.show {
-      opacity: 1;  /* Fade in när klassen 'show' tillämpas */
+      opacity: 1;  /* Always visible */
     }
 
     #bombText {
@@ -166,6 +160,7 @@
 
     .bomb-badge.flash {
       transform: scale(1.15);
+      transition: transform 0.25s ease;
     }
 
     button.good {
@@ -183,10 +178,10 @@
       color: white;
     }
 
-    /* Feedback för knappar och ord */
+    /* Feedback animations */
     .feedback {
+      transition: opacity 0.5s ease;
       opacity: 0;
-      transition: opacity 1s ease-in-out;
     }
 
     .feedback.show {
@@ -242,7 +237,7 @@
       bombText.textContent = text;
       bombBadge.textContent = bombs;  // Uppdatera antalet bomber här direkt
 
-      bombBadge.classList.remove("good", "warn", "bad", "flash", "show");
+      bombBadge.classList.remove("good", "warn", "bad", "flash");
 
       if (type === "good") bombBadge.classList.add("good");
       if (type === "warn") bombBadge.classList.add("warn");
@@ -338,12 +333,6 @@
       if (type === "good") testBtn.classList.add("good");
       if (type === "warn") testBtn.classList.add("warn");
       if (type === "bad") testBtn.classList.add("bad");
-
-      // Lägg till fade-in för feedback
-      testBtn.classList.add("show");
-      setTimeout(() => {
-        testBtn.classList.remove("show");
-      }, FEEDBACK_TIME);
     }
 
     function check() {
