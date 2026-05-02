@@ -346,25 +346,24 @@ bombBadge.style.color = "white";
       }
     }
 
-    function share() {
-      const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-      const url = `https://pwestl.github.io/philipsfyra/${game}/`;
+function share() {
+  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+  const url = `https://pwestl.github.io/philipsfyra/${game}/`;
 
-      const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
+  const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
 
-      const message =
-`JAG KLARADE PHILIPS (${creator}S) FYRA #${game}
+  const message = 
+    `JAG KLARADE PHILIPS (${creator}S) FYRA #${game}
 
 Ordning:
 ${emojis}
-Bommar: 
-${bombs}
+Bommar: ${bombs}
 
 ${url}`;
 
-      navigator.clipboard.writeText(message);
-      setBombFeedback("RESULTAT KOPIERAT", "good");
-    }
+  navigator.clipboard.writeText(message);
+  setBombFeedback("RESULTAT KOPIERAT", "good");
+}
 
     function getEmoji(color) {
       if (color === "yellow") return "🟨";
