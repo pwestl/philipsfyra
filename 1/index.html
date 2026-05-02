@@ -319,6 +319,16 @@ function flashWrong(selected) {
   }, FEEDBACK_TIME);
 }
 
+function setButtonFeedback(text, type = "") {
+  testBtn.textContent = text;
+
+  testBtn.classList.remove("good", "warn", "bad");
+
+  if (type === "good") testBtn.classList.add("good");
+  if (type === "warn") testBtn.classList.add("warn");
+  if (type === "bad") testBtn.classList.add("bad");
+}
+
 function check() {
   if (locked) return;
 
@@ -349,16 +359,15 @@ function check() {
     setButtonFeedback("RÄTT GRUPP", "good");
     win();
     render();
-
   } else {
-    bombs++;  // Uppdatera bombantal direkt här när ett fel sker
+    bombs++;  // Uppdatera antalet bomber när ett fel görs
     flashWrong(selected);
 
     setButtonFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad");
-  }
 
-  // Anropa setBombFeedback för att uppdatera UI:n med det nya antalet bomber
-  setBombFeedback("BOMMAR", "neutral");
+    // Uppdatera bombfeedbacken med antalet bomber
+    setBombFeedback("BOMMAR", "neutral");
+  }
 
   setTimeout(() => {
     locked = false;
@@ -374,18 +383,18 @@ function check() {
 
 function win() {
   if (remainingGroups.length === 0) {
-
     gameWon = true;
 
     setButtonFeedback("DELA RESULTAT", "good");
-testBtn.onclick = share;
-testBtn.disabled = false;
+    testBtn.onclick = share;
+    testBtn.disabled = false;
 
     if (feedbackTimeout) {
       clearTimeout(feedbackTimeout);
       feedbackTimeout = null;
     }
 
+    // Visa antalet bommar när spelet är vunnit
     setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
   }
 }
