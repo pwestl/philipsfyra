@@ -234,7 +234,7 @@ bombBadge.style.color = "white";
     const creator = data.creator;  // Hämta skaparnamnet
 
     // Uppdatera rubrik och titel baserat på skaparen
-    document.querySelector("h1").textContent = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}) FYRA #${game}`;
+    document.querySelector("h1").textContent = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
     document.title = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
 
     // Resten av din kod som hanterar spelet
