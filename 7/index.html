@@ -66,7 +66,7 @@
       animation: shake 0.6s ease;
       background: #ff4d4d !important;
       color: white;
-      transition: transform 0.025s ease, border-color 0.025s ease, background 0.025s ease;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
 
     }
 
@@ -276,7 +276,7 @@
 
     function flashWrong(selected) {
       selected.forEach(el => el.classList.add("wrong"));
-      setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600); // Synkronisera med animationens längd
+      setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 2000); // Synkronisera med animationens längd
     }
 
     function check() {
@@ -316,7 +316,7 @@
         setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
       }
 
-      setTimeout(() => locked = false, 1200);
+      setTimeout(() => locked = false, 2000);
     }
 
     function win() {
