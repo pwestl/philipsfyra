@@ -325,6 +325,7 @@ function flashWrong(selected) {
     selected.forEach(el => {
       el.classList.remove("fade-out");
       el.classList.remove("wrong"); // Ta bort wrong-klassen när fade-out är klar
+
       // Återställ bakgrundsfärgen beroende på om ordet var valt
       if (el.classList.contains("selected")) {
         el.style.backgroundColor = "#cfe6ff"; // Återställ bakgrund till den valda (blå)
@@ -333,6 +334,33 @@ function flashWrong(selected) {
       }
     });
   }, fadeDuration + 500); // Vänta ytterligare 500ms så att fade-effekten syns klart
+}
+
+function setBombFeedback(text, type = "neutral", temporary = false) {
+  bombText.textContent = text;
+  bombBadge.textContent = bombs;
+
+  bombBadge.classList.remove("good", "warn", "bad", "flash");
+
+  if (type === "good") bombBadge.classList.add("good");
+  if (type === "warn") bombBadge.classList.add("warn");
+  if (type === "bad") bombBadge.classList.add("bad");
+
+  bombBadge.classList.add("flash");
+  setTimeout(() => bombBadge.classList.remove("flash"), 200);
+
+  // Stoppa gammal timeout innan ny
+  if (feedbackTimeout) {
+    clearTimeout(feedbackTimeout);
+    feedbackTimeout = null;
+  }
+
+  if (temporary) {
+    feedbackTimeout = setTimeout(() => {
+      bombText.textContent = "BOMMAR";
+      bombBadge.classList.remove("good", "warn", "bad");
+    }, 1500); // Denna tid ska matcha ordens fade-tid
+  }
 }
 
 function check() {
