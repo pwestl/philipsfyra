@@ -164,7 +164,13 @@ document.getElementById("form").addEventListener("submit", function(e) {
     };
   });
 
-  const json = JSON.stringify(result, null, 2);
+  // Lägg till skaparnamnet i JSON-objektet
+  const jsonObject = {
+    creator: playerName,
+    groups: result
+  };
+
+  const json = JSON.stringify(jsonObject, null, 2);
 
   const blob = new Blob([json], { type: "application/json" });
 
