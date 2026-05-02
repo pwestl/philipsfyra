@@ -1,427 +1,344 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>PHILIPS FYRA</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>PHILIPS FYRA</title>
+  <meta property="og:title" content="PHILIPS FYRA #7">
+  <meta property="og:url" content="https://pwestl.github.io/philipsfyra/7/">
 
-<meta property="og:title" content="PHILIPS FYRA #7">
-<meta property="og:url" content="https://pwestl.github.io/philipsfyra/7/">
+  <style>
+    :root {
+      --cell-h: 42px;
+      --gap: 10px;
+    }
 
-<style>
-:root {
-  --cell-h: 42px;
-  --gap: 10px;
-}
+    body {
+      font-family: system-ui, -apple-system, Arial;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 14px;
+      text-transform: uppercase;
+    }
 
-body {
-  font-family: system-ui, -apple-system, Arial;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 14px;
-  text-transform: uppercase;
-}
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      margin: 6px 0 10px;
+    }
 
-h1 {
-  font-size: 22px;
-  font-weight: 800;
-  text-align: center;
-  margin: 6px 0 10px;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: var(--cell-h);
+      gap: var(--gap);
+      align-content: start;
+      contain: layout paint;
+      overflow: visible;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-auto-rows: var(--cell-h);
-  gap: var(--gap);
-  align-content: start;
-  contain: layout paint;
-  overflow: visible;
-}
-}
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      user-select: none;
+      will-change: transform;
+    }
 
-.cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  font-weight: 600;
-  text-align: center;
-  user-select: none;
-  will-change: transform;
-}
+    .word {
+      height: 100%;
+      font-size: 14px;
+      background: #f3f3f3;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
 
-.word {
-  height: 100%;
-  font-size: 14px;
-  background: #f3f3f3;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-}
+    .selected { background: #cfe6ff; }
 
-.selected { background: #cfe6ff; }
+    .word.wrong {
+      animation: shake 0.6s ease;
+      background: #ff4d4d !important;
+      color: white;
+    }
 
-.word.wrong {
-  background: #ff4d4d !important; /* Gör ordet röd */
-  color: white;
-  transition: background 1.5s ease, opacity 1.5s ease; /* Använd samma transition som för bombbadgen */
-}
+    @keyframes shake {
+      0%   { transform: translateY(0); }
+      25%  { transform: translateY(-2px); }
+      50%  { transform: translateY(2px); }
+      75%  { transform: translateY(-1px); }
+      100% { transform: translateY(0); }
+    }
 
-/* Återställ till den blå bakgrunden om ordet är "selected" */
-.word.selected {
-  background: #cfe6ff; /* Vald bakgrund */
-  transition: background 1.5s ease; /* Använd också en transition här för smooth förändring */
-}
+    .group {
+      grid-column: span 2;
+      grid-row: span 2;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center; 
+      padding: 0 14px;
+      border-radius: 10px;
+      transition: transform 280ms ease;
+    }
 
-/*@keyframes shake {
-  0%   { transform: translateY(0); }
-  25%  { transform: translateY(-2px); }
-  50%  { transform: translateY(2px); }
-  75%  { transform: translateY(-1px); }
-  100% { transform: translateY(0); }
-}*/
+    .yellow { background: #f9df6d; }
+    .green  { background: #a0c35a; }
+    .blue   { background: #b0c4ef; }
+    .purple { background: #ba81c5; }
 
-.group {
-  grid-column: span 2;
-  grid-row: span 2;
-  font-size: 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center; 
-  padding: 0 14px;
-  border-radius: 10px;
-  transition: transform 280ms ease;
-}
+    /* BUTTONS */
+    .actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
 
-.yellow { background: #f9df6d; }
-.green  { background: #a0c35a; }
-.blue   { background: #b0c4ef; }
-.purple { background: #ba81c5; }
+    button {
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      background: #222;
+      color: white;
+      border: none;
+    }
 
-/* BUTTONS */
-.actions {
-  display: grid;
-  gap: 8px;
-  margin-top: 12px;
-}
+    button:disabled { opacity: 0.35; }
 
-.actions .row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-}
+    /* BOM UI */
+    .bomb-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+      font-weight: 700;
+      gap: 6px;
+    }
 
-button {
-  width: 100%;
-  padding: 16px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 800;
-  background: #222;
-  color: white;
-  border: none;
-}
+    .bomb-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #f3f3f3;
+      color: #222;
+      border: 2px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
 
-button:disabled { opacity: 0.35; }
+    #bombText {
+      font-size: 12px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
 
-/* BOM UI */
-.bomb-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
-  font-weight: 700;
-  gap: 6px;
-}
+    .bomb-badge.good { background: #a0c35a; }
+    .bomb-badge.warn { background: #f9df6d; }
+    .bomb-badge.bad  { background: #ff4d4d; }
 
-.bomb-badge {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-
-  background: #f3f3f3;
-  color: #222;
-
-  border: 2px solid #222;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 16px;
-  font-weight: 800;
-
-  transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-}
-
-#bombText {
-  font-size: 12px;
-  color: #444;
-  letter-spacing: 0.5px;
-}
-
-.bomb-badge.good { background: #a0c35a; }
-.bomb-badge.warn { background: #f9df6d; }
-.bomb-badge.bad  { background: #ff4d4d; }
-
-.bomb-badge.flash {
-  transform: scale(1.15);
-}
-
-</style>
+    .bomb-badge.flash {
+      transform: scale(1.15);
+    }
+  </style>
 </head>
 
 <body>
+  <div style="text-align:left; font-size:12px; opacity:0.5; margin-bottom:6px;">
+    <span onclick="goHome()" style="cursor:pointer;">← ARKIV</span>
+  </div>
 
-<!-- HEADER ARKIV -->
-<div style="text-align:left; font-size:12px; opacity:0.5; margin-bottom:6px;">
-  <span onclick="goHome()" style="cursor:pointer;">← ARKIV</span>
-</div>
+  <h1>PHILIPS FYRA</h1>
 
-<h1>PHILIPS FYRA</h1>
+  <div id="grid" class="grid"></div>
 
-<div id="grid" class="grid"></div>
-
-  <!-- BOM UI -->
-<div class="bomb-wrap">
-  <div id="bombBadge" class="bomb-badge">0</div>
-  <div id="bombText">BOMMAR</div>
-</div>
+  <div class="bomb-wrap">
+    <div id="bombBadge" class="bomb-badge">0</div>
+    <div id="bombText">BOMMAR</div>
+  </div>
   
-<div class="actions">
-  <button id="testBtn" onclick="check()" disabled>TESTA</button>
-</div>
+  <div class="actions">
+    <button id="testBtn" onclick="check()">TESTA</button>
+  </div>
 
+  <div id="popup" class="popup"></div>
 
+  <script>
+    let groups = [];
+    let remainingGroups = [];
+    let solvedGroups = [];
+    let allWords = [];
+    let bombs = 0;
+    let locked = false;
+    let solveOrder = [];
+    let feedbackTimeout = null;
+    const grid = document.getElementById("grid");
+    const popup = document.getElementById("popup");
+    const testBtn = document.getElementById("testBtn");
+    const bombBadge = document.getElementById("bombBadge");
+    const bombText = document.getElementById("bombText");
 
-<div id="popup" class="popup"></div>
+    function setBombFeedback(text, type = "neutral", temporary = false) {
+      bombText.textContent = text;
+      bombBadge.textContent = bombs;
 
-<script>
-let groups = [];
-let remainingGroups = [];
-let solvedGroups = [];
-let allWords = [];
-let bombs = 0;
-let locked = false;
-let solveOrder = [];
-let gameWon = false;
-let feedbackTimeout = null;
+      bombBadge.classList.remove("good", "warn", "bad", "flash");
 
-const grid = document.getElementById("grid");
-const popup = document.getElementById("popup");
-const testBtn = document.getElementById("testBtn");
+      if (type === "good") bombBadge.classList.add("good");
+      if (type === "warn") bombBadge.classList.add("warn");
+      if (type === "bad") bombBadge.classList.add("bad");
 
-const bombBadge = document.getElementById("bombBadge");
-const bombText = document.getElementById("bombText");
+      bombBadge.classList.add("flash");
+      setTimeout(() => bombBadge.classList.remove("flash"), 200);
 
-function setBombFeedback(text, type = "neutral", temporary = false) {
-  bombText.textContent = text;
-  bombBadge.textContent = bombs;
-
-  bombBadge.classList.remove("good", "warn", "bad", "flash");
-
-  if (type === "good") bombBadge.classList.add("good");
-  if (type === "warn") bombBadge.classList.add("warn");
-  if (type === "bad") bombBadge.classList.add("bad");
-
-  bombBadge.classList.add("flash");
-  setTimeout(() => bombBadge.classList.remove("flash"), 200);
-
-  // ❗ viktigt: stoppa gammal timeout innan ny
-  if (feedbackTimeout) {
-    clearTimeout(feedbackTimeout);
-    feedbackTimeout = null;
-  }
-
-  if (temporary) {
-    feedbackTimeout = setTimeout(() => {
-      bombText.textContent = "BOMMAR";
-      bombBadge.classList.remove("good", "warn", "bad");
-    }, 1500);
-  }
-}
-
-async function load() {
-  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-
-  document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
-  document.title = `PHILIPS FYRA #${game}`;
-
-  const res = await fetch(`puzzle.json?v=${Date.now()}`);
-  groups = await res.json();
-
-  remainingGroups = JSON.parse(JSON.stringify(groups));
-
-  solvedGroups = [];
-  allWords = remainingGroups.flatMap(g => g.words);
-
-  testBtn.textContent = "TESTA";
-  testBtn.onclick = check;
-
-  shuffle();
-}
-
-function shuffle() {
-  allWords.sort(() => Math.random() - 0.5);
-  render();
-}
-
-function render() {
-  grid.innerHTML = "";
-
-  solvedGroups.forEach(g => {
-    const div = document.createElement("div");
-    div.className = `cell group ${g.color}`;
-    div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
-    grid.appendChild(div);
-  });
-
-  allWords.forEach(w => {
-    const div = document.createElement("div");
-    div.className = "cell word";
-    div.textContent = w;
-
-    div.onclick = () => {
-      if (locked) return;
-
-      const selectedWords = document.querySelectorAll(".selected");
-
-      // Om användaren redan har valt 4 ord, får de inte välja fler utan att först avmarkera ett
-      if (selectedWords.length >= 4 && !div.classList.contains("selected")) {
-        return; // Gör inget om användaren försöker välja fler än 4
+      // Stänger gammal timeout om en ny startas
+      if (feedbackTimeout) {
+        clearTimeout(feedbackTimeout);
+        feedbackTimeout = null;
       }
 
-      // Om ordet redan är valt, avmarkera det
-      div.classList.toggle("selected");
-
-      // Aktivera knappen om exakt 4 ord är valda
-      testBtn.disabled = selectedWords.length !== 3; // En ny ordmarkering gör att det blir 4
-
-    };
-
-    grid.appendChild(div);
-  });
-}
-
-    grid.appendChild(div);
-  });
-}
-
-function flashWrong(selected) {
-  // Lägg till "wrong" för att göra ordet röd
-  selected.forEach(el => {
-    el.classList.add("wrong"); // Lägg till "wrong" för röd bakgrund
-    el.style.backgroundColor = "#ff4d4d"; // Röd bakgrund direkt
-  });
-
-  const fadeDuration = 1500; // Samma fade-tid som för bombbadgen
-
-  // Efter 1500ms, ta bort "wrong" och låt ordet fadea tillbaka till den valda bakgrunden
-  setTimeout(() => {
-    selected.forEach(el => {
-      el.classList.remove("wrong"); // Ta bort "wrong"-klassen
-      el.style.backgroundColor = "#cfe6ff"; // Återställ bakgrunden till blå (selected)
-    });
-  }, fadeDuration); // Vänta i 1500ms innan fade
-}
-
-function setBombFeedback(text, type = "neutral", temporary = false) {
-  bombText.textContent = text;
-  bombBadge.textContent = bombs;
-
-  bombBadge.classList.remove("good", "warn", "bad", "flash");
-
-  if (type === "good") bombBadge.classList.add("good");
-  if (type === "warn") bombBadge.classList.add("warn");
-  if (type === "bad") bombBadge.classList.add("bad");
-
-  bombBadge.classList.add("flash");
-  setTimeout(() => bombBadge.classList.remove("flash"), 200);
-
-  // Stoppa gammal timeout innan ny
-  if (feedbackTimeout) {
-    clearTimeout(feedbackTimeout);
-    feedbackTimeout = null;
-  }
-
-  if (temporary) {
-    feedbackTimeout = setTimeout(() => {
-      bombText.textContent = "BOMMAR";
-      bombBadge.classList.remove("good", "warn", "bad");
-    }, 1500); // Denna tid ska matcha ordens fade-tid
-  }
-}
-
-function check() {
-  if (locked) return;
-
-  const selected = [...document.querySelectorAll(".selected")];
-  if (selected.length !== 4) return;
-
-  locked = true;
-
-  const words = selected.map(e => e.textContent);
-
-  let match = null;
-  let almost = false;
-
-  for (const g of remainingGroups) {
-    const count = g.words.filter(w => words.includes(w)).length;
-    if (count === 4) match = g;
-    if (count === 3) almost = true;
-  }
-
-  if (match) {
-    solvedGroups.push(match);
-    solveOrder.push(match);
-    remainingGroups = remainingGroups.filter(g => g !== match);
-    allWords = allWords.filter(w => !match.words.includes(w));
-
-    selected.forEach(el => el.classList.remove("selected"));
-
-    setBombFeedback("RÄTT GRUPP", "good", true);
-    win();
-    render();
-
-  } else {
-    bombs++;
-    flashWrong(selected);
-
-    setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
-  }
-
-  setTimeout(() => locked = false, 1500);
-}
-
-function win() {
-  if (remainingGroups.length === 0) {
-
-    testBtn.textContent = "DELA RESULTAT";
-    testBtn.onclick = share;
-    testBtn.disabled = false;
-
-    // viktig: stoppa ev gamla timers direkt
-    if (feedbackTimeout) {
-      clearTimeout(feedbackTimeout);
-      feedbackTimeout = null;
+      // Tidsinställd feedbackåterställning (synkronisering med felaktiga ord)
+      if (temporary) {
+        feedbackTimeout = setTimeout(() => {
+          bombText.textContent = "BOMMAR";
+          bombBadge.classList.remove("good", "warn", "bad");
+        }, 600); // 600ms synkronisering med längden på felaktiga ords röda markering
+      }
     }
 
-    setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
-  }
-}
+    async function load() {
+      const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+      document.querySelector("h1").textContent = `PHILIPS FYRA #${game}`;
+      document.title = `PHILIPS FYRA #${game}`;
 
-function share() {
-  const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
-  const url = `https://pwestl.github.io/philipsfyra/${game}/`;
+      const res = await fetch(`puzzle.json?v=${Date.now()}`);
+      groups = await res.json();
+      remainingGroups = JSON.parse(JSON.stringify(groups));
+      solvedGroups = [];
+      allWords = remainingGroups.flatMap(g => g.words);
 
-  const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
+      testBtn.textContent = "TESTA";
+      testBtn.onclick = check;
 
-  const message =
+      shuffle();
+    }
+
+    function shuffle() {
+      allWords.sort(() => Math.random() - 0.5);
+      render();
+    }
+
+    function render() {
+      grid.innerHTML = "";
+
+      solvedGroups.forEach(g => {
+        const div = document.createElement("div");
+        div.className = `cell group ${g.color}`;
+        div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
+        grid.appendChild(div);
+      });
+
+      allWords.forEach(w => {
+        const div = document.createElement("div");
+        div.className = "cell word";
+        div.textContent = w;
+
+        div.onclick = () => {
+          if (locked) return;
+
+          div.classList.toggle("selected");
+
+          if (document.querySelectorAll(".selected").length > 4) {
+            div.classList.remove("selected");
+          }
+
+          testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+        };
+
+        grid.appendChild(div);
+      });
+    }
+
+    function flashWrong(selected) {
+      selected.forEach(el => el.classList.add("wrong"));
+      setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 600); // Synkronisera med animationens längd
+    }
+
+    function check() {
+      if (locked) return;
+
+      const selected = [...document.querySelectorAll(".selected")];
+      if (selected.length !== 4) return;
+
+      locked = true;
+
+      const words = selected.map(e => e.textContent);
+      let match = null;
+      let almost = false;
+
+      for (const g of remainingGroups) {
+        const count = g.words.filter(w => words.includes(w)).length;
+        if (count === 4) match = g;
+        if (count === 3) almost = true;
+      }
+
+      if (match) {
+        solvedGroups.push(match);
+        solveOrder.push(match);
+        remainingGroups = remainingGroups.filter(g => g !== match);
+        allWords = allWords.filter(w => !match.words.includes(w));
+
+        selected.forEach(el => el.classList.remove("selected"));
+
+        setBombFeedback("RÄTT GRUPP", "good", true);
+        win();
+        render();
+
+      } else {
+        bombs++;
+        flashWrong(selected);
+
+        setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
+      }
+
+      setTimeout(() => locked = false, 1200);
+    }
+
+    function win() {
+      if (remainingGroups.length === 0) {
+        testBtn.textContent = "DELA RESULTAT";
+        testBtn.onclick = share;
+        testBtn.disabled = false;
+
+        if (feedbackTimeout) {
+          clearTimeout(feedbackTimeout);
+          feedbackTimeout = null;
+        }
+
+        setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
+      }
+    }
+
+    function share() {
+      const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+      const url = `https://pwestl.github.io/philipsfyra/${game}/`;
+
+      const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
+
+      const message =
 `JAG KLARADE PHILIPS FYRA #${game}
 
 ${emojis}
@@ -430,24 +347,24 @@ Bommar: ${bombs}
 
 ${url}`;
 
-  navigator.clipboard.writeText(message);
-  setBombFeedback("RESULTAT KOPIERAT", "good");
-}
+      navigator.clipboard.writeText(message);
+      setBombFeedback("RESULTAT KOPIERAT", "good");
+    }
 
-function getEmoji(color) {
-  if (color === "yellow") return "🟨";
-  if (color === "green") return "🟩";
-  if (color === "blue") return "🟦";
-  if (color === "purple") return "🟪";
-  return "⬜";
-}
+    function getEmoji(color) {
+      if (color === "yellow") return "🟨";
+      if (color === "green") return "🟩";
+      if (color === "blue") return "🟦";
+      if (color === "purple") return "🟪";
+      return "⬜";
+    }
 
-function goHome() {
-  window.location.href = "/philipsfyra/";
-}
+    function goHome() {
+      window.location.href = "/philipsfyra/";
+    }
 
-load();
-</script>
+    load();
+  </script>
 
 </body>
 </html>
