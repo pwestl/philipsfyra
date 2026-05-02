@@ -1,1 +1,384 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>PHILIPS FYRA</title>
+  <meta property="og:title" content="PHILIPS FYRA #8">
+  <meta property="og:url" content="https://pwestl.github.io/philipsfyra/8/">
 
+  <style>
+    :root {
+      --cell-h: 42px;
+      --gap: 10px;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, Arial;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 14px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      margin: 6px 0 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: var(--cell-h);
+      gap: var(--gap);
+      align-content: start;
+      contain: layout paint;
+      overflow: visible;
+    }
+
+    .cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      user-select: none;
+      will-change: transform;
+    }
+
+    .word {
+      height: 100%;
+      font-size: 14px;
+      background: #f3f3f3;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+
+    .selected { background: #cfe6ff; }
+
+    .word.wrong {
+      animation: shake 0.6s ease;
+      background: #ff4d4d !important;
+      color: white;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+
+    }
+
+    /*@keyframes shake {
+      0%   { transform: translateY(0); }
+      25%  { transform: translateY(-2px); }
+      50%  { transform: translateY(2px); }
+      75%  { transform: translateY(-1px); }
+      100% { transform: translateY(0); }
+    }*/
+
+    .group {
+      grid-column: span 2;
+      grid-row: span 2;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center; 
+      padding: 0 14px;
+      border-radius: 10px;
+      transition: transform 280ms ease;
+    }
+
+    .yellow { background: #f9df6d; }
+    .green  { background: #a0c35a; }
+    .blue   { background: #b0c4ef; }
+    .purple { background: #ba81c5; }
+
+    /* BUTTONS */
+    .actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      background: #222;
+      color: white;
+      border: none;
+    }
+
+    button:disabled { opacity: 0.35; }
+
+    /* BOM UI */
+    .bomb-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+      font-weight: 700;
+      gap: 6px;
+    }
+
+    .bomb-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #f3f3f3;
+      color: #222;
+      border: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+    }
+
+    #bombText {
+      font-size: 12px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+
+    .bomb-badge.good { background: #a0c35a; }
+    .bomb-badge.warn { background: #f9df6d; }
+    .bomb-badge.bad  { background: #ff4d4d; }
+
+    .bomb-badge.flash {
+      transform: scale(1.15);
+    }
+  </style>
+</head>
+
+<body>
+  <div style="text-align:left; font-size:12px; opacity:0.5; margin-bottom:6px;">
+    <span onclick="goHome()" style="cursor:pointer;">← ARKIV</span>
+  </div>
+
+  <h1>PHILIPS FYRA</h1>
+
+  <div id="grid" class="grid"></div>
+
+  <div class="bomb-wrap">
+    <div id="bombBadge" class="bomb-badge">0</div>
+    <div id="bombText">BOMMAR</div>
+  </div>
+  
+  <div class="actions">
+    <button id="testBtn" onclick="check()">TESTA</button>
+  </div>
+
+  <div id="popup" class="popup"></div>
+
+  <script>
+    let groups = [];
+    let remainingGroups = [];
+    let solvedGroups = [];
+    let allWords = [];
+    let bombs = 0;
+    let locked = false;
+    let solveOrder = [];
+    let feedbackTimeout = null;
+    const grid = document.getElementById("grid");
+    const popup = document.getElementById("popup");
+    const testBtn = document.getElementById("testBtn");
+    const bombBadge = document.getElementById("bombBadge");
+    const bombText = document.getElementById("bombText");
+
+    function setBombFeedback(text, type = "neutral", temporary = false) {
+      bombText.textContent = text;
+      bombBadge.textContent = bombs;
+
+      bombBadge.classList.remove("good", "warn", "bad", "flash");
+
+
+      if (type === "good") bombBadge.classList.add("good");
+      if (type === "warn") bombBadge.classList.add("warn");
+      if (type === "bad") bombBadge.classList.add("bad");
+
+      bombBadge.classList.add("flash");
+      setTimeout(() => bombBadge.classList.remove("flash"), 2000);
+
+      // Stänger gammal timeout om en ny startas
+      if (feedbackTimeout) {
+        clearTimeout(feedbackTimeout);
+        feedbackTimeout = null;
+      }
+
+bombBadge.style.color = "white";
+
+      // Tidsinställd feedbackåterställning (synkronisering med felaktiga ord)
+      if (temporary) {
+        feedbackTimeout = setTimeout(() => {
+          bombText.textContent = "BOMMAR";
+          bombBadge.classList.remove("good", "warn", "bad");
+          bombBadge.style.color = "#222";
+        }, 2000); // 600ms synkronisering med längden på felaktiga ords röda markering
+      }
+    }
+
+  async function load() {
+    const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+    
+    // Hämta JSON och skaparnamn
+    const res = await fetch(`puzzle.json?v=${Date.now()}`);
+    const data = await res.json();
+    const creator = data.creator;  // Hämta skaparnamnet
+
+    // Uppdatera rubrik och titel baserat på skaparen
+    document.querySelector("h1").textContent = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
+    document.title = creator === 'Philip' ? `PHILIPS FYRA #${game}` : `PHILIPS (${creator}S) FYRA #${game}`;
+
+    // Resten av din kod som hanterar spelet
+    groups = data.groups;
+    remainingGroups = JSON.parse(JSON.stringify(groups));
+    solvedGroups = [];
+    allWords = remainingGroups.flatMap(g => g.words);
+
+    testBtn.textContent = "TESTA";
+    testBtn.onclick = check;
+
+    shuffle();
+}
+
+    function shuffle() {
+      allWords.sort(() => Math.random() - 0.5);
+      render();
+    }
+
+    function render() {
+      grid.innerHTML = "";
+
+      solvedGroups.forEach(g => {
+        const div = document.createElement("div");
+        div.className = `cell group ${g.color}`;
+        div.innerHTML = `<strong>${g.name}</strong><br>${g.words.join(", ")}`;
+        grid.appendChild(div);
+      });
+
+      allWords.forEach(w => {
+        const div = document.createElement("div");
+        div.className = "cell word";
+        div.textContent = w;
+
+        div.onclick = () => {
+          if (locked) return;
+
+          div.classList.toggle("selected");
+
+          if (document.querySelectorAll(".selected").length > 4) {
+            div.classList.remove("selected");
+          }
+
+          testBtn.disabled = document.querySelectorAll(".selected").length !== 4;
+        };
+
+        grid.appendChild(div);
+      });
+    }
+
+    function flashWrong(selected) {
+      selected.forEach(el => el.classList.add("wrong"));
+      setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 2000); // Synkronisera med animationens längd
+    }
+
+    function check() {
+      if (locked) return;
+
+      const selected = [...document.querySelectorAll(".selected")];
+      if (selected.length !== 4) return;
+
+      locked = true;
+
+      const words = selected.map(e => e.textContent);
+      let match = null;
+      let almost = false;
+
+      for (const g of remainingGroups) {
+        const count = g.words.filter(w => words.includes(w)).length;
+        if (count === 4) match = g;
+        if (count === 3) almost = true;
+      }
+
+      if (match) {
+        solvedGroups.push(match);
+        solveOrder.push(match);
+        remainingGroups = remainingGroups.filter(g => g !== match);
+        allWords = allWords.filter(w => !match.words.includes(w));
+
+        selected.forEach(el => el.classList.remove("selected"));
+
+        setBombFeedback("RÄTT GRUPP", "good", true);
+        win();
+        render();
+
+      } else {
+        bombs++;
+        flashWrong(selected);
+
+        setBombFeedback(almost ? "3 AV 4 RÄTT" : "FEL", almost ? "warn" : "bad", true);
+      }
+
+      setTimeout(() => locked = false, 2000);
+    }
+
+    function win() {
+      if (remainingGroups.length === 0) {
+        testBtn.textContent = "DELA RESULTAT";
+        testBtn.onclick = share;
+        testBtn.disabled = false;
+
+        if (feedbackTimeout) {
+          clearTimeout(feedbackTimeout);
+          feedbackTimeout = null;
+        }
+
+        setBombFeedback(`DU KLARADE DET MED ${bombs} BOMMAR`, "good", false);
+      }
+    }
+
+    function share() {
+      const game = window.location.pathname.split("/").filter(Boolean).pop() || "1";
+      const url = `https://pwestl.github.io/philipsfyra/${game}/`;
+
+      const emojis = solveOrder.map(g => getEmoji(g.color)).join(" ");
+
+      const message =
+`JAG KLARADE PHILIPS (${creator}S) FYRA #${game}
+
+Ordning:
+${emojis}
+Bommar: 
+${bombs}
+
+${url}`;
+
+      navigator.clipboard.writeText(message);
+      setBombFeedback("RESULTAT KOPIERAT", "good");
+    }
+
+    function getEmoji(color) {
+      if (color === "yellow") return "🟨";
+      if (color === "green") return "🟩";
+      if (color === "blue") return "🟦";
+      if (color === "purple") return "🟪";
+      return "⬜";
+    }
+
+    function goHome() {
+      window.location.href = "/philipsfyra/";
+    }
+
+    load();
+  </script>
+
+</body>
+</html>
