@@ -65,9 +65,16 @@ h1 {
 .selected { background: #cfe6ff; }
 
 .word.wrong {
-  animation: shake 0.6s ease;
-  background: #ff4d4d !important;
-  color: white;
+  animation: shake 1.5s ease; /* Skakningseffekten varar i 1.5 sekunder */
+  background: #ff4d4d !important; /* Gör bakgrunden röd */
+  color: white; /* Gör texten vit */
+  opacity: 1; /* Starta med full opacitet */
+  transition: opacity 1.5s ease; /* Lägg till en övergångseffekt för opacitet */
+}
+
+/* Fade-out-effekt */
+.word.wrong.fade-out {
+  opacity: 0; /* Gör ordet genomskinligt under fade-out */
 }
 
 @keyframes shake {
@@ -297,8 +304,24 @@ function render() {
 }
 
 function flashWrong(selected) {
+  // Lägg till "wrong" för skakningseffekten
   selected.forEach(el => el.classList.add("wrong"));
-  setTimeout(() => selected.forEach(el => el.classList.remove("wrong")), 1500);
+  
+  // Vänta i samma tid som feedbacken (1500ms) innan vi gör fade-out
+  const fadeDuration = 1500; // Längd på fade-effekten
+  
+  // Efter animationen (1500ms), ta bort ordens felaktiga klass och gör fade-out
+  setTimeout(() => {
+    selected.forEach(el => {
+      el.classList.remove("wrong");
+      el.classList.add("fade-out"); // Lägg till fade-out klass
+    });
+  }, fadeDuration);
+  
+  // Efter fade-out (1500ms), ta bort fade-out klass för att återställa ordet
+  setTimeout(() => {
+    selected.forEach(el => el.classList.remove("fade-out"));
+  }, fadeDuration + 500); // Vänta ytterligare 500ms så att fade-effekten syns klart
 }
 
 function check() {
