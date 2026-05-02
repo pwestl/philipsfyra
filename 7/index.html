@@ -291,20 +291,22 @@ function render() {
 
       const selectedWords = document.querySelectorAll(".selected");
 
-      // Om användaren har valt fyra ord, tillåts de bara välja bort ett innan de väljer nytt ord
-      if (selectedWords.length >= 4) {
-        if (!div.classList.contains("selected")) {
-          // Om det nya ordet inte redan är valt, gör inget
-          return;
-        }
+      // Om användaren redan har valt 4 ord, får de inte välja fler utan att först avmarkera ett
+      if (selectedWords.length >= 4 && !div.classList.contains("selected")) {
+        return; // Gör inget om användaren försöker välja fler än 4
       }
 
-      // Markera eller avmarkera ordet
+      // Om ordet redan är valt, avmarkera det
       div.classList.toggle("selected");
 
-      // Om exakt 4 ord är valda, aktivera knappen
-      testBtn.disabled = selectedWords.length !== 4;
+      // Aktivera knappen om exakt 4 ord är valda
+      testBtn.disabled = selectedWords.length !== 3; // En ny ordmarkering gör att det blir 4
+
     };
+
+    grid.appendChild(div);
+  });
+}
 
     grid.appendChild(div);
   });
